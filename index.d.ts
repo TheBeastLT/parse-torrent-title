@@ -42,7 +42,7 @@ declare namespace ParseTorrentTitle {
         season?: number;
         episodes?: Array<number>;
         episode?: number;
-        languages?: string;
+        languages?: Array<string>;
         dubbed?: boolean;
     }
 
