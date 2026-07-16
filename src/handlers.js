@@ -268,6 +268,33 @@ exports.addDefaults = /** @type Parser */ parser => {
         return null;
     });
 
+    // Bare trailing Roman-numeral season: "Sword Art Online II - 01", "Title III 12".
+    // The bracketed/dash-before-letter handlers above miss a lone Roman numeral that
+    // sits between the title and the episode number. Restricted to unambiguous
+    // multi-char numerals (II–XIII) preceded by a title word, so single-letter
+    // I/V/X can't false-positive on ordinary title tokens.
+    parser.addHandler("seasons", ({ title, result }) => {
+        if (result.seasons) return null;
+        const ROMAN_MAP = { XIII: 13, XII: 12, XI: 11, IX: 9, VIII: 8, VII: 7, VI: 6, IV: 4, III: 3, II: 2 };
+        const m = title.match(/\w[\w.'-]*\s+(XIII|XII|XI|IX|VIII|VII|VI|IV|III|II)(\s*[-.]?\s*)(\d{1,4})(?:\D|$)/);
+        if (m && ROMAN_MAP[m[1]]) {
+            result.seasons = [ROMAN_MAP[m[1]]];
+            // Only claim the episode for a purely space-separated number ("Douluo Dalu
+            // II 26") that the downstream episode handlers can't parse. Dash/dot forms
+            // ("... II - 01") are left to those handlers, which also trim the episode
+            // from the title — claiming it here would leave "- 01" stuck in the title.
+            const separatorIsSpaceOnly = /^\s+$/.test(m[2]);
+            if (separatorIsSpaceOnly && !result.episodes) {
+                const ep = parseInt(m[3], 10);
+                if (ep >= 1 && ep <= 9999 && !(ep >= 1900 && ep <= 2099)) {
+                    result.episodes = [ep];
+                }
+            }
+            return { matchIndex: 0 };
+        }
+        return null;
+    });
+
     // adds single season info if its there"s only single season
     parser.addHandler("season", ({ result }) => {
         if (result.seasons && result.seasons.length === 1) {
@@ -362,6 +389,69 @@ exports.addDefaults = /** @type Parser */ parser => {
     // Bracketed numeric ranges with optional trailing markers like "Fin" or "End"
     // e.g. [01-17 Fin], [01-26], [01-17 End]
     parser.addHandler("episodes", /\[(\s*0*\d{1,3}\s*(?:[-–~]|to)\s*0*\d{1,3}(?:\s*(?:fin|end|fin\.|end\.)?)?\s*)\]/i, range, { remove: true });
+    // Absolute-episode range hint: a parenthetical/bracketed 3+ digit range that
+    // annotates a per-season batch pack, e.g. "Apotheosis S2 01-10 (053-062)" →
+    // {start:53,end:62}. Coexists with the main per-season range ("01-10") without
+    // replacing it, so it's stored as a separate observational field (no remove,
+    // matchIndex 0). 2-digit ranges are intentionally excluded — ambiguous with an
+    // ordinary per-season range. Callers use this to match flat-catalog absolute
+    // episode requests against season-labelled packs.
+    parser.addHandler("absoluteRangeHint", ({ title, result }) => {
+        if (result.absoluteRangeHint) return null;
+        const m = title.match(/[([]\s*(\d{3,})\s*-\s*(\d{3,})\s*[)\]]/);
+        if (m) {
+            const start = parseInt(m[1], 10);
+            const end = parseInt(m[2], 10);
+            if (start < end) {
+                result.absoluteRangeHint = { start, end };
+                return { matchIndex: 0 };
+            }
+        }
+        return null;
+    });
+
+    // Large zero-padded ranges in parens/brackets, incl. 4-digit: "(0001-1000)", "[001-500]".
+    // The range handlers above cap at 3 digits and don't accept parens, so long-running
+    // batch packs (One Piece, Naruto absolute numbering) slip through. Stored as a
+    // two-element [start, end] sentinel — episodeRangeStart/End derives the bounds — to
+    // avoid materializing a thousand-element episodes array.
+    parser.addHandler("episodes", ({ title, result }) => {
+        if (result.episodes) return null;
+        const m = title.match(/[([]\s*0*(\d{1,4})\s*[-–~]\s*0*(\d{1,4})\s*[)\]]/);
+        if (m) {
+            const start = parseInt(m[1], 10);
+            const end = parseInt(m[2], 10);
+            if (start > 0 && end > 0 && start < end && end <= 9999) {
+                result.episodes = [start, end];
+                result.episodeRangeStart = start;
+                result.episodeRangeEnd = end;
+                return { rawMatch: m[0], matchIndex: m.index, remove: true };
+            }
+        }
+        return null;
+    });
+    // Bare numeric range with no keyword/brackets, e.g. "One Piece 001-1000",
+    // "Show 01-26". Restricted to zero-padded (0N) or both-sides ≥3-digit values so
+    // it can't misread "Part 2 - 11" (small, unpadded, spaced) as a range — that
+    // must stay a single episode. Stored as a [start, end] sentinel.
+    parser.addHandler("episodes", ({ title, result }) => {
+        if (result.episodes) return null;
+        const m = title.match(/(?:^|[\s([])(\d{1,4})\s*[-–]\s*(\d{1,4})(?=[\s)\]]|$)/);
+        if (m) {
+            const [a, b] = [m[1], m[2]];
+            const start = parseInt(a, 10);
+            const end = parseInt(b, 10);
+            const zeroPadded = /^0\d/.test(a) || /^0\d/.test(b);
+            const bothLarge = start >= 100 && end >= 100;
+            if ((zeroPadded || bothLarge) && start > 0 && end > 0 && start < end && end <= 9999) {
+                result.episodes = [start, end];
+                result.episodeRangeStart = start;
+                result.episodeRangeEnd = end;
+                return { rawMatch: m[0], matchIndex: m.index };
+            }
+        }
+        return null;
+    });
     parser.addHandler("episodes", /\bEp(?:isode)?\W+\d{1,2}\.(\d{1,3})\b/i, array(integer));
     parser.addHandler("episodes", /(?:\b[ée]p?(?:isode)?|[Ээ]пизод|[Сс]ер(?:ии|ия|\.)?|caa?p(?:itulo)?|epis[oó]dio)[. ]?[-:#№]?[. ]?(\d{1,4})(?:[abc]|v0?[1-4]|\W|$)/i, array(integer));
     parser.addHandler("episodes", /\b(\d{1,3})(?:-?я)?[ ._-]*(?:ser(?:i?[iyj]a|\b)|[Сс]ер(?:ии|ия|\.)?)/i, array(integer));
@@ -384,6 +474,26 @@ exports.addDefaults = /** @type Parser */ parser => {
     // Uses a negative lookahead to avoid matching when the arc section contains a
     // range like "- 01 - 12" (which indicates a multi-episode pack, not a single arc episode)
     parser.addHandler("episodes", /(?<!S\d)(?<!S\d\d):(?!\s*[^:\[\]]*?-\s*\d{1,4}\s*-\s*\d{1,4})\s*[^:\[\]]*?\s+-\s+(\d{1,3})(?:\s*\[|$|\s+(?:\d{3,4}p|HEVC|x264|x265|WEB|BD|DL))/i, array(integer), { skipIfAlreadyFound: false });
+
+    // Arc / subtitle name (anime multi-arc shows).
+    // Captures the subtitle that follows a colon when an episode marker (" - NN")
+    // trails it — the exact shape the anime-arc episode handler above matches, e.g.
+    //   "Sword Art Online: Alicization - War of Underworld - 05" → arc "Alicization - War of Underworld"
+    // Tying arc to the trailing "- NN" keeps it from firing on plain colon titles
+    // like "The Fast and the Furious: Tokyo Drift" (no episode) — those have no arc.
+    // Observational only (matchIndex 0): never mutates title/episode parsing.
+    parser.addHandler("arc", ({ title, result }) => {
+        if (result.arc) return null;
+        const m = title.match(/(?<!S\d)(?<!S\d\d):\s*([^:\[\]]+?)\s+-\s+\d{1,4}(?:\D|$)/i);
+        if (m) {
+            const arc = m[1].trim().replace(/\s{2,}/g, " ");
+            if (arc && !/^\d+$/.test(arc)) {
+                result.arc = arc;
+                return { matchIndex: 0 };
+            }
+        }
+        return null;
+    });
 
     // can be both absolute episode and season+episode in format 101
     parser.addHandler("episodes", ({ title, result, matched }) => {

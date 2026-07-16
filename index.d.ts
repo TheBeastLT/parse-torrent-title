@@ -15,6 +15,7 @@ declare namespace ParseTorrentTitle {
 
     interface DefaultParserResult {
         title: string;
+        arc?: string;
         date?: string;
         year?: number | string;
         resolution?: string;
@@ -42,6 +43,7 @@ declare namespace ParseTorrentTitle {
         isMovie?: boolean;
         episodeRangeStart?: number;
         episodeRangeEnd?: number;
+        absoluteRangeHint?: { start: number; end: number };
         volumes?: Array<number>;
         seasons?: Array<number>;
         season?: number;
@@ -93,4 +95,11 @@ declare module "parse-torrent-title" {
     export const parse: ParseTorrentTitle.ParseFunction;
     export const addHandler: ParseTorrentTitle.AddHandlerFunction;
     export const addDefaults: ParseTorrentTitle.AddDefaultsFunction;
+
+    /** Normalize a parsed resolution value (e.g. "4k") to its display label ("4K"). */
+    export function normalizeResolution(resolution?: string | null): string | null;
+    /** Normalize a parsed codec value (e.g. "hevc") to its display label ("HEVC"). */
+    export function normalizeCodec(codec?: string | null): string | null;
+    /** Extract an episode number from a batch-torrent filename; null if none found. */
+    export function parseFilename(filename?: string | null): number | null;
 }
