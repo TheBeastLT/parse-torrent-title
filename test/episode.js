@@ -1155,6 +1155,22 @@ describe("Parsing episode", () => {
         expect(parse(releaseName)).to.deep.include({ episode: 26 });
     });
 
+    it("should not detect season number before russian season word as episode", () => {
+        const releaseName = "01 - Дело о золотом таланте - Приключения Пети и Волка - 4 Сезон - D2T.mkv";
+        expect(parse(releaseName)).to.deep.include({ season: 4 });
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should detect transliterated russian serija episode", () => {
+        const releaseName = "01. Griffiny - Sezon 21 - Serija 1 - Oskary.mkv";
+        expect(parse(releaseName)).to.deep.include({ season: 21, episode: 1 });
+    });
+
+    it("should not detect series number as part of episode list", () => {
+        const releaseName = "My Family, Series 1, 02 Pain In The Class 720p WEB-DL HEVC x265 BONE.mkv";
+        expect(parse(releaseName)).to.deep.include({ season: 1, episodes: [2] });
+    });
+
     it("should not detect episode from bracketed audio channels", () => {
         const releaseName = "Deadpool (2016) [2160p] [7.1 AAC ENG] [5.1 AAC ENG FRE GER ITA SPA] [COMMENTARY]";
         expect(parse(releaseName)).to.not.have.property("episodes");
