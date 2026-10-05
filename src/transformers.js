@@ -31,8 +31,8 @@ exports.range = input => {
         .split(" ")
         .map(str => parseInt(str, 10));
 
-    if (array.length === 2 && array[0] < array[1]) {
-        array = Array(array[1] - array[0] + 1).fill().map((_, idx) => array[0] + idx);
+    if (array.length === 2 && array[0] < array[1] && !/^\d+[ .]*[,&+][ .]*\d+$/.test(input.trim())) {
+        array = new Array(array[1] - array[0] + 1).fill().map((_, idx) => array[0] + idx);
     }
     if (!array.every((number, idx) => idx === array.length - 1 || number + 1 === array[idx + 1])) {
         return null; // array is not in sequence and ascending order

@@ -562,4 +562,54 @@ describe("Parsing season", () => {
         const releaseName = "18.11 - A Code Of Secrecy (2014) x264 1080p-AAC-ESUB [Parth].mkv";
         expect(parse(releaseName)).to.not.have.property("season");
     });
+
+    it("should detect norwegian season folder", () => {
+        const releaseName = "Sesong 2";
+        expect(parse(releaseName)).to.deep.include({ season: 2 });
+    });
+
+    it("should detect german season folder", () => {
+        const releaseName = "Staffel 1";
+        expect(parse(releaseName)).to.deep.include({ season: 1 });
+    });
+
+    it("should detect swedish season folder", () => {
+        const releaseName = "pepparkornen säsong 3";
+        expect(parse(releaseName)).to.deep.include({ season: 3 });
+    });
+
+    it("should detect croatian season folder", () => {
+        const releaseName = "Sezona 5 + Bonus";
+        expect(parse(releaseName)).to.deep.include({ season: 5 });
+    });
+
+    it("should detect season number before season word", () => {
+        const releaseName = "2 Season";
+        expect(parse(releaseName)).to.deep.include({ season: 2 });
+    });
+
+    it("should not detect year range end before season word as season", () => {
+        const releaseName = "Tottenham Hotspur 2012-13 Season Review.mp4";
+        expect(parse(releaseName)).to.not.have.property("season");
+    });
+
+    it("should detect bare season folder", () => {
+        const releaseName = "S04";
+        expect(parse(releaseName)).to.deep.include({ season: 4 });
+    });
+
+    it("should detect season at the end of the title", () => {
+        const releaseName = "Peaky Blinders S04";
+        expect(parse(releaseName)).to.deep.include({ title: "Peaky Blinders", season: 4 });
+    });
+
+    it("should not expand comma separated seasons into a range", () => {
+        const releaseName = "Горец (Сезон 1, 22 серии) / Highlander [1992, DVDRip]";
+        expect(parse(releaseName)).to.deep.include({ season: 1 });
+    });
+
+    it("should detect swedish season range", () => {
+        const releaseName = "Bäst I Test Säsong 1-3 (1080p), Bast I Test";
+        expect(parse(releaseName)).to.deep.include({ seasons: [1, 2, 3] });
+    });
 });

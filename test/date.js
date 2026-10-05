@@ -196,4 +196,16 @@ describe("Parsing date", () => {
         const releaseName = "11-11-11.2011.1080p.BluRay.x264.DTS-FGT";
         expect(parse(releaseName)).to.not.have.property("date");
     });
+
+    it("should detect date with mixed separators", () => {
+        const releaseName = "2015 07-20- Daily Show- Paul Rudd [EXTENDED].mp4";
+        expect(parse(releaseName)).to.deep.include({ date: "2015-07-20" });
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect date with mixed separators when it's year and episode range", () => {
+        const releaseName = "[NoobSubs] Berserk 2016 01-12 (720p Blu-ray 8bit AAC MP4)";
+        expect(parse(releaseName)).to.not.have.property("date");
+        expect(parse(releaseName)).to.deep.include({ year: 2016 });
+    });
 });

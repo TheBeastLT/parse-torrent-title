@@ -140,4 +140,9 @@ describe("Parsing title", () => {
         const releaseName = "COMPASS2.0.ANIMATION.PROJECT.S01E02.Will.You.Be.My.Partner.1080p.CR.WEB-DL.JPN.AAC2.0.H.264.MSubs-ToonsHub.mkv";
         expect(parse(releaseName)).to.deep.include({ title: "COMPASS2 0 ANIMATION PROJECT" });
     });
+
+    it("should detect title with absolute episode at the beginning", () => {
+        const releaseName = "1125 - One piece [Sub] 1080p";
+        expect(parse(releaseName)).to.deep.include({ title: "One piece" });
+    });
 });

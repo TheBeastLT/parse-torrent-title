@@ -884,4 +884,139 @@ describe("Parsing episode", () => {
         expect(parse(releaseName)).to.not.have.property("seasons");
         expect(parse(releaseName)).to.not.have.property("episodes");
     });
+
+    it("should detect four digit episode with E prefix instead of year", () => {
+        const releaseName = "M.jak.Milosc.E1944.1080p.WEB.DL.x264.PL.GhN.mp4";
+        expect(parse(releaseName)).to.deep.include({ episode: 1944 });
+        expect(parse(releaseName)).to.not.have.property("year");
+    });
+
+    it("should detect four digit episode with ep prefix instead of year", () => {
+        const releaseName = "Santa_Barbara_ep_1900_vhsrip_rus_xvid.avi";
+        expect(parse(releaseName)).to.deep.include({ episode: 1900 });
+        expect(parse(releaseName)).to.not.have.property("year");
+    });
+
+    it("should detect season and episode with dot separator before extension", () => {
+        const releaseName = "Mangust.2.01.avi";
+        expect(parse(releaseName)).to.deep.include({ season: 2, episode: 1 });
+    });
+
+    it("should detect season and three digit episode with dot separator before extension", () => {
+        const releaseName = "Glukhar-3.036.avi";
+        expect(parse(releaseName)).to.deep.include({ season: 3, episode: 36 });
+    });
+
+    it("should not detect runtime suffix as season and episode", () => {
+        const releaseName = "sokol'nichiy_tomas_dvdrip_1.46.avi";
+        expect(parse(releaseName)).to.not.have.property("season");
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect season dot episode in the middle of a time", () => {
+        const releaseName = "Elements of Chernobyl Episode 1 1.23.45.mkv";
+        expect(parse(releaseName)).to.deep.include({ episode: 1 });
+        expect(parse(releaseName)).to.not.have.property("season");
+    });
+
+    it("should detect season and episode with dot separator at the start", () => {
+        const releaseName = "3.001.Кизиловый щербет.WEBRip.1080p.RG.Russkie.serialy.mkv";
+        expect(parse(releaseName)).to.deep.include({ season: 3, episode: 1 });
+    });
+
+    it("should detect season and episode with dot separator at the start followed by title", () => {
+        const releaseName = "1.01 Shattered Vows.avi";
+        expect(parse(releaseName)).to.deep.include({ season: 1, episode: 1 });
+    });
+
+    it("should not detect number in parentheses with a suffix as episode", () => {
+        const releaseName = "[Asakura] Kaiko Sareta Ankoku Heishi (30-dai) no Slow na Second Life 01 [BDRip 1920x1080 x265 10bit FLAC].mkv";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should still detect episode after title with number in parentheses with a dash", () => {
+        const releaseName = "[ASW] Kaiko sareta Ankoku Heishi (30-dai) no Slow na Second Life - 01 [1080p HEVC][8FAB46AC].mkv";
+        expect(parse(releaseName)).to.deep.include({ episode: 1 });
+    });
+
+    it("should detect transliterated russian episode", () => {
+        const releaseName = "Shejh.Badijar.Istorija.ljubvi.i.predatelstva.1978.(4-ja.serija.iz.4).XviD.TVRip.avi";
+        expect(parse(releaseName)).to.deep.include({ episode: 4 });
+    });
+
+    it("should detect serbian episode", () => {
+        const releaseName = "Lud, Zbunjen, Normalan (2014) Epizoda 170.flv";
+        expect(parse(releaseName)).to.deep.include({ episode: 170 });
+    });
+
+    it("should not expand comma separated decimal into a range", () => {
+        const releaseName = "Yuragi-Sou No Yuuna-San - 03,5 OVA1 uncen  [1080p].mkv";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not expand comma separated duration into a range", () => {
+        const releaseName = "Следствие ведут знатоки фильм 1 Черный маклер 1,46.avi";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should still detect comma separated consecutive episodes", () => {
+        const releaseName = "LVDB 1,2.avi";
+        expect(parse(releaseName)).to.deep.include({ episodes: [1, 2] });
+    });
+
+    it("should not detect episode range when end is a decimal number", () => {
+        const releaseName = "Astrid.et.Raphaelle-S04E03-10.000.metres.mkv";
+        expect(parse(releaseName)).to.deep.include({ season: 4, episodes: [3] });
+    });
+
+    it("should not detect episode range from time range", () => {
+        const releaseName = "The.Pitt.1x15.Quindicesima.Ora.21.00-22.00.ITA.ENG.1080p.DLMux.AAC.x265-Pir8.mkv";
+        expect(parse(releaseName)).to.deep.include({ season: 1, episodes: [15] });
+    });
+
+    it("should detect episode with year numbered season", () => {
+        const releaseName = "Looney Tunes - S1940E24 - A Wild Hare.mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Looney Tunes", season: 1940, episode: 24 });
+        expect(parse(releaseName)).to.not.have.property("year");
+    });
+
+    it("should detect episode with year numbered season and separate year", () => {
+        const releaseName = "Tom and Jerry S1947E27 - Cat Fishin (1947) [1080p BluRay REMUX AVC FLAC 1.0].mkv";
+        expect(parse(releaseName)).to.deep.include({ season: 1947, episode: 27, year: 1947 });
+    });
+
+    it("should detect episode with s.N ep.N notation", () => {
+        const releaseName = "[apreder]Les_Pays_d'en_Haut_s.4_ep.01(2019)DVB.mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Les Pays d'en Haut", season: 4, episode: 1 });
+    });
+
+    it("should detect episode with three digit s.N ep.N notation", () => {
+        const releaseName = "[apreder]Un_si_grand_soleil_s.8_ep.001(2025)DVB.mkv";
+        expect(parse(releaseName)).to.deep.include({ season: 8, episode: 1 });
+    });
+
+    it("should detect episode before bracketed resolution", () => {
+        const releaseName = "Kamen Rider Black - 24 [GSG.Persona99][480].rus.jpn.mp4";
+        expect(parse(releaseName)).to.deep.include({ episode: 24, resolution: "480p" });
+    });
+
+    it("should detect absolute episode before resolution in parentheses", () => {
+        const releaseName = "37 Yali Capkini  (1080).mp4";
+        expect(parse(releaseName)).to.deep.include({ episode: 37, resolution: "1080p" });
+    });
+
+    it("should still detect year glued to episode", () => {
+        const releaseName = "Insiders.2023E43.Sarah.Hanson-Young.Greens.Senator.720p";
+        expect(parse(releaseName)).to.deep.include({ year: 2023, episode: 43 });
+    });
+
+    it("should not detect episode from year numbered season without episode", () => {
+        const releaseName = "MythBusters S2009 Complete 720p WEBRips x264 [i c]";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should detect absolute episode at the beginning followed by title", () => {
+        const releaseName = "1125 - One piece [Sub] 1080p";
+        expect(parse(releaseName)).to.deep.include({ episode: 1125 });
+    });
 });
