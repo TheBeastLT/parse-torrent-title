@@ -349,6 +349,7 @@ describe("Random releases", () => {
             seasons: [1],
             season: 1,
             resolution: "1080p",
+            source: "WEB",
             codec: "h264",
             group: "EDITH"
         });

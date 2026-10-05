@@ -1019,4 +1019,144 @@ describe("Parsing episode", () => {
         const releaseName = "1125 - One piece [Sub] 1080p";
         expect(parse(releaseName)).to.deep.include({ episode: 1125 });
     });
+
+    it("should detect episode right after the year", () => {
+        const releaseName = "[NoobSubs] Berserk 2016 12 (720p Blu-ray 8bit AAC).mp4";
+        expect(parse(releaseName)).to.deep.include({ year: 2016, episode: 12 });
+    });
+
+    it("should detect concatenated episode right after the year", () => {
+        const releaseName = "the.flash.2014.113.hdtv-lol.mp4";
+        expect(parse(releaseName)).to.deep.include({ year: 2014, episode: 113 });
+    });
+
+    it("should detect episode right after the year in parentheses", () => {
+        const releaseName = "[Some-Stuffs]_Pocket_Monsters_(2019)_088_(1080p)_[0AA4D76E].mkv";
+        expect(parse(releaseName)).to.deep.include({ year: 2019, episode: 88 });
+    });
+
+    it("should detect episode right after the year followed by episode title", () => {
+        const releaseName = "Sherlock.Holmes.(1954).11.The Red Headed League.mp4";
+        expect(parse(releaseName)).to.deep.include({ year: 1954, episode: 11 });
+    });
+
+    it("should detect dash wrapped episode right after the year", () => {
+        const releaseName = "Flash Gordon 1996 -24- The Wrath of Ming [Sub+Eng+Fre].mkv";
+        expect(parse(releaseName)).to.deep.include({ year: 1996, episode: 24 });
+    });
+
+    it("should detect concatenated episode right after the resolution", () => {
+        const releaseName = "WhenCallsTheHeart720p_204_WWW.NEWPCT1.COM.mkv";
+        expect(parse(releaseName)).to.deep.include({ resolution: "720p", episode: 204 });
+    });
+
+    it("should detect series word episode", () => {
+        const releaseName = "My Family, Series 1, 08 Much Ado About Ben 720p WEB-DL HEVC x265 BONE.mkv";
+        expect(parse(releaseName)).to.deep.include({ season: 1, episode: 8 });
+    });
+
+    it("should detect series word episode with dot separator", () => {
+        const releaseName = "Timmy Time Series 2.01 Timmy Learns Magic.mkv";
+        expect(parse(releaseName)).to.deep.include({ season: 2, episode: 1 });
+    });
+
+    it("should detect polish episode word", () => {
+        const releaseName = "Simpsonowie - The Simpsons - Sezon 35 Odcinek 11 .mp4";
+        expect(parse(releaseName)).to.deep.include({ season: 35, episode: 11 });
+    });
+
+    it("should detect swedish episode word", () => {
+        const releaseName = "Avsnitt 02 - Dishonor.mkv";
+        expect(parse(releaseName)).to.deep.include({ episode: 2 });
+    });
+
+    it("should detect dutch episode word", () => {
+        const releaseName = "'t Schaep met de 5 pooten aflevering 4.mp4";
+        expect(parse(releaseName)).to.deep.include({ episode: 4 });
+    });
+
+    it("should detect german episode word", () => {
+        const releaseName = "Super Dragonball Heroes (Deutsch) [Folge 21] (720p_30fps_H264-192kbit_AAC).mp4";
+        expect(parse(releaseName)).to.deep.include({ episode: 21 });
+    });
+
+    it("should detect finnish episode word", () => {
+        const releaseName = "Silkkitie.30.päivässä.-.Jakso-04.flv";
+        expect(parse(releaseName)).to.deep.include({ episode: 4 });
+    });
+
+    it("should detect italian episode word", () => {
+        const releaseName = "Catch 22 - Puntata 4 (2019).HDTV.720p.H264.italian.Ac3-2.0-BaMax71.mkv";
+        expect(parse(releaseName)).to.deep.include({ episode: 4 });
+    });
+
+    it("should not detect channels after the year as episode", () => {
+        const releaseName = "Godzilla.vs.Kong.2021.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA.mkv";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect audio after the year as episode", () => {
+        const releaseName = "Nobody (2021) 1080p 5.1 - 2.0 x264 Phun Psyz.mp4";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect cd number after the year as episode", () => {
+        const releaseName = "Jism 2 (2012) 1 CD DVD Rip XivD MP3 E-SUB Team DST";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect size after the year as episode", () => {
+        const releaseName = "Mission Impossible 5 Rogue Nation 2015 700 MB";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect date after the year as episode", () => {
+        const releaseName = "The Bold and the Beautiful 2015 2 27";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should detect episode range with tilde starting from zero", () => {
+        const releaseName = "[Erai-raws] Boku no Hero Academia S2 - 00~25 [1080p][Multiple Subtitle]";
+        expect(parse(releaseName)).to.deep.include({ episodes: Array.from({ length: 26 }, (_, i) => i) });
+    });
+
+    it("should detect episode range in brackets with ep prefix", () => {
+        const releaseName = "Naruto Complete [Ep 01 - 220][English][480p]";
+        expect(parse(releaseName)).to.deep.include({ episodes: Array.from({ length: 220 }, (_, i) => i + 1) });
+    });
+
+    it("should detect season and episode without s prefix", () => {
+        const releaseName = "Vikkatakavi 01E06.mkv";
+        expect(parse(releaseName)).to.deep.include({ season: 1, episode: 6 });
+    });
+
+    it("should detect season and episode with series and ep prefixes", () => {
+        const releaseName = "Steptoe And Son Series 05EP01 A Death In The Family.mp4";
+        expect(parse(releaseName)).to.deep.include({ season: 5, episode: 1 });
+    });
+
+    it("should detect ova episode with underscores", () => {
+        const releaseName = "[Cleo]Monster_Musume_no_Iru_Nichijou_-_OVA_01_(Dual Audio_10bit_BD720p_x265).mkv";
+        expect(parse(releaseName)).to.deep.include({ episode: 1 });
+    });
+
+    it("should detect russian episode count of total as range", () => {
+        const releaseName = "Викинги / Vikings / Сезон: 5 / Серии: 5 из 20 [2017, WEB-DL 1080p] MVO";
+        expect(parse(releaseName)).to.deep.include({ episodes: [1, 2, 3, 4, 5] });
+    });
+
+    it("should detect russian full episode count in brackets as range", () => {
+        const releaseName = "Клинок, рассекающий демонов (ТВ-1) / Kimetsu no Yaiba / Demon Slayer [TV] [26 из 26] [RUS(ext), ENG, JAP+Sub]";
+        expect(parse(releaseName)).to.deep.include({ episodes: Array.from({ length: 26 }, (_, i) => i + 1) });
+    });
+
+    it("should detect turkish bolum episode", () => {
+        const releaseName = "Kaderimin Yazıldığı Gün 26. Bölüm.mkv";
+        expect(parse(releaseName)).to.deep.include({ episode: 26 });
+    });
+
+    it("should not detect episode from bracketed audio channels", () => {
+        const releaseName = "Deadpool (2016) [2160p] [7.1 AAC ENG] [5.1 AAC ENG FRE GER ITA SPA] [COMMENTARY]";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
 });

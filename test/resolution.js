@@ -91,4 +91,9 @@ describe("Parsing resolution", () => {
         expect(parse(releaseName)).to.deep.include({ resolution: "720p" });
         expect(parse(releaseName)).to.not.have.property("episodes");
     });
+
+    it("should detect 1080p resolution when 4k remastered is present", () => {
+        const releaseName = "Batman Returns 1992 4K Remastered BluRay 1080p DTS AC3 x264-MgB";
+        expect(parse(releaseName)).to.deep.include({ resolution: "1080p" });
+    });
 });

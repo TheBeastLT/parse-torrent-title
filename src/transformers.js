@@ -40,6 +40,11 @@ exports.range = input => {
     return array;
 };
 
+exports.rangeUpTo = input => {
+    const end = parseInt(input, 10);
+    return end > 0 ? new Array(end).fill().map((_, idx) => idx + 1) : null;
+};
+
 exports.yearRange = input => {
     const parts = input.split(/\D+/);
     const start = parts[0] && parseInt(parts[0], 10);

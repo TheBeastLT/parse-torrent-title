@@ -291,4 +291,14 @@ describe("Parsing source", () => {
         const releaseName = "VHS 3 Viral (2014)PL.mp4";
         expect(parse(releaseName)).to.not.have.property("source");
     });
+
+    it("should detect CAM source attached to year", () => {
+        const releaseName = "A Very Harold & Kumar 3D Christmas (2011)CAM(900mb)Nl subs N";
+        expect(parse(releaseName)).to.deep.include({ source: "CAM" });
+    });
+
+    it("should detect WEB source", () => {
+        const releaseName = "The.Last.of.Us.S01E08.1080p.WEB.H264-CAKES[TGx]";
+        expect(parse(releaseName)).to.deep.include({ source: "WEB" });
+    });
 });

@@ -1,12 +1,16 @@
-const { none, value, integer, boolean, lowercase, uppercase, date, range, yearRange, array, uniqConcat } = require("./transformers");
+const { none, value, integer, boolean, lowercase, uppercase, date, range, rangeUpTo, yearRange, array, uniqConcat } = require("./transformers");
 
 exports.addDefaults = /** @type Parser */ parser => {
+
+    // Site
+    parser.addHandler("site", /^(www?[., ][\w-]+[. ][\w-]+(?:[. ][\w-]+)?)\s+-\s*/i, none, { skipFromTitle: true, remove: true });
 
     // Episode code
     parser.addHandler("episodeCode", /[[(]([a-z0-9]{8}|[A-Z0-9]{8})[\])](?=\.[a-zA-Z0-9]{1,5}$|$)/, uppercase, { remove: true });
     parser.addHandler("episodeCode", /\[(?=[A-Z]+\d|\d+[A-Z])([A-Z0-9]{8})]/, uppercase, { remove: true });
 
     // Resolution
+    parser.addHandler("resolution", /(?<=\b(?:4k|2160p)\b.*)\b(480|720|1080)p\b/i, value("$1p"), { remove: true });
     parser.addHandler("resolution", /\b[([]?4k[)\]]?\b/i, value("4k"), { remove: true });
     parser.addHandler("resolution", /21600?[pi]/i, value("4k"), { skipIfAlreadyFound: false, remove: true });
     parser.addHandler("resolution", /[([]?3840x\d{4}[)\]]?/i, value("4k"), { remove: true });
@@ -33,8 +37,9 @@ exports.addDefaults = /** @type Parser */ parser => {
     // Year
     parser.addHandler("year", /[([*]?[ .]?(?<!\bE)((?:19\d|20[012])\d[ .]?-[ .]?(?:19\d|20[012])\d)(?:\s?[*)\]])?/, yearRange, { remove: true });
     parser.addHandler("year", /[([*][ .]?((?:19\d|20[012])\d[ .]?-[ .]?\d{2})(?:\s?[*)\]])?/, yearRange, { remove: true });
+    parser.addHandler("year", /(?<=[ .](?:19\d|20[012])\d[ .]+)[([]((?:19\d|20[012])\d)[)\]]/, integer, { remove: true });
     parser.addHandler("year", /[([*]?(?!^)(?<!\d|Cap[. ]?|\bep[. ]?|\bE|\bS(?=\d{4}E\d))((?:19\d|20[012])\d)(?!\d|kbps)[*)\]]?/i, integer, { remove: true });
-    parser.addHandler("year", /^[([]?((?:19\d|20[012])\d)(?!\d|kbps)[)\]]?/i, integer, { remove: true });
+    parser.addHandler("year", /^[([]?((?:19\d|20[012])\d)(?!\d|kbps)[)\]]?(?![ ._]+(?:S\d{1,2}[ .]?E\d|E\d{1,3}\b))/i, integer, { remove: true });
 
     // Extended
     parser.addHandler("extended", /EXTENDED/, boolean);
@@ -65,8 +70,19 @@ exports.addDefaults = /** @type Parser */ parser => {
     // Region
     parser.addHandler("region", /R\d\b/, none, { skipIfFirst: true });
 
+    // Video depth
+    parser.addHandler("bitDepth", /(?:8|10|12)[- ]?bit/i, lowercase, { remove: true });
+    parser.addHandler("bitDepth", /\bhevc\s?10\b/i, value("10bit"));
+    parser.addHandler("bitDepth", /\bhdr10\b/i, value("10bit"));
+    parser.addHandler("bitDepth", /\bhi10\b/i, value("10bit"), { remove: true, skipFromTitle: true });
+    parser.addHandler("bitDepth", ({ result }) => {
+        if (result.bitDepth) {
+            result.bitDepth = result.bitDepth.replace(/[ -]/, "");
+        }
+    });
+
     // Source
-    parser.addHandler("source", /\b(?:H[DQ][ .-]*)?CAM(?:H[DQ])?(?:[ .-]*Rip)?\b/i, value("CAM"), { remove: true });
+    parser.addHandler("source", /\b(?:H[DQ][ .-]*)?CAM(?:H[DQ])?(?:[ .-]*Rip)?\b(?![ .-]*(?:S\d|E\d|\((?:19|20)\d{2}\)))/i, value("CAM"), { remove: true });
     parser.addHandler("source", /\b(?:H[DQ][ .-]*)?S[ .-]+print/i, value("CAM"), { remove: true });
     parser.addHandler("source", /\b(?:HD[ .-]*)?T(?:ELE)?S(?:YNC)?(?:Rip)?\b/i, value("TeleSync"), { remove: true });
     parser.addHandler("source", /\b(?:HD[ .-]*)?T(?:ELE)?C(?:INE)?(?:Rip)?\b/, value("TeleCine"), { remove: true });
@@ -75,13 +91,14 @@ exports.addDefaults = /** @type Parser */ parser => {
     parser.addHandler("source", /(?<=remux.*)\bBlu[ .-]*Ray\b/i, value("BluRay REMUX"), { remove: true });
     parser.addHandler("source", /\bBlu[ .-]*Ray\b(?![ .-]*Rip)/i, value("BluRay"), { remove: true });
     parser.addHandler("source", /\bUHD[ .-]*Rip\b/i, value("UHDRip"), { remove: true });
+    parser.addHandler("source", /\bP(?:re)?-HD(?:Rip)?\b/i, value("SCR"), { remove: true });
     parser.addHandler("source", /\bHD[ .-]*Rip\b/i, value("HDRip"), { remove: true });
     parser.addHandler("source", /\bMicro[ .-]*HD\b/i, value("HDRip"), { remove: true });
     parser.addHandler("source", /\b(?:BR|Blu[ .-]*Ray)[ .-]*Rip\b/i, value("BRRip"), { remove: true });
     parser.addHandler("source", /\bBD[ .-]*Rip\b|\bBDR\b|\bBD-RM\b|[[(]BD[\]) .,-]/i, value("BDRip"), { remove: true });
     parser.addHandler("source", /\b(?:HD[ .-]*)?DVD[ .-]*Rip\b/i, value("DVDRip"), { remove: true });
     parser.addHandler("source", /\bVHS[ .-]*Rip\b/i, value("DVDRip"), { remove: true });
-    parser.addHandler("source", /\b(?:DVD?|BD|BR)?[ .-]*Scr(?:eener)?\b/i, value("SCR"), { remove: true });
+    parser.addHandler("source", /\b(?:DVD?|BD|BR|HD)?[ .-]*Scr(?:eener)?\b/i, value("SCR"), { remove: true });
     parser.addHandler("source", /\bP(?:re)?DVD(?:Rip)?\b/i, value("SCR"), { remove: true });
     parser.addHandler("source", /\bDVD(?:R\d?)?\b/i, value("DVD"), { remove: true });
     parser.addHandler("source", /\bVHS\b/i, value("DVD"), { remove: true, skipIfFirst: true });
@@ -95,17 +112,6 @@ exports.addDefaults = /** @type Parser */ parser => {
     parser.addHandler("source", /\bWEB[ .-]*Rip\b/i, value("WEBRip"), { remove: true });
     parser.addHandler("source", /\b(?:DL|WEB|BD|BR)MUX\b/i, { remove: true });
     parser.addHandler("source", /\b(DivX|XviD)\b/, { remove: true });
-
-    // Video depth
-    parser.addHandler("bitDepth", /(?:8|10|12)[- ]?bit/i, lowercase, { remove: true });
-    parser.addHandler("bitDepth", /\bhevc\s?10\b/i, value("10bit"));
-    parser.addHandler("bitDepth", /\bhdr10\b/i, value("10bit"));
-    parser.addHandler("bitDepth", /\bhi10\b/i, value("10bit"));
-    parser.addHandler("bitDepth", ({ result }) => {
-        if (result.bitDepth) {
-            result.bitDepth = result.bitDepth.replace(/[ -]/, "");
-        }
-    });
 
     // HDR
     parser.addHandler("hdr", /\bDV\b|dolby.?vision|\bDoVi\b/i, uniqConcat(value("DV")), { remove: true, skipIfAlreadyFound: false });
@@ -126,7 +132,7 @@ exports.addDefaults = /** @type Parser */ parser => {
     // Codec
     parser.addHandler("codec", /\b[xh][-. ]?26[45]/i, lowercase, { remove: true });
     parser.addHandler("codec", /\bhevc(?:\s?10)?\b/i, value("hevc"), { remove: true, skipIfAlreadyFound: false });
-    parser.addHandler("codec", /\b(?:dvix|mpeg2|divx|xvid|avc)\b/i, lowercase, { remove: true, skipIfAlreadyFound: false });
+    parser.addHandler("codec", /\b(?:dvix|mpeg2|divx|xvid|avc|(?<!-)av1)\b/i, lowercase, { remove: true, skipIfAlreadyFound: false });
     parser.addHandler("codec", ({ result }) => {
         if (result.codec) {
             result.codec = result.codec.replace(/[ .-]/, "");
@@ -145,6 +151,7 @@ exports.addDefaults = /** @type Parser */ parser => {
     parser.addHandler("audio", /\bDD5[. ]?1\b/i, value("dd5.1"), { remove: true });
     parser.addHandler("audio", /\bQ?AAC(?:[. ]?2[. ]0|x2)?\b/, value("aac"), { remove: true });
     parser.addHandler("audioChannels", /\[[257][.-][01]]/, lowercase, { remove: true });
+    parser.addHandler("audioChannels", /(?:\b(?:DTS(?:-?HD)?(?:[ .-]?MA)?|E?AC-?3|AAC|TrueHD|FLAC|Opus|L?PCM)[ .-]?|[[(])([257]\.[01])(?:ch)?(?=[\]) .,_-]|$)/i, none, { remove: true });
 
     // Group
     parser.addHandler("group", /- ?(?!\d+$|S\d+|\d+x|ep?\d+|[^[]+]$)([^\-. []+[^\-. [)\]\d][^\-. [)\]]*)(?:\[[\w.-]+])?(?=\.\w{2,4}$|$)/i, { remove: true });
@@ -170,11 +177,12 @@ exports.addDefaults = /** @type Parser */ parser => {
     parser.addHandler("seasons", /(?:complete\W|seasons?\W|\W|^)((?:s\d{1,2}[., +/\\&-]+)+s\d{1,2}\b)/i, range, { remove: true });
     parser.addHandler("seasons", /(?:complete\W|seasons?\W|\W|^)[([]?(s\d{2,}-\d{2,}\b)[)\]]?/i, range, { remove: true });
     parser.addHandler("seasons", /(?:complete\W|seasons?\W|\W|^)[([]?(s[1-9]-[2-9]\b)[)\]]?/i, range, { remove: true });
-    parser.addHandler("seasons", /(?:(?:\bthe\W)?\bcomplete\W)?(?:seasons?|[Сс]езони?|sezon|temporadas?|stagioni|s[äæ]song|sesong|staffel)[. ]?[-:]?[. ]?[([]?((?:\d{1,2}[, /\\&]+)+\d{1,2}\b)[)\]]?/i, range, { remove: true });
+    parser.addHandler("seasons", /(?:(?:\bthe\W)?\bcomplete\W)?(?:seasons?|[Сс]езони?|sezon|temporadas?|stagioni|s[äæ]song|sesong|staffel)[. ]?[-:]?[. ]?[([]?((?:\d{1,2}(?: ?[,/\\&][, /\\&]*| ))+\d{1,2}\b)[)\]]?/i, range, { remove: true });
     parser.addHandler("seasons", /(?:(?:\bthe\W)?\bcomplete\W)?(?:seasons|[Сс]езони?|sezon|temporadas?|stagioni|s[äæ]song|sesong|staffel)[. ]?[-:]?[. ]?[([]?((?:\d{1,2}[. -]+)+0?[1-9]\d?\b)[)\]]?/i, range, { remove: true });
     parser.addHandler("seasons", /(?:(?:\bthe\W)?\bcomplete\W)?season[. ]?[([]?((?:\d{1,2}[. -]+)+[1-9]\d?\b)[)\]]?(?!.*\.\w{2,4}$)/i, range, { remove: true });
     parser.addHandler("seasons", /(?:(?:\bthe\W)?\bcomplete\W)?\b(?:seasons?|s[äæ]song|sesong|staffel)\b[. -]?(\d{1,2}[. -]?(?:to|thru|and|till|\+|:)[. -]?\d{1,2})\b/i, range, { remove: true });
     parser.addHandler("seasons", /\bS((?:19|20)\d{2})E0*[1-9]\d{0,2}\b/i, array(integer));
+    parser.addHandler("seasons", /\bS(\d{3})[. ]?E\d{1,4}\b/i, array(integer));
     parser.addHandler("seasons", /(\d{1,2})(?:-?й)?[. _]?(?:[Сс]езон|sez(?:on)?)(?:\W?\D|$)/i, array(integer));
     parser.addHandler("seasons", /(?:(?:\bthe\W)?\bcomplete\W)?(?:saison|seizoen|sezona|sezon(?:SO?)?|stagione|season|series|temp(?:orada)?|sesong|s[äæ]song|sæson|staffel):?[. ]?(\d{1,2})/i, array(integer));
     parser.addHandler("seasons", /[Сс]езон:?[. _]?№?(\d{1,2})(?!\d)/i, array(integer));
@@ -187,6 +195,7 @@ exports.addDefaults = /** @type Parser */ parser => {
     parser.addHandler("seasons", /^(\d{1,2})[. ]season$/i, array(integer));
     parser.addHandler("seasons", /(?:\D|^)(\d{1,2})[Xxх]\d{1,3}(?:\D|$)/, array(integer));
     parser.addHandler("seasons", /\bSn([1-9])(?:\D|$)/, array(integer));
+    parser.addHandler("seasons", /(?:^|[ ._-])(\d{1,2})EP?\d{2,3}(?=[ ._-]|$)/i, array(integer));
     parser.addHandler("seasons", /\bs\.(\d{1,2})[ .]ep\.\d{1,4}/i, array(integer));
     parser.addHandler("seasons", /[[(](\d{1,2})\.\d{1,3}[)\]]/, array(integer));
     parser.addHandler("seasons", /-\s?(\d{1,2})\.\d{2,3}\s?-/, array(integer));
@@ -211,12 +220,16 @@ exports.addDefaults = /** @type Parser */ parser => {
     parser.addHandler("episodes", /(?:[\W\d]|^)(?:episodes?|[Сс]ерии:?)[ .]?[([]?(\d{1,3}(?:[ .+]*[&+][ .]?\d{1,3})+)(?:\W|$)/i, range);
     parser.addHandler("episodes", /[([]?(?:\D|^)(\d{1,3}[ .]?ao[ .]?\d{1,3})[)\]]?(?:\W|$)/i, range);
     parser.addHandler("episodes", /(?:[\W\d]|^)(?:e|eps?|episodes?|[Сс]ерии:?|\d+[xх])[ .]*[([]?(\d{1,3}(?:-\d{1,3})+)(?!\.\d)(?:\W|$)/i, range);
+    parser.addHandler("episodes", /[Сс]ерии:?\s+(\d{1,4})\s+из\s+\d{1,4}/, rangeUpTo);
+    parser.addHandler("episodes", /\[(\d{1,4})\s+из\s+\d{1,4}]/, rangeUpTo);
+    parser.addHandler("episodes", /(?:[\W\d]|^)(?:eps?|episodes?)[ .]*[([]?(\d{1,2}[ .]+-[ .]+\d{1,3}|\d{3,4}[ .]+-[ .]+\d{3,4})(?!\.\d|[ .]*-)(?:\W|$)/i, range);
+    parser.addHandler("episodes", /(?:\W|^)(\d{1,3}(?:[ .]*~[ .]*\d{1,3})+)(?:\W|$)/i, range);
     parser.addHandler("episodes", /(?:so?|t)\d{1,2}[. ]?[xх-]?[. ]?(?:e|x|х|ep)[. ]?(\d{1,4})(?:[abc]|v0?[1-4]|\D|$)/i, array(integer));
     parser.addHandler("episodes", /(?:so?|t)\d{1,2}\s?[-.]\s?(\d{1,4})(?:[abc]|v0?[1-4]|\D|$)/i, array(integer));
     parser.addHandler("episodes", /\b(?:so?|t)\d{2}(\d{2})\b/i, array(integer));
     parser.addHandler("episodes", /\bS(?:19|20)\d{2}E(0*[1-9]\d{0,2})\b/i, array(integer));
+    parser.addHandler("episodes", /\bS\d{3}[. ]?E(\d{1,4})\b/i, array(integer));
     parser.addHandler("episodes", /\bs\.\d{1,2}[ .]ep\.(\d{1,4})/i, array(integer));
-    parser.addHandler("episodes", /(?:\W|^)(\d{1,3}(?:[ .]*~[ .]*\d{1,3})+)(?:\W|$)/i, range);
     parser.addHandler("episodes", /-\s(\d{1,3}[ .]*-[ .]*\d{1,3})(?!-\d)(?:\W|$)/i, range);
     parser.addHandler("episodes", /s\d{1,2}\s?\((\d{1,3}[ .]*-[ .]*\d{1,3})\)/i, range);
     parser.addHandler("episodes", /(?:^|\/)(?!20-20)\d{1,2}-(\d{2})\b(?!-\d)/, array(integer));
@@ -225,11 +238,13 @@ exports.addDefaults = /** @type Parser */ parser => {
     parser.addHandler("episodes", /(?<!(?:seasons?|[Сс]езони?)\W*)(?:[ .([-]|^)(\d{1,3}(?:[ .]?[,&+~][ .]?\d{1,3})+)(?:[ .)\]-]|$)/i, range);
     parser.addHandler("episodes", /(?<!(?:seasons?|[Сс]езони?)\W*)(?!20-20)(?:[ .([-]|^)(\d{1,3}(?:-\d{1,3})+)(?!\.\d)(?:[ .)(\]]|-\D|$)/i, range);
     parser.addHandler("episodes", /\bEp(?:isode)?\W+\d{1,2}\.(\d{1,3})\b/i, array(integer));
-    parser.addHandler("episodes", /(?:\b[ée]p?(?:isode)?|[Ээ]пизод|[Сс]ер(?:ии|ия|\.)?|caa?p(?:itulo)?|epis[oó]dio|epizoda)[. ]?[-:#№]?[. ]?(\d{1,4})(?:[abc]|v0?[1-4]|\W|$)/i, array(integer));
+    parser.addHandler("episodes", /(?:\b[ée]p?(?:isode)?|[Ээ]пизод|[Сс]ер(?:ии|ия|\.)?|caa?p(?:itulo)?|epis[oó]dio|epizoda|odcinek|avsnitt|aflevering|folge|jakso|puntata)[. ]?[-:#№]?[. ]?(\d{1,4})(?:[abc]|v0?[1-4]|\W|$)/i, array(integer));
     parser.addHandler("episodes", /\b(\d{1,3})(?:-?(?:я|ja|ya))?[ ._-]*(?:ser(?:i?[iyj]a|\b)|[Сс]ер(?:ии|ия|\.)?)/i, array(integer));
     parser.addHandler("episodes", /(?:\D|^)\d{1,2}[. ]?[Xxх][. ]?(\d{1,3})(?:[abc]|v0?[1-4]|\D|$)/, array(integer));
     parser.addHandler("episodes", /[[(]\d{1,2}\.(\d{1,3})[)\]]/, array(integer));
+    parser.addHandler("episodes", /(?:^|[ ._-])\d{1,2}EP?(\d{2,3})(?=[ ._-]|$)/i, array(integer));
     parser.addHandler("episodes", /\b[Ss](?:eason\W?)?\d{1,2}[ .](\d{1,2})\b/, array(integer));
+    parser.addHandler("episodes", /\bseries[ .]?\d{1,2}(?:, |\.| - ?|- | )(\d{1,3})(?=[ .]+[^\W\d])/i, array(integer));
     parser.addHandler("episodes", /-\s?\d{1,2}\.(\d{2,3})\s?-/, array(integer));
     parser.addHandler("episodes", /^\d{1,2}\.(\d{2,3}) - /, array(integer), { skipIfBefore: ["year, source", "resolution"] });
     parser.addHandler("episodes", /^\d{1,2}\.(\d{2,3})[. ]+(?=[^\W\d]|[\u00c0-\u024f\u0400-\u04ff])/, array(integer), { skipIfBefore: ["year"] });
@@ -237,8 +252,12 @@ exports.addDefaults = /** @type Parser */ parser => {
     parser.addHandler("episodes", /\b\d{2}[ ._-](\d{2})(?:.F)?\.\w{2,4}$/, array(integer));
     parser.addHandler("episodes", /(?<!^)\[(\d{2,3})](?!(?:\.\w{2,4})?$)/, array(integer));
     parser.addHandler("episodes", /\bodc[. ]+(\d{1,3})\b/i, array(integer));
+    parser.addHandler("episodes", /\b(\d{1,4})\.?[ ._-]*b[öo]l[üu]m\b/i, array(integer));
+    parser.addHandler("episodes", /\bb[öo]l[üu]m[ ._-]*(\d{1,4})\b/i, array(integer));
+    parser.addHandler("episodes", /\bOVA[ ._]+(\d{1,2})(?:v\d)?\b(?![ .]*[-~&+.]\d)/i, array(integer), { skipFromTitle: true });
 
     parser.addHandler("episodes", /^(\d{3,4})[. ]+-[. ]+(?=[^\W\d])/, array(integer), { remove: true, skipIfBefore: ["year"] });
+
     // can be both absolute episode and season+episode in format 101
     parser.addHandler("episodes", ({ title, result, matched }) => {
         if (!result.episodes) {
@@ -282,6 +301,18 @@ exports.addDefaults = /** @type Parser */ parser => {
         return null;
     });
 
+    parser.addHandler("episodes", ({ title, result, matched }) => {
+        if (!result.episodes && !result.date) {
+            const match = matched.year && title.slice(matched.year.matchIndex)
+                .match(/^(?:[ .]| - ?)(?!(?:480|576|720)\b)(\d{1,3})(?:v\d)?-?(?=[ .([-]|$)(?![ .,-]*\d|[ .]*(?:cd|dvd|dis[ck]|bits?|films?|movies?|[mg]b)\b)/i)
+                || matched.resolution && title.slice(matched.resolution.matchIndex).match(/^ (\d{3,4}) (?=[^\W\d])/);
+            if (match) {
+                result.episodes = [parseInt(match[1], 10)];
+            }
+        }
+        return null;
+    });
+
     // adds single season info if its there's only single season
     parser.addHandler("episode", ({ result }) => {
         if (result.episodes && result.episodes.length === 1) {
@@ -289,15 +320,18 @@ exports.addDefaults = /** @type Parser */ parser => {
         }
     });
 
+    parser.addHandler("source", /\b(?:WEB|web)\b(?![ .-]*DL)/, value("WEB"), { remove: true, skipIfFirst: true });
+
     parser.addHandler("complete", /(?:\bthe\W)?(?:\bcomplete|collection|dvd)?\b[ .]?\bbox[ .-]?set\b/i, boolean);
     parser.addHandler("complete", /(?:\bthe\W)?(?:\bcomplete|collection|dvd)?\b[ .]?\bmini[ .-]?series\b/i, boolean);
-    parser.addHandler("complete", /(?:\bthe\W)?(?:\bcomplete|full|all)\b.*\b(?:series|seasons|collection|episodes|set|pack|movies)\b/i, boolean);
+    parser.addHandler("complete", /(?:\bthe\W)?\b(?:complete|full|all)\b.*\b(?:series|seasons|collection|episodes|set|pack|movies)\b/i, boolean);
     parser.addHandler("complete", /\b(?:series|seasons|movies?)\b.*\b(?:complete|collection)\b/i, boolean);
     parser.addHandler("complete", /(?:\bthe\W)?\bultimate\b[ .]\bcollection\b/i, boolean, { skipIfAlreadyFound: false });
     parser.addHandler("complete", /\bcollection\b.*\b(?:set|pack|movies)\b/i, boolean);
     parser.addHandler("complete", /\b(collection|completa)\b/i, boolean, { skipFromTitle: true });
     parser.addHandler("complete", /\bkolekcja\b(?:\Wfilm(?:y|ów|ow)?)?/i, boolean, { remove: true });
-    parser.addHandler("complete", /duology|trilogy|quadr[oi]logy|tetralogy|pentalogy|hexalogy|heptalogy|anthology|saga/i, boolean, { skipIfAlreadyFound: false });
+    parser.addHandler("complete", /duology|trilogy|quadr[oi]logy|tetralogy|pentalogy|hexalogy|heptalogy|anthology/i, boolean, { skipIfAlreadyFound: false });
+    parser.addHandler("complete", /\bsaga\b/i, boolean, { skipFromTitle: true });
 
     // Language
     parser.addHandler("languages", /\bmulti(?:ple)?[ .-]*(?:su?$|sub\w*|dub\w*)\b|msub/i, uniqConcat(value("multi subs")), { skipIfAlreadyFound: false, remove: true });
@@ -385,7 +419,7 @@ exports.addDefaults = /** @type Parser */ parser => {
     parser.addHandler("languages", /\b(?:DK|danska|dansub|nordic)\b/i, uniqConcat(value("danish")), { skipIfAlreadyFound: false });
     parser.addHandler("languages", /\b(danish|dinamarqu[eê]s)\b/i, uniqConcat(value("danish")), { skipFromTitle: true, skipIfAlreadyFound: false });
     parser.addHandler("languages", /\bdan\b(?=.*\.(?:srt|vtt|ssa|ass|sub|idx)$)/i, uniqConcat(value("danish")), { skipFromTitle: true, skipIfAlreadyFound: false });
-    parser.addHandler("languages", /\b(?:(?<!w{3}\.\w+\.)FI|finsk|finsub|nordic)\b/i, uniqConcat(value("finnish")), { skipIfAlreadyFound: false });
+    parser.addHandler("languages", /\b(?:(?<!w{3}\.\w+\.|Sci-)FI|finsk|finsub|nordic)\b/i, uniqConcat(value("finnish")), { skipIfAlreadyFound: false });
     parser.addHandler("languages", /\bfinnish\b/i, uniqConcat(value("finnish")), { skipFromTitle: true, skipIfAlreadyFound: false });
     parser.addHandler("languages", /\b(?:(?<!w{3}\.\w+\.)SE|swe|swesubs?|sv(?:ensk)?|nordic)\b/i, uniqConcat(value("swedish")), { skipIfAlreadyFound: false });
     parser.addHandler("languages", /\b(swedish|sueco)\b/i, uniqConcat(value("swedish")), { skipFromTitle: true, skipIfAlreadyFound: false });

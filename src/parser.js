@@ -7,6 +7,8 @@ const ALT_TITLES_REGEX = new RegExp(`[^/|(]*[${NON_ENGLISH_CHARS}][^/|]*[/|]|[/|
 const NOT_ONLY_NON_ENGLISH_REGEX = new RegExp(`(?<=[a-zA-Z][^${NON_ENGLISH_CHARS}]+)[${NON_ENGLISH_CHARS}].*[${NON_ENGLISH_CHARS}]|[${NON_ENGLISH_CHARS}].*[${NON_ENGLISH_CHARS}](?=[^${NON_ENGLISH_CHARS}]+[a-zA-Z])`, "g");
 const NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${NON_ENGLISH_CHARS}#[【★]+|[ \\-:/\\\\[|{(#$&^]+$`, "g");
 const REMAINING_NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${NON_ENGLISH_CHARS}#]+|[[\\]({} ]+$`, "g");
+const UNCLOSED_BRACKET_AT_END = /\s*[([{][^)\]}]*$/;
+const UNOPENED_BRACKET = /^([^([{]*)[)\]}]/;
 const DEFAULT_OPTIONS = {
     skipIfAlreadyFound: true, // whether to skip a matcher if another matcher from this group was already found
     skipFromTitle: false, // whether to exclude found match from the end result title
@@ -30,8 +32,8 @@ function createHandlerFromRegExp(name, regExp, transformer, options) {
 
         if (rawMatch) {
             const transformed = transformer(cleanMatch || rawMatch, result[name]);
-            const beforeTitleMatch = title.match(/^\[([^[\]]+)]/);
-            const isBeforeTitle = beforeTitleMatch && beforeTitleMatch[1].includes(rawMatch);
+            const beforeTitleMatch = title.match(/^\[[^[\]]+]/);
+            const isBeforeTitle = beforeTitleMatch && match.index < beforeTitleMatch[0].length;
             const otherMatches = Object.entries(matched).filter(e => e[0] !== name);
             const isSkipIfFirst = options.skipIfFirst && otherMatches.length &&
                 otherMatches.every(e => match.index < e[1].matchIndex);
@@ -74,6 +76,10 @@ function cleanTitle(rawTitle) {
         .replace(ALT_TITLES_REGEX, "") // remove alt language titles
         .replace(NOT_ONLY_NON_ENGLISH_REGEX, "") // remove non english chars if they are not the only ones left
         .replace(REMAINING_NOT_ALLOWED_SYMBOLS_AT_START_AND_END, "")
+        .replace(/^[^\s.]*\.\S*$/, title => title.replace(/\./g, " ")) // replace dots with spaces if title is dot separated
+        .replace(UNCLOSED_BRACKET_AT_END, "") // remove unclosed bracket section at the end
+        .replace(UNOPENED_BRACKET, "$1") // remove closing bracket without an opening one
+        .replace(/\s+/g, " ")
         .trim();
 
     return cleanedTitle;

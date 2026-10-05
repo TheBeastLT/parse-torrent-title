@@ -612,4 +612,19 @@ describe("Parsing season", () => {
         const releaseName = "Bäst I Test Säsong 1-3 (1080p), Bast I Test";
         expect(parse(releaseName)).to.deep.include({ seasons: [1, 2, 3] });
     });
+
+    it("should not detect season range across a removed year", () => {
+        const releaseName = "Stargate SG-1. Season 9 (2005) 20.avi";
+        expect(parse(releaseName)).to.deep.include({ seasons: [9], episode: 20 });
+    });
+
+    it("should detect season with three digits padded", () => {
+        const releaseName = "One.Piece.S004E111.Dash.For.a.Miracle!.Alabasta.Animal.Land!.1080p.NF.WEB-DL.DDP2.0.x264-KQRM.mkv";
+        expect(parse(releaseName)).to.deep.include({ season: 4, episode: 111 });
+    });
+
+    it("should detect three digit season", () => {
+        const releaseName = "house.hunters.s216e12.1080p.web.h264-spamneggs.mkv";
+        expect(parse(releaseName)).to.deep.include({ season: 216, episode: 12 });
+    });
 });

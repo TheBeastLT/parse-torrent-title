@@ -55,4 +55,9 @@ describe("Parsing codec", () => {
 
         expect(parse(releaseName)).to.not.have.property("codec");
     });
+
+    it("should detect av1 codec", () => {
+        const releaseName = "Love.Island.S03E32.1080p.AV1.10bit-MeGusta.mkv";
+        expect(parse(releaseName)).to.deep.include({ codec: "av1" });
+    });
 });

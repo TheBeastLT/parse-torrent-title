@@ -1199,4 +1199,9 @@ describe("Parsing language", () => {
         const releaseName = "Ara.(A.Break).2008.DVDRip";
         expect(parse(releaseName)).to.not.have.property("languages");
     });
+
+    it("should detect multi subs with other languages", () => {
+        const releaseName = "X-Men Complete 13 Movie Collection Sci-Fi 2000 - 2020 Eng Rus Multi-Subs 1080p [H264-mp4]";
+        expect(parse(releaseName)).to.deep.include({ languages: ["multi subs", "english", "russian"] });
+    });
 });
