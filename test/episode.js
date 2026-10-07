@@ -1175,4 +1175,24 @@ describe("Parsing episode", () => {
         const releaseName = "Deadpool (2016) [2160p] [7.1 AAC ENG] [5.1 AAC ENG FRE GER ITA SPA] [COMMENTARY]";
         expect(parse(releaseName)).to.not.have.property("episodes");
     });
+
+    it("should detect episode range with thru", () => {
+        const releaseName = "DareDevil - Seasons 2 - Episodes 10 thru 13";
+        expect(parse(releaseName)).to.deep.include({ episodes: [10, 11, 12, 13] });
+    });
+
+    it("should detect episode from bracketed x of y", () => {
+        const releaseName = "BBC Planet Earth [3 of 11] Caves.avi";
+        expect(parse(releaseName)).to.deep.include({ title: "BBC Planet Earth", episodes: [3] });
+    });
+
+    it("should not detect episode from disc numbering in multi season pack", () => {
+        const releaseName = "Forensic Files Complete Series Seasons 01-06 [1 of 4]";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect episode from disc numbering after season range", () => {
+        expect(parse("Forensic Files Seasons 01-06 [1 of 4]")).to.not.have.property("episodes");
+        expect(parse("Forensic Files S01-S06 [1 of 4]")).to.not.have.property("episodes");
+    });
 });

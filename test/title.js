@@ -220,4 +220,19 @@ describe("Parsing title", () => {
         const releaseName = "Wonder Woman 1984 (2020) [UHDRemux 2160p DoVi P8 Es-DTSHD AC3 En-AC3].mkv";
         expect(parse(releaseName)).to.deep.include({ title: "Wonder Woman 1984", year: 2020 });
     });
+
+    it("should not include all seasons prefix in title", () => {
+        const releaseName = "House MD All Seasons (1-8) 720p Ultra-Compressed";
+        expect(parse(releaseName)).to.deep.include({ title: "House MD", seasons: [1, 2, 3, 4, 5, 6, 7, 8] });
+    });
+
+    it("should not include complete keyword before all seasons in title", () => {
+        const releaseName = "Breaking Bad Complete (All Seasons 1 to 5) -nelly-";
+        expect(parse(releaseName)).to.deep.include({ title: "Breaking Bad", seasons: [1, 2, 3, 4, 5] });
+    });
+
+    it("should not include trailing comma in title", () => {
+        const releaseName = "The Golden Girls, Seasons 1 thru 7 Complete, X264";
+        expect(parse(releaseName)).to.deep.include({ title: "The Golden Girls", seasons: [1, 2, 3, 4, 5, 6, 7] });
+    });
 });

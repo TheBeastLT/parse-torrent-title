@@ -627,4 +627,24 @@ describe("Parsing season", () => {
         const releaseName = "house.hunters.s216e12.1080p.web.h264-spamneggs.mkv";
         expect(parse(releaseName)).to.deep.include({ season: 216, episode: 12 });
     });
+
+    it("should not detect zero season from zero padded complete series episode range", () => {
+        const releaseName = "Naruto Shippuden (Complete Series 001-500) [720p][HEVC][x265]";
+        expect(parse(releaseName)).to.not.have.property("seasons");
+    });
+
+    it("should detect single season with plural seasons keyword", () => {
+        const releaseName = "DareDevil - Seasons 2 - Episodes 10 thru 13";
+        expect(parse(releaseName)).to.deep.include({ title: "DareDevil", seasons: [2], season: 2 });
+    });
+
+    it("should detect season list with oxford comma and", () => {
+        const releaseName = "Skam - Season 1, 2, and 3";
+        expect(parse(releaseName)).to.deep.include({ seasons: [1, 2, 3] });
+    });
+
+    it("should detect seasons from first n seasons", () => {
+        const releaseName = "The Boondocks 2005 Complete First 3 Seasons Burntodisc";
+        expect(parse(releaseName)).to.deep.include({ title: "The Boondocks", seasons: [1, 2, 3] });
+    });
 });
