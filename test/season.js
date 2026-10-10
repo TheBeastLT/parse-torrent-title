@@ -322,6 +322,21 @@ describe("Parsing season", () => {
         expect(parse(releaseName)).to.deep.include({ season: 6 });
     });
 
+    it("should detect season range with russian x separator", () => {
+        const releaseName = "Пока-пока, Земля / Bye Bye, Earth [01-02х01-19 из 20] (2024) WEBRip 1080p by VLDeshka | L | DreamCast, JAMClub";
+        expect(parse(releaseName)).to.deep.include({ seasons: [1, 2] });
+    });
+
+    it("should detect season range with x separator", () => {
+        const releaseName = "Show [01-03x01-30 из 30] (2020) WEBRip 1080p";
+        expect(parse(releaseName)).to.deep.include({ seasons: [1, 2, 3] });
+    });
+
+    it("should not detect season range from a digit in the title before x separator", () => {
+        const releaseName = "stargate-sg1-10x01-maso-a-krev.avi";
+        expect(parse(releaseName)).to.deep.include({ seasons: [10], title: "stargate-sg1" });
+    });
+
     it("should detect season with russian season word in araic letters", () => {
         const releaseName = "Zvezdnie.Voiny.Voina.Klonov.3.sezon.22.seria.iz.22.XviD.HDRip.avi";
         expect(parse(releaseName)).to.deep.include({ season: 3 });
