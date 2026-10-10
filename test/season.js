@@ -322,6 +322,16 @@ describe("Parsing season", () => {
         expect(parse(releaseName)).to.deep.include({ season: 6 });
     });
 
+    it("should detect season before transliterated season word followed by episode range", () => {
+        const releaseName = "Prins.iz.Beverli.Hillz.(1.sezon.08-09.serii.iz.20).1990.XviD.TVRip.avi";
+        expect(parse(releaseName)).to.deep.include({ seasons: [1], episodes: [8, 9] });
+    });
+
+    it("should detect season range with plus separator attached to seasons word", () => {
+        const releaseName = "[UQW] Arslan Senki Seasons1+2 [BD 1080p AVC-YUV444P10 FLAC]";
+        expect(parse(releaseName)).to.deep.include({ seasons: [1, 2] });
+    });
+
     it("should detect season range with russian x separator", () => {
         const releaseName = "Пока-пока, Земля / Bye Bye, Earth [01-02х01-19 из 20] (2024) WEBRip 1080p by VLDeshka | L | DreamCast, JAMClub";
         expect(parse(releaseName)).to.deep.include({ seasons: [1, 2] });
