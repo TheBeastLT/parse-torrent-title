@@ -1195,4 +1195,119 @@ describe("Parsing episode", () => {
         expect(parse("Forensic Files Seasons 01-06 [1 of 4]")).to.not.have.property("episodes");
         expect(parse("Forensic Files S01-S06 [1 of 4]")).to.not.have.property("episodes");
     });
+
+    it("should detect season and three digit episode at the start of a file name", () => {
+        expect(parse("3-104 Ралли в Клубе Микки Мауса часть 2 (Road Rally Part 2).avi")).to.deep.include({ seasons: [3], episodes: [104] });
+    });
+
+    it("should not detect season and episode from a movie title starting with numbers", () => {
+        const result = parse("3-10 to Yuma (2007) 1080p BluRay x264.mkv");
+        expect(result).to.deep.include({ title: "3-10 to Yuma", year: 2007 });
+        expect(result).to.not.have.property("episodes");
+        expect(parse("3-10.to.Yuma.2007.1080p.BluRay.x264.mkv")).to.not.have.property("episodes");
+    });
+
+    it("should detect episode before cyrillic resolution marker", () => {
+        expect(parse("«Эрнест и Селестина» 1 сезон 05 серия 720р.mkv")).to.deep.include({ seasons: [1], episodes: [5], resolution: "720p" });
+    });
+
+    it("should detect both episodes of a descending double episode code", () => {
+        expect(parse("Its.Pony.S01E31E22.Annie-Versary.Teachers.Pet.1080p.AMZN.WEB-DL.DDP5.1.H.264.mkv")).to.deep.include({ seasons: [1], episodes: [22, 31] });
+        expect(parse("Show.S01E01E02.1080p.mkv")).to.deep.include({ episodes: [1, 2] });
+    });
+
+    it("should detect zero padded episode glued to the name of a file", () => {
+        expect(parse("esperanca001.avi")).to.deep.include({ title: "esperanca", episodes: [1] });
+        expect(parse("GodHandTeru05.avi")).to.deep.include({ title: "GodHandTeru", episodes: [5] });
+    });
+
+    it("should not detect episode from a number glued to a movie title", () => {
+        ["Apollo13.mkv", "Terminator2.avi", "Mission2.avi", "Ocean's11.avi", "Agent47.mkv"]
+            .forEach(releaseName => expect(parse(releaseName), releaseName).to.not.have.property("episodes"));
+        expect(parse("Numb3rs.S01E01.mkv")).to.deep.include({ title: "Numb3rs", seasons: [1], episodes: [1] });
+    });
+
+    it("should detect episode glued to ep suffix", () => {
+        expect(parse("AniPlay_Kumiho_6ep_dub.mp4")).to.deep.include({ episodes: [6] });
+        expect(parse("AniPlay_Kumiho_10ep_dub.mp4")).to.deep.include({ episodes: [10] });
+    });
+
+    it("should detect season and episode from volume episode naming", () => {
+        expect(parse("v2e09. Morning, Noon and Night.rus.eng.avi")).to.deep.include({ seasons: [2], episodes: [9] });
+        expect(parse("V01E14 - Heart Of Ice.mkv")).to.deep.include({ seasons: [1], episodes: [14] });
+    });
+
+    it("should detect season and episode before transliterated series word", () => {
+        expect(parse("Morskje.Dyvolj.3.01.serij.iz.16.2009.DivX.DVDRip.Kinozal.TV.avi")).to.deep.include({ seasons: [3], episodes: [1] });
+        expect(parse("Vsegda.govori.vsegda.6.1-3.ser.iz.8.avi")).to.deep.include({ seasons: [6], episodes: [1, 2, 3] });
+        expect(parse("Vsegda.govori.vsegda.5.02.ser.iz.10.avi")).to.deep.include({ seasons: [5], episodes: [2] });
+    });
+
+    it("should not detect season from a single number before transliterated series word", () => {
+        expect(parse("Brigada.01.seriya.avi")).to.not.have.property("seasons");
+        expect(parse("Ulica.razbityh.fonarej.2.serija.avi")).to.not.have.property("seasons");
+    });
+
+    it("should detect season and episode from x prefixed code at the start", () => {
+        expect(parse("x1001 - The Return Of Chef.avi")).to.deep.include({ seasons: [10], episodes: [1] });
+        expect(parse("x302 - Some Title.avi")).to.deep.include({ seasons: [3], episodes: [2] });
+    });
+
+    it("should not detect season and episode from codec or resolution with x prefix", () => {
+        expect(parse("x264 - Some Movie 2010.mkv")).to.not.have.property("episodes");
+        expect(parse("x1080 - Some Movie 2010.mkv")).to.not.have.property("episodes");
+    });
+
+    it("should not detect episode range from the middle of a hyphenated number chain", () => {
+        expect(parse("90-60-90.modelos_001.avi")).to.not.have.property("episodes");
+    });
+
+    it("should detect season prefixed three digit episode code at the start of a file name", () => {
+        expect(parse("3-307 The Last Shout (1).mp4")).to.deep.include({ seasons: [3], episodes: [7] });
+        expect(parse("2-208 Documentary - How To Be Absolutely Fabulous.mp4")).to.deep.include({ seasons: [2], episodes: [8] });
+    });
+
+    it("should detect episode range instead of season from two digit start with three digit end", () => {
+        expect(parse("96-100.mp4")).to.deep.include({ episodes: [96, 97, 98, 99, 100] }).and.to.not.have.property("seasons");
+        expect(parse("99-100 Douluo Dalu.mkv")).to.deep.include({ episodes: [99, 100] }).and.to.not.have.property("seasons");
+    });
+
+    it("should not detect season and episode from a phone number at the start", () => {
+        expect(parse("Extras/1-900 Hotline")).to.not.have.property("seasons");
+        expect(parse("1-800 Hotline.mkv")).to.not.have.property("seasons");
+    });
+
+    it("should not detect episode from a part number glued to the name", () => {
+        expect(parse("SupercutALTverWithRecaps720pPart01.mkv")).to.not.have.property("episodes");
+        expect(parse("dvd01.avi")).to.not.have.property("episodes");
+    });
+
+    it("should not detect episode from a season number glued to ep before the episode number", () => {
+        expect(parse("Istoriya.Zatoichi.s.1ep.03.1974.DVDRip.avi").episodes).to.not.deep.equal([1]);
+    });
+
+    it("should not detect episode range from a hyphenated name at the start", () => {
+        expect(parse("1-900-Beavis.avi")).to.not.have.property("episodes");
+    });
+
+    it("should detect dot separated episode pair after season before transliterated season word", () => {
+        expect(parse("Doktor.Kuinn.Zhenshina.vrach.(2.sezon.26.27.serija.iz.27).1994.DivX.DVDRip.avi")).to.deep.include({ seasons: [2], episodes: [26, 27] });
+        expect(parse("Sekretnye.materialy.sezon.1.24.seriya.iz.24.avi")).to.deep.include({ seasons: [1], episodes: [24] });
+    });
+
+    it("should detect episode range before russian series word", () => {
+        expect(parse("Черепашки ниндзя 3 сезон 12-13 серия[Saint Sound].mkv")).to.deep.include({ seasons: [3], episodes: [12, 13] });
+    });
+
+    it("should detect episode after year followed by dot and space", () => {
+        expect(parse("STEPonee Хороший доктор Good Doctor 2013. 5 [озвучка ]_xvid.avi")).to.deep.include({ episodes: [5] });
+        expect(parse("STEPonee Хороший доктор Good Doctor 2013. 19 [озвучка ].avi")).to.deep.include({ episodes: [19] });
+        expect(parse("Istoriya.Zatoichi.s.1ep.03.1974.DVDRip_4_prob4 .mkv")).to.not.have.property("episodes");
+    });
+
+    it("should detect zero padded episode glued to the name after a release group", () => {
+        expect(parse("[alliance]Queens01.avi")).to.deep.include({ episodes: [1] });
+        expect(parse("[clubfate]sandglass02.avi")).to.deep.include({ episodes: [2] });
+        expect(parse("[group]Apollo13.mkv")).to.not.have.property("episodes");
+    });
 });

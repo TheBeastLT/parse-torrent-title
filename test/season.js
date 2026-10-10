@@ -672,4 +672,9 @@ describe("Parsing season", () => {
         const releaseName = "The Boondocks 2005 Complete First 3 Seasons Burntodisc";
         expect(parse(releaseName)).to.deep.include({ title: "The Boondocks", seasons: [1, 2, 3] });
     });
+
+    it("should not detect season from possessive s glued to a number", () => {
+        expect(parse("Ocean's11.avi")).to.not.have.property("seasons");
+        expect(parse("Ocean's.11.2001.1080p.BluRay.mkv")).to.not.have.property("seasons");
+    });
 });

@@ -96,4 +96,9 @@ describe("Parsing resolution", () => {
         const releaseName = "Batman Returns 1992 4K Remastered BluRay 1080p DTS AC3 x264-MgB";
         expect(parse(releaseName)).to.deep.include({ resolution: "1080p" });
     });
+
+    it("should detect resolution with cyrillic p", () => {
+        expect(parse("«Эрнест и Селестина» 1 сезон 05 серия 720р.mkv")).to.deep.include({ resolution: "720p" });
+        expect(parse("Show 1 сезон 05 серия 1080р.mkv")).to.deep.include({ resolution: "1080p" });
+    });
 });

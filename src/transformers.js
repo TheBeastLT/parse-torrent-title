@@ -40,6 +40,8 @@ exports.range = input => {
     return array;
 };
 
+exports.list = input => [...new Set(input.match(/\d+/g).map(number => parseInt(number, 10)))].sort((a, b) => a - b);
+
 exports.rangeUpTo = input => {
     const end = parseInt(input, 10);
     return end > 0 ? new Array(end).fill().map((_, idx) => idx + 1) : null;
