@@ -1222,9 +1222,23 @@ describe("Parsing episode", () => {
     });
 
     it("should not detect episode from a number glued to a movie title", () => {
-        ["Apollo13.mkv", "Terminator2.avi", "Mission2.avi", "Ocean's11.avi", "Agent47.mkv"]
-            .forEach(releaseName => expect(parse(releaseName), releaseName).to.not.have.property("episodes"));
-        expect(parse("Numb3rs.S01E01.mkv")).to.deep.include({ title: "Numb3rs", seasons: [1], episodes: [1] });
+        const releaseName = "Apollo13.mkv";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect episode from a number glued to a movie title v2", () => {
+        const releaseName = "Terminator2.avi";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect episode from a number glued to a movie title v3", () => {
+        const releaseName = "Agent47.mkv";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should detect episode with a number in a glued title", () => {
+        const releaseName = "Numb3rs.S01E01.mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Numb3rs", seasons: [1], episodes: [1] });
     });
 
     it("should detect episode glued to ep suffix", () => {

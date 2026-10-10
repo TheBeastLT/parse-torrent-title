@@ -2,6 +2,10 @@ const { none, value, integer, boolean, lowercase, uppercase, date, range, rangeU
 
 const VIDEO_EXTENSIONS = "3g2|3gp|avi|flv|mkv|mk3d|mov|mp2|mp4|m4v|mpe|mpeg|mpg|mpv|webm|wmv|ogm|divx|ts|m2ts";
 const SUBTITLE_EXTENSIONS = "sub|smi|srt|ssa|ass|vtt";
+const EPISODE_CODE = "(?:\\bS\\d{1,2}E\\d{1,3}|\\b\\d{1,2}x\\d{1,3}\\b)";
+const HALF_EPISODE_END = "\\.5(?:v\\d)?(?=[ ._\\-)\\][]|$)(?!-\\d)(?![ ._]?(?:gb|mb|ch|kbps|fps|bit|x\\d))";
+const MARKED_HALF_EPISODE = `(?<!${EPISODE_CODE}.*)(?:\\bs\\d{1,2}e|\\be|\\bep(?:isode)?[ .]*|[ .]-[ .]?|^(?=\\d{1,3}\\.5(?:v\\d)? - \\D))0*(\\d{1,3})${HALF_EPISODE_END}(?!.*${EPISODE_CODE})`;
+const BARE_HALF_EPISODE = `(?<!${EPISODE_CODE}.*|\\d - .*|(?:imdb|part|seasons?|sezon|сезон)[ ._]?)(?:[ .]|\\[)0*(\\d{1,3})${HALF_EPISODE_END}(?!.*(?:${EPISODE_CODE}| - \\d))`;
 
 exports.addDefaults = /** @type Parser */ parser => {
 
@@ -206,14 +210,14 @@ exports.addDefaults = /** @type Parser */ parser => {
     parser.addHandler("seasons", /(?<=[a-z]\.)(?<!sezon\.)(\d{1,2})\.\d{1,3}(?:-\d{1,3})?\.ser[ijya]{0,3}(?=\.)/i, array(integer));
     parser.addHandler("seasons", /(?:^|[ ._-])(\d{1,2})EP?\d{2,3}(?=[ ._-]|$)/i, array(integer));
     parser.addHandler("seasons", /\bs\.(\d{1,2})[ .]ep\.\d{1,4}/i, array(integer));
-    parser.addHandler("seasons", /[[(](\d{1,2})\.\d{1,3}[)\]]/, array(integer));
+    parser.addHandler("seasons", /[[(](\d{1,2})\.(?!5[)\]])\d{1,3}[)\]]/, array(integer));
     parser.addHandler("seasons", /-\s?(\d{1,2})\.\d{2,3}\s?-/, array(integer));
     parser.addHandler("seasons", /^(\d{1,2})\.\d{2,3} - /, array(integer), { skipIfBefore: ["year, source", "resolution"] });
     parser.addHandler("seasons", /^(\d{1,2})\.\d{2,3}[. ]+(?=[^\W\d]|[\u00c0-\u024f\u0400-\u04ff])/, array(integer), { skipIfBefore: ["year"] });
     parser.addHandler("seasons", /(?:^|\/)(?!20-20)(\d{1,2}(?=-\d{2}\b(?!-\d))|(\d)(?=-(?:1\d{2}|\2\d{2})(?=[ ._]|$)))/, array(integer), { skipIfBefore: ["year"] });
     parser.addHandler("seasons", /[^\w-](\d{1,2})-\d{2}(?=\.\w{2,4}$)/, array(integer));
     parser.addHandler("seasons", /(?<!\bEp?(?:isode)? ?\d+\b.*)\b(\d{2})[ ._]\d{2}(?:.F)?\.\w{2,4}$/, array(integer));
-    parser.addHandler("seasons", /\bEp(?:isode)?\W+(\d{1,2})\.\d{1,3}\b/i, array(integer));
+    parser.addHandler("seasons", /\bEp(?:isode)?\W+(?:#|(?!\d{1,2}\.5\b))(\d{1,2})\.\d{1,3}\b/i, array(integer));
 
     // adds single season info if its there"s only single season
     parser.addHandler("season", ({ result }) => {
@@ -253,21 +257,21 @@ exports.addDefaults = /** @type Parser */ parser => {
     parser.addHandler("episodes", /(?<!(?:seasons?|series|[Сс]езони?)\W*)(?:[ .([-]|^)(\d{1,3}(?:[ .]?[,&+~][ .]?\d{1,3})+)(?:[ .)\]-]|$)/i, range);
     parser.addHandler("episodes", /^(?!20-20)(\d{1,3}(?:-\d{1,3})+)(?!\.\d)(?:[ .)(\]]|$)/i, range, { skipIfBefore: ["year"] });
     parser.addHandler("episodes", /(?<!^\d{1,3}(?:-\d{1,3})+[ .)(\]-].*)(?<!(?:seasons?|[Сс]езони?)\W*)(?!20-20)(?:[ .([]|(?<!^\d{1,3}(?:-\d{1,3})*)-)(\d{1,3}(?:-\d{1,3})+)(?!\.\d)(?:[ .)(\]]|-\D|$)/i, range);
-    parser.addHandler("episodes", /\bEp(?:isode)?\W+\d{1,2}\.(\d{1,3})\b/i, array(integer));
+    parser.addHandler("episodes", /\bEp(?:isode)?\W+(?:#|(?!\d{1,2}\.5\b))\d{1,2}\.(\d{1,3})\b/i, array(integer));
     parser.addHandler("episodes", /(?:\b[ée]p?(?:isode)?|[Ээ]пизод|[Сс]ер(?:ии|ия|\.)?|seri[jy]a|caa?p(?:itulo)?|epis[oó]dio|epizoda|odcinek|avsnitt|aflevering|folge|jakso|puntata)[. ]?[-:#№]?[. ]?(\d{1,4})(?:[abc]|v0?[1-4]|\W|$)/i, array(integer));
     parser.addHandler("episodes", /\d{1,2}\.sezon\.(\d{1,3}\.\d{1,3})\.ser/i, range);
     parser.addHandler("episodes", /\b(\d{1,3}-\d{1,3})[ ._]*(?:ser(?:i?[iyj]a|\b)|[Сс]ер(?:ии|ия|\.)?)/i, range);
     parser.addHandler("episodes", /\b(\d{1,3})(?:-?(?:я|ja|ya))?[ ._-]*(?:ser(?:i?[iyj]a|\b)|[Сс]ер(?:ии|ия|\.)?)/i, array(integer));
     parser.addHandler("episodes", /(?:\D|^)\d{1,2}[. ]?[Xxх][. ]?(\d{1,3})(?:[abc]|v0?[1-4]|\D|$)/, array(integer));
     parser.addHandler("episodes", /^x(?!26[45]\b|(?:480|576|720|1080|2160)\b)\d{1,2}(\d{2})(?= - )/i, array(integer));
-    parser.addHandler("episodes", /[[(]\d{1,2}\.(\d{1,3})[)\]]/, array(integer));
+    parser.addHandler("episodes", /[[(]\d{1,2}\.(?!5[)\]])(\d{1,3})[)\]]/, array(integer));
     parser.addHandler("episodes", /(?:^|[ ._-])\d{1,2}EP?(\d{2,3})(?=[ ._-]|$)/i, array(integer));
     parser.addHandler("episodes", /\b[Ss](?:eason\W?)?\d{1,2}[ .](\d{1,2})\b/, array(integer));
     parser.addHandler("episodes", /\bseries[ .]?\d{1,2}(?:, |\.| - ?|- | )(\d{1,3})(?=[ .]+[^\W\d])/i, array(integer));
     parser.addHandler("episodes", /-\s?\d{1,2}\.(\d{2,3})\s?-/, array(integer));
     parser.addHandler("episodes", /^\d{1,2}\.(\d{2,3}) - /, array(integer), { skipIfBefore: ["year, source", "resolution"] });
     parser.addHandler("episodes", /^\d{1,2}\.(\d{2,3})[. ]+(?=[^\W\d]|[\u00c0-\u024f\u0400-\u04ff])/, array(integer), { skipIfBefore: ["year"] });
-    parser.addHandler("episodes", /(?<=\D|^)(\d{1,3})[. ]?(?:of|из|iz)[. ]?\d{1,3}(?=\D|$)/i, array(integer));
+    parser.addHandler("episodes", /(?<=\D|^)(?!(?<=\d\.)5\b)(\d{1,3})[. ]?(?:of|из|iz)[. ]?\d{1,3}(?=\D|$)/i, array(integer));
     parser.addHandler("episodes", /\b\d{2}[ ._-](\d{2})(?:.F)?\.\w{2,4}$/, array(integer));
     parser.addHandler("episodes", /(?<!^)\[(\d{2,3})](?!(?:\.\w{2,4})?$)/, array(integer));
     parser.addHandler("episodes", /\bodc[. ]+(\d{1,3})\b/i, array(integer));
@@ -278,6 +282,9 @@ exports.addDefaults = /** @type Parser */ parser => {
     parser.addHandler("episodes", /\bOVA[ ._]+(\d{1,2})(?:v\d)?\b(?![ .]*[-~&+.]\d)/i, array(integer), { skipFromTitle: true });
 
     parser.addHandler("episodes", /^(\d{3,4})[. ]+-[. ]+(?=[^\W\d])/, array(integer), { remove: true, skipIfBefore: ["year"] });
+
+    parser.addHandler("episodes", new RegExp(MARKED_HALF_EPISODE, "i"), array(integer));
+    parser.addHandler("episodes", new RegExp(BARE_HALF_EPISODE, "i"), array(integer));
 
     // can be both absolute episode and season+episode in format 101
     parser.addHandler("episodes", ({ title, result, matched }) => {
@@ -333,6 +340,9 @@ exports.addDefaults = /** @type Parser */ parser => {
         }
         return null;
     });
+
+    parser.addHandler("halfEpisode", new RegExp(MARKED_HALF_EPISODE, "i"), boolean);
+    parser.addHandler("halfEpisode", new RegExp(BARE_HALF_EPISODE, "i"), boolean);
 
     // adds single season info if its there's only single season
     parser.addHandler("episode", ({ result }) => {
