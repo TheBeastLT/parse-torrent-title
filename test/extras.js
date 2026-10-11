@@ -67,4 +67,16 @@ describe("Parsing extras", () => {
 
         expect(parse(releaseName)).to.not.have.property("extras");
     });
+
+    it("should detect added soundtracks and books", () => {
+        const releaseName = "Hyouka_TV+Novel+Manga+Music+Other; dub jpn sub chs (2019-10-06)";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Hyouka TV", extras: true });
+    });
+
+    it("should not detect extras from other in an ampersand title", () => {
+        const releaseName = "[uba] Love, Chunibyo & Other Delusions! (2012) - S02 v3 (BD Remux)";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Love, Chunibyo & Other Delusions!" });
+    });
 });

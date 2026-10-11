@@ -2,7 +2,7 @@ const { none, value, integer, boolean, lowercase, uppercase, date, range, rangeU
 
 const VIDEO_EXTENSIONS = "3g2|3gp|avi|flv|mkv|mk3d|mov|mp2|mp4|m4v|mpe|mpeg|mpg|mpv|webm|wmv|ogm|divx|ts|m2ts";
 const SUBTITLE_EXTENSIONS = "sub|smi|srt|ssa|ass|vtt";
-const PACK_EXTRA = "(?:\\d+\\s*)?(?:OVAs?|OAVs?|OADs?|ONAs?|Specials?|SPs?|Movies?|Films?|Extras?|Bonus(?:es)?|OP|ED|NC ?(?:OP|ED)s?)\\b";
+const PACK_EXTRA = "(?:\\d+\\s*)?(?:OVAs?|OAVs?|OADs?|ONAs?|Specials?|SPs?|Movies?|Films?|Extras?|Bonus(?:es)?|Novels?|Mangas?|OSTs?|Soundtracks?|Artbooks?|OP|ED|NC ?(?:OP|ED)s?)\\b";
 const EPISODE_CODE = "(?:\\bS\\d{1,2}E\\d{1,3}|\\b\\d{1,2}x\\d{1,3}\\b)";
 const HALF_EPISODE_END = "\\.5(?:v\\d)?(?=[ ._\\-)\\][]|$)(?![ .-]\\d)(?![ ._]?(?:gb|mb|ch|kbps|fps|bit|x\\d|th\\b|km\\b|dimensional))" +
     "(?![._-](?:minut[eio]s?|seconds?|hours?|days?|weeks?|months?|years?|anni|o'?clock|[ap]m|to|million|ways|signs|stages|" +
