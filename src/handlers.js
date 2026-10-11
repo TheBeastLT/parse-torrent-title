@@ -244,6 +244,7 @@ exports.addDefaults = /** @type Parser */ parser => {
     parser.addHandler("episodes", /(?:[\W\d]|^)(?:eps?|episodes?)[ .]*[([]?(\d{1,3}[ .]+(?:to|thru|till)[ .]+\d{1,3})(?:\W|$)/i, range);
     parser.addHandler("episodes", /[Сс]ерии:?\s+(\d{1,4})\s+из\s+\d{1,4}/, rangeUpTo);
     parser.addHandler("episodes", /\[(\d{1,4})\s+из\s+\d{1,4}]/, rangeUpTo);
+    parser.addHandler("episodes", /(?<=\s)(\d{1,4})\/\1(?=\s*\[)/, rangeUpTo);
     parser.addHandler("episodes", /(?:[\W\d]|^)(?:eps?|episodes?)[ .]*[([]?(\d{1,2}[ .]+-[ .]+\d{1,3}|\d{3,4}[ .]+-[ .]+\d{3,4})(?!\.\d|[ .]*-)(?:\W|$)/i, range);
     parser.addHandler("episodes", /(?:\W|^)(\d{1,3}(?:[ .]*~[ .]*\d{1,3})+)(?:\W|$)/i, range);
     parser.addHandler("episodes", /(?:so?|t)\d{1,2}[. ]?[xх-]?[. ]?(?:e|x|х|ep)[. ]?(\d{1,4})(?:[abc]|v0?[1-4]|\D|$)/i, array(integer));

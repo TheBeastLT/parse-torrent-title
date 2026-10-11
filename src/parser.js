@@ -2,7 +2,7 @@ const { none } = require("./transformers");
 
 // chinese/japanese/russian chars https://stackoverflow.com/a/43419070
 const NON_ENGLISH_CHARS = "\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f\u0400-\u04ff";
-const RUSSIAN_CAST_REGEX = new RegExp("\\([^)]*[\u0400-\u04ff][^)]*\\)$|(?<=\\/.*)\\(.*\\)$");
+const RUSSIAN_CAST_REGEX = new RegExp("(?:\\([^)]*[\u0400-\u04ff][^)]*\\)|(?<=\\/.*)\\(.*\\))(?=\\s*(?:\\[[^\\]]*)?$)");
 const ALT_TITLES_REGEX = new RegExp(`[^/|(]*[${NON_ENGLISH_CHARS}][^/|]*[/|]|[/|][^/|(]*[${NON_ENGLISH_CHARS}][^/|]*`, "g");
 const NOT_ONLY_NON_ENGLISH_REGEX = new RegExp(`(?<=[a-zA-Z][^${NON_ENGLISH_CHARS}]+)[${NON_ENGLISH_CHARS}].*[${NON_ENGLISH_CHARS}]|[${NON_ENGLISH_CHARS}].*[${NON_ENGLISH_CHARS}](?=[^${NON_ENGLISH_CHARS}]+[a-zA-Z])`, "g");
 const NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${NON_ENGLISH_CHARS}#[【★]+|[ \\-:,/\\\\[|{(#$&^]+$`, "g");

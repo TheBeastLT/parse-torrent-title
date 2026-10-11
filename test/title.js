@@ -265,4 +265,44 @@ describe("Parsing title", () => {
         const releaseName = "Мастершеф / Сезон: 2 / Серии: 1, 2 [2014, DVB-T2]";
         expect(parse(releaseName)).to.deep.include({ title: "Мастершеф", seasons: [2] });
     });
+
+    it("should remove cast parenthesis before episode count of total", () => {
+        const releaseName = "Хочу влюбиться / Koi ga Shitai x3 (Katayama Osamu, Yoshida Ken) 11/11 [Япония, 2001 г., романтика, драма, TVRip] [RAW] [JAP+Sub Rus]";
+        expect(parse(releaseName)).to.deep.include({ title: "Koi ga Shitai x3", year: 2001 });
+    });
+
+    it("should remove cast parenthesis before episode count of total with details block", () => {
+        const releaseName = "Наш учебник / Watashitachi no Kyokasho (Kawake Shunsaku, Hayama Hiroki) 12/12 [Япония, 2007 г., детектив, школа, TVRip]";
+        expect(parse(releaseName)).to.deep.include({ title: "Watashitachi no Kyokasho", year: 2007 });
+    });
+
+    it("should remove single name cast parenthesis before episode count of total", () => {
+        const releaseName = "Песня солнцу / Taiyo no uta (Yamamuro Daisuke) 10/10 [Япония, 2006 г., романтика, драма, TVRip]";
+        expect(parse(releaseName)).to.deep.include({ title: "Taiyo no uta", year: 2006 });
+    });
+
+    it("should remove cast parenthesis with multiple alt titles before episode count of total", () => {
+        const releaseName = "Якша / Яша / Yasha (Sato Shimako) 11/11 [Япония, 2000 г., Фантастика, драма, DVDRip][RAW][JAP+Sub Rus]";
+        expect(parse(releaseName)).to.deep.include({ title: "Yasha", year: 2000 });
+    });
+
+    it("should remove cast parenthesis before episode count of total with short details block", () => {
+        const releaseName = "Отец невесты / Hanayome to Papa (Sato Yuichi, Ishikawa Junichi) 12/12 [Япония, 2007 г., семейная]";
+        expect(parse(releaseName)).to.deep.include({ title: "Hanayome to Papa", year: 2007 });
+    });
+
+    it("should remove cast parenthesis before details block", () => {
+        const releaseName = "Наш учебник / Watashitachi no Kyokasho (Kawake Shunsaku, Hayama Hiroki) [Япония, 2007 г.]";
+        expect(parse(releaseName)).to.deep.include({ title: "Watashitachi no Kyokasho", year: 2007 });
+    });
+
+    it("should keep slash numbers in title", () => {
+        const releaseName = "Fahrenheit 9/11 (2004) 1080p";
+        expect(parse(releaseName)).to.deep.include({ title: "Fahrenheit 9/11", year: 2004 });
+    });
+
+    it("should keep slash numbers title", () => {
+        const releaseName = "24/7 2022 WEB-DL";
+        expect(parse(releaseName)).to.deep.include({ title: "24/7", year: 2022 });
+    });
 });

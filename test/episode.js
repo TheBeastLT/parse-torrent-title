@@ -1150,6 +1150,26 @@ describe("Parsing episode", () => {
         expect(parse(releaseName)).to.deep.include({ episodes: Array.from({ length: 26 }, (_, i) => i + 1) });
     });
 
+    it("should detect full episode count with slash before details block as range", () => {
+        const releaseName = "Наш учебник / Watashitachi no Kyokasho (Kawake Shunsaku, Hayama Hiroki) 12/12 [Япония, 2007 г., детектив, школа, TVRip]";
+        expect(parse(releaseName)).to.deep.include({ episodes: Array.from({ length: 12 }, (_, i) => i + 1) });
+    });
+
+    it("should detect full episode count with slash before multiple bracket blocks as range", () => {
+        const releaseName = "Якша / Яша / Yasha (Sato Shimako) 11/11 [Япония, 2000 г., Фантастика, драма, DVDRip][RAW][JAP+Sub Rus]";
+        expect(parse(releaseName)).to.deep.include({ episodes: Array.from({ length: 11 }, (_, i) => i + 1) });
+    });
+
+    it("should not detect episodes from different slash numbers", () => {
+        const releaseName = "Fahrenheit 9/11 [2004, BDRip]";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect episodes from same slash numbers without details block", () => {
+        const releaseName = "Some Show 7/7 2021 1080p WEB-DL";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
     it("should detect turkish bolum episode", () => {
         const releaseName = "Kaderimin Yazıldığı Gün 26. Bölüm.mkv";
         expect(parse(releaseName)).to.deep.include({ episode: 26 });
