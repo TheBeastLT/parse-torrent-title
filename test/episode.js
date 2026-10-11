@@ -172,6 +172,58 @@ describe("Parsing episode", () => {
         expect(parse(releaseName)).to.deep.include({ episode: 321 });
     });
 
+    it("should detect hashtag episode", () => {
+        const releaseName = "[AI-Raws] デュラララ!! #25 天下泰平 (BD HEVC 1920x1080 yuv444p10le FLAC 字幕)[2617AFAB].mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "デュラララ!!", episodes: [25] });
+    });
+
+    it("should detect hashtag episode followed by episode title", () => {
+        const releaseName = "Mobile Suit Gundam the Witch from Mercury #10 Circling Thoughts.mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Mobile Suit Gundam the Witch from Mercury", episodes: [10] });
+    });
+
+    it("should not detect hashtag audio track as episode", () => {
+        const releaseName = "Hannibal 2013-2015 [S01-S03] [10Bit] [1080p.BluRay.H265.EAC3.AS76-FT] [AUDIO #1 ENGLISH] [AUDIO #0 POLISH]";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect hashtag movie number as episode", () => {
+        const releaseName = "[LPF] Persona 3 the Movie: #1 Spring of Birth (2013) (BD 1080p x264 AAC)";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should detect four digit episode range", () => {
+        const releaseName = "[PrinceOtaku] One Piece - Egghead Island - Episodes 1123-1133 (English Dub) 720p";
+        const result = parse(releaseName);
+
+        expect(result).to.deep.include({ title: "One Piece - Egghead Island" });
+        expect(result.episodes).to.have.length(11);
+        expect(result.episodes[0]).to.equal(1123);
+    });
+
+    it("should detect four digit episode range with ep marker", () => {
+        const result = parse("One Piece Ep 1100-1110");
+
+        expect(result.episodes).to.have.length(11);
+        expect(result.episodes[10]).to.equal(1110);
+    });
+
+    it("should not detect year range after episodes word as episode range", () => {
+        const releaseName = "SUPERGIRL - Complete Season 5 S05 with CROSSOVER Episodes (2019-2020) - 720p AMZN Web-DL x264";
+
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should detect phase episode", () => {
+        const releaseName = "Mobile Suit Gundam SEED - Phase 01 - False Peace.mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Mobile Suit Gundam SEED", episodes: [1] });
+    });
+
+    it("should not detect single digit phase as episode", () => {
+        const releaseName = "Star Trek New Voyages Phase 2.mkv";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
     it("should detect absolute episode correctly not hindered by title digits with apostrophe", () => {
         const releaseName = "512 - Airport '07.avi";
         expect(parse(releaseName)).to.deep.include({ episode: 512 });

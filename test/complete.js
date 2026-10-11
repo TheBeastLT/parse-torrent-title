@@ -172,4 +172,41 @@ describe("Parsing complete collection", () => {
 
         expect(parse(releaseName).title).to.include("Complete Edition");
     });
+
+    it("should strip trailing full batch", () => {
+        const releaseName = "Onigashima Paced - Full Batch";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Onigashima Paced", complete: true });
+    });
+
+    it("should strip bracketed batch", () => {
+        const releaseName = "[Golumpa] 18if (Batch) [English Dub] [FuniDub 1080p x264 AAC] [MKV]";
+
+        expect(parse(releaseName)).to.deep.include({ title: "18if", complete: true });
+    });
+
+    it("should strip leading unofficial batch", () => {
+        const releaseName = "(Unofficial Batch) Cross Ange (BD)(Hi10)(720)(AAC)";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Cross Ange", complete: true });
+    });
+
+    it("should strip complete batch", () => {
+        const releaseName = "Shinryaku! Ika Musume (Complete Batch) [10bit BD 720p]";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Shinryaku! Ika Musume", complete: true });
+    });
+
+    it("should not strip batch inside a longer bracket", () => {
+        const releaseName = "[blad761] Princess Principal. [Batch 01 - 12] 720p [MKV Hi444PP AAC]";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Princess Principal." });
+    });
+
+    it("should not strip bad batch title", () => {
+        const releaseName = "Star.Wars.The.Bad.Batch.S02E03.1080p";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Star Wars The Bad Batch" });
+        expect(parse(releaseName)).to.not.have.property("complete");
+    });
 });

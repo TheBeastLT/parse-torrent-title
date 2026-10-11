@@ -241,6 +241,7 @@ exports.addDefaults = /** @type Parser */ parser => {
     parser.addHandler("episodes", /(?:[\W\d]|^)(?:episodes?|[Сс]ерии:?)[ .]?[([]?(\d{1,3}(?:[ .+]*[&+][ .]?\d{1,3})+)(?:\W|$)/i, range);
     parser.addHandler("episodes", /[([]?(?:\D|^)(\d{1,3}[ .]?ao[ .]?\d{1,3})[)\]]?(?:\W|$)/i, range);
     parser.addHandler("episodes", /(?:[\W\d]|^)(?:e|eps?|episodes?|[Сс]ерии:?|\d+[xх])[ .]*[([]?(\d{1,3}(?:-\d{1,3})+)(?!\.\d)(?:\W|$)/i, range);
+    parser.addHandler("episodes", /(?:[\W\d]|^)(?:eps?|episodes?)[ .]*[([]?(?!(?:19|20)\d{2}-(?:19|20)\d{2}\b)(\d{3,4}-\d{3,4})(?!\.\d)(?:\W|$)/i, range);
     parser.addHandler("episodes", /(?:[\W\d]|^)(?:eps?|episodes?)[ .]*[([]?(\d{1,3}[ .]+(?:to|thru|till)[ .]+\d{1,3})(?:\W|$)/i, range);
     parser.addHandler("episodes", /[Сс]ерии:?\s+(\d{1,4})\s+из\s+\d{1,4}/, rangeUpTo);
     parser.addHandler("episodes", /\[(\d{1,4})\s+из\s+\d{1,4}]/, rangeUpTo);
@@ -349,6 +350,8 @@ exports.addDefaults = /** @type Parser */ parser => {
         }
         return null;
     });
+    parser.addHandler("episodes", /(?<!(?:audio|subtitles?|season|movie|film)\W*)(?:^|[ ._])#(\d{1,3})(?![.,]?\d)(?=[ ._\])]|$)/i, array(integer));
+    parser.addHandler("episodes", /\bphase[ .](\d{2,3})\b/i, array(integer));
 
     // the parsed episode written as `12.5`: an episode inserted after 12, i.e. a recap or special
     parser.addHandler("halfEpisode", ({ title, result, matched }) => {
@@ -380,6 +383,8 @@ exports.addDefaults = /** @type Parser */ parser => {
     parser.addHandler("complete", /\bcollection\b.*\b(?:set|pack|movies)\b/i, boolean);
     parser.addHandler("complete", /\bint[ée]grale\b/i, boolean, { skipIfAlreadyFound: false });
     parser.addHandler("complete", /\b(?:la |primera |segunda )?(?:s[ée]rie|temporada)[ .]complet[ao]s?\b/i, boolean, { skipIfAlreadyFound: false });
+    parser.addHandler("complete", /[([{【](?:(?:full|complete|unofficial)[ ._-]?)?batch[)\]}】]/i, boolean, { remove: true, skipFromTitle: true, skipIfAlreadyFound: false });
+    parser.addHandler("complete", /(?<![([{【][^)\]}】]*|\bbad[ ._-]?)\b(?:(?:full|complete|unofficial)[ ._-]?)?batch\b/i, boolean, { remove: true, skipFromTitle: true, skipIfAlreadyFound: false });
     parser.addHandler("complete", /\bcomplet[eo]s?\b(?=[ ._-]*(?:$|[[\]()]))/i, boolean, { skipIfAlreadyFound: false });
     parser.addHandler("complete", /\b(collection|completa)\b/i, boolean, { skipFromTitle: true });
     parser.addHandler("complete", /\bkolekcja\b(?:\Wfilm(?:y|ów|ow)?)?/i, boolean, { remove: true });
