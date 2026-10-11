@@ -701,4 +701,17 @@ describe("Parsing season", () => {
 
         expect(parse(releaseName)).to.deep.include({ seasons: [2], episodes: [1] });
     });
+
+    it("should not detect season from the open season movie sequels", () => {
+        const releaseName = "Open Season 2 (2008) 720p BrRip x264 - 500MB - YIFY";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Open Season 2", year: 2008 });
+        expect(parse(releaseName)).to.not.have.property("seasons");
+    });
+
+    it("should not detect season range from the open season movie pack", () => {
+        const releaseName = "Open Season 1-2 720p Dual Audio [eng-hin]";
+
+        expect(parse(releaseName)).to.not.have.property("seasons");
+    });
 });

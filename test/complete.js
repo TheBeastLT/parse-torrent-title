@@ -136,4 +136,40 @@ describe("Parsing complete collection", () => {
         const releaseName = "Kolekcja Halloween (1978-2022) [720p] [BRRip] [XviD] [AC3-ELiTE] [Lektor PL]";
         expect(parse(releaseName)).to.deep.include({ title: "Halloween", complete: true });
     });
+
+    it("should detect trailing complete and keep it out of the title", () => {
+        const releaseName = "Gurren Lagann Complete [BD 1080p]";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Gurren Lagann", complete: true });
+    });
+
+    it("should detect spanish complete series with an episode count", () => {
+        const releaseName = "Mazinger Z La Serie Completa 92 Capitulos [DVDRip]";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Mazinger Z", complete: true });
+    });
+
+    it("should detect portuguese completo", () => {
+        const releaseName = "Dragon Ball Kai Completo (2011) [Dual Audio]";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Dragon Ball Kai", complete: true });
+    });
+
+    it("should detect french integrale in parentheses", () => {
+        const releaseName = "Death Note (Integrale) [VOSTFR 1080p]";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Death Note", complete: true });
+    });
+
+    it("should detect spanish complete season", () => {
+        const releaseName = "Ghost in the Shell -Primera Temporada Completa";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Ghost in the Shell", complete: true });
+    });
+
+    it("should keep complete in a complete edition title", () => {
+        const releaseName = "World Masterpiece Theater Complete Edition - Anne of Green Gables [DVDRip]";
+
+        expect(parse(releaseName).title).to.include("Complete Edition");
+    });
 });
