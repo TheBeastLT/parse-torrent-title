@@ -7,6 +7,7 @@ const ALT_TITLES_REGEX = new RegExp(`[^/|(]*[${NON_ENGLISH_CHARS}][^/|]*[/|]|[/|
 const NOT_ONLY_NON_ENGLISH_REGEX = new RegExp(`(?<=[a-zA-Z][^${NON_ENGLISH_CHARS}]+)[${NON_ENGLISH_CHARS}].*[${NON_ENGLISH_CHARS}]|[${NON_ENGLISH_CHARS}].*[${NON_ENGLISH_CHARS}](?=[^${NON_ENGLISH_CHARS}]+[a-zA-Z])`, "g");
 const NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${NON_ENGLISH_CHARS}#[【★]+|[ \\-:,/\\\\[|{(#$&^]+$`, "g");
 const REMAINING_NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${NON_ENGLISH_CHARS}#]+|[[\\]({} ]+$`, "g");
+const BEFORE_TITLE_REGEX = new RegExp(`^\\[[^[\\]]+]|^(?:[^/[]*[${NON_ENGLISH_CHARS}][^/[]*/)+(?=\\s*[a-zA-Z])`);
 const UNCLOSED_BRACKET_AT_END = /\s*[([{][^)\]}]*$/;
 const UNOPENED_BRACKET = /^([^([{]*)[)\]}]/;
 const DEFAULT_OPTIONS = {
@@ -32,7 +33,7 @@ function createHandlerFromRegExp(name, regExp, transformer, options) {
 
         if (rawMatch) {
             const transformed = transformer(cleanMatch || rawMatch, result[name]);
-            const beforeTitleMatch = title.match(/^\[[^[\]]+]/);
+            const beforeTitleMatch = title.match(BEFORE_TITLE_REGEX);
             const isBeforeTitle = beforeTitleMatch && match.index < beforeTitleMatch[0].length;
             const otherMatches = Object.entries(matched).filter(e => e[0] !== name);
             const isSkipIfFirst = options.skipIfFirst && otherMatches.length &&

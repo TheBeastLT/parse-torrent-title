@@ -235,4 +235,34 @@ describe("Parsing title", () => {
         const releaseName = "The Golden Girls, Seasons 1 thru 7 Complete, X264";
         expect(parse(releaseName)).to.deep.include({ title: "The Golden Girls", seasons: [1, 2, 3, 4, 5, 6, 7] });
     });
+
+    it("should use the latin title when cyrillic season info precedes it", () => {
+        const releaseName = "Клиника / Сезон 8 / Серия 1-12 (HDTV 720p) / Scrubs / Season 8/ Episode 1-12 [2009, HDTV, Sub]";
+        expect(parse(releaseName)).to.deep.include({ title: "Scrubs", seasons: [8] });
+    });
+
+    it("should use the latin title when cyrillic episode info precedes it", () => {
+        const releaseName = "Балда / серии 01-25 (25) / The Baldy Man [1996, DVDRip]";
+        expect(parse(releaseName)).to.deep.include({ title: "The Baldy Man" });
+    });
+
+    it("should use the latin title when cyrillic season brackets precede it", () => {
+        const releaseName = "Отчаянные дегустаторы отправляются... (Сезон 1 Серий 1-6 из 7) / The Supersizers go [2007, PDTVRip]";
+        expect(parse(releaseName)).to.deep.include({ title: "The Supersizers go", seasons: [1] });
+    });
+
+    it("should use the latin title when cyrillic season and episode segments precede it", () => {
+        const releaseName = "Леди Баг и Супер-Кот / Сезон: 2 / Серии: 1-26 из 26 / Miraculous: Tales of Ladybug & Cat Noir [2018, WEB-DL]";
+        expect(parse(releaseName)).to.deep.include({ title: "Miraculous: Tales of Ladybug & Cat Noir", seasons: [2] });
+    });
+
+    it("should use the latin title when cyrillic episode brackets precede it", () => {
+        const releaseName = "Лето Нашей Тайны (1-20 серия (125)) / Corpo Dourado [1998, TVRip]";
+        expect(parse(releaseName)).to.deep.include({ title: "Corpo Dourado" });
+    });
+
+    it("should keep the cyrillic title when no latin title is present", () => {
+        const releaseName = "Мастершеф / Сезон: 2 / Серии: 1, 2 [2014, DVB-T2]";
+        expect(parse(releaseName)).to.deep.include({ title: "Мастершеф", seasons: [2] });
+    });
 });
