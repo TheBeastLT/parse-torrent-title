@@ -181,4 +181,226 @@ describe("Parsing half episode", () => {
 
         expect(parse(releaseName)).to.deep.include({ seasons: [1], episodes: [5] }).and.to.not.have.property("halfEpisode");
     });
+
+    it("should not detect half episode from an episode title starting with a time", () => {
+        const releaseName = "The.Pitt.S01E11.5.00.P.M.1080p.AMZN.WEB-DL.DDP5.1.H.264-RGzsRutracker.mkv";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from an episode title starting with a number", () => {
+        const releaseName = "AwesomenessTV.S02E05.5.Ways.to.Reject.a.Guy.480p.HDTV.x264-mSD.mkv";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from a translated episode title starting with a number", () => {
+        const releaseName = "La.casa.de.papel.A.K.A.Money.Heist.S04E05.5.minutos.antes.DUAL-AUDIO.SPA-ENG.mkv";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from a hyphenated episode title starting with a number", () => {
+        const releaseName = "Deadliest.Catch.S11E13.5-Year.Storm.Part.2.XviD-AFG.avi";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from an episode title with a time after the number", () => {
+        const releaseName = "That.70s.Show.S06E21.5.15.720p.BluRay.FLAC2.0.x264-NTb.mkv";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from a show name with a hyphenated word", () => {
+        const releaseName = "[Serious Chat] 2.5-jigen no Ririsa 01 [BDRip 1080p HEVC FLAC].mkv";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should detect half episode before release tags in a dotted name", () => {
+        const releaseName = "Tengen.Toppa.Gurren.Lagann.E05.5.BDRip.720p.x264 (by OCG).mkv";
+
+        expect(parse(releaseName)).to.deep.include({ episodes: [5], halfEpisode: true });
+    });
+
+    it("should detect half episode before a subtitle language tag", () => {
+        const releaseName = "Nura.Rise.Of.The.Yokai.Clan.S02E12.5.SUBFRENCH.1080p.BluRay.x264-KAZETV.mkv";
+
+        expect(parse(releaseName)).to.deep.include({ seasons: [2], episodes: [12], halfEpisode: true });
+    });
+
+    it("should detect half episode before a special word", () => {
+        const releaseName = "S12E11.5.Special.The.Journey.So.Far.720p-YoshQ.mp4";
+
+        expect(parse(releaseName)).to.deep.include({ seasons: [12], episodes: [11], halfEpisode: true });
+    });
+
+    it("should detect half episode before the extension in a dotted name", () => {
+        const releaseName = "Full.Metal.Panic.Invisible.Victory.S01E08.5.mkv";
+
+        expect(parse(releaseName)).to.deep.include({ seasons: [1], episodes: [8], halfEpisode: true });
+    });
+
+    it("should detect half episode before a dotted episode title", () => {
+        const releaseName = "Solo.Leveling.S01E07.5.How.to.Get.Stronger.1080p.CR.WEB-DL.DUAL.AAC2.0.H.264-VARYG.mkv";
+
+        expect(parse(releaseName)).to.deep.include({ seasons: [1], episodes: [7], halfEpisode: true });
+    });
+
+    it("should detect half episode before a hyphenated episode title", () => {
+        const releaseName = "Violet Evergarden S01E04.5-Surely, Someday, You Will Understand Love.mkv";
+
+        expect(parse(releaseName)).to.deep.include({ seasons: [1], episodes: [4], halfEpisode: true });
+    });
+
+    it("should detect half episode before a release language tag", () => {
+        const releaseName = "Nana.Ep11.5.MULTi.DVDRip.x264-NEGI3737.mkv";
+
+        expect(parse(releaseName)).to.deep.include({ episodes: [11], halfEpisode: true });
+    });
+
+    it("should not detect half episode from an episode title starting with a time unit", () => {
+        const releaseName = "Wahlburgers.S01E02.5.OClock.is.Dinnertime.HDTV.x264-CLDD.mkv";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from an episode title starting with a number range", () => {
+        const releaseName = "House.MD.S06E14.5.to.9.720p.10bit.BluRay.x265-budgetbits.mkv";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should detect zero padded half episode before a dash title", () => {
+        const releaseName = "[Abystoma] Deca-Dence 05.5 - Install (recap) (WEB 720p) [628FF0F5].mkv";
+
+        expect(parse(releaseName)).to.deep.include({ episodes: [5], halfEpisode: true });
+    });
+
+    it("should detect single digit half episode before release info", () => {
+        const releaseName = "[HorribleSubs] Cop Craft - 9.5 [720p].mkv";
+
+        expect(parse(releaseName)).to.deep.include({ episodes: [9], halfEpisode: true });
+    });
+
+    it("should detect single digit half episode after episode word before a dash title", () => {
+        const releaseName = "SPECIAL-Episode 6.5 - Lucy In London.mp4";
+
+        expect(parse(releaseName)).to.deep.include({ episodes: [6], halfEpisode: true });
+    });
+
+    it("should detect half episode after a dotted episode word", () => {
+        const releaseName = "[Deadmau- RAWS] Shiki.2010.S01.BDRip.Rus.Jap.Deadmauvlad.Ep.20.5.avi";
+
+        expect(parse(releaseName)).to.deep.include({ episodes: [20], halfEpisode: true });
+    });
+
+    it("should detect half episode with a four digit episode", () => {
+        const releaseName = "One Piece - 1015.5 - A Special Episode to Admire Zoro-senpai and Sanji-senpai! [1080p].mkv";
+
+        expect(parse(releaseName)).to.deep.include({ episodes: [1015], halfEpisode: true });
+    });
+
+    it("should not detect half episode from a number in the title next to a different episode", () => {
+        const releaseName = "S1953E18 Duck Dodgers in the 24.5 Century MM.avi";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from an imdb rating equal to the episode", () => {
+        const releaseName = "S01E08 Heroes IMDB 8.5.mkv";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from season and episode notation at the start", () => {
+        const releaseName = "1.5 The Third Floor Flat.mkv";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from an episode title starting with a volume unit", () => {
+        const releaseName = "Life.2x19.5.Litri.ITA-ENG.1080p.DLMux.h264-NovaRip.mkv";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should detect zero padded half episode at the start", () => {
+        const releaseName = "07.5 Tenchi Muyo! Special Mihoshi's Space Adventure.mkv";
+
+        expect(parse(releaseName)).to.deep.include({ episodes: [7], halfEpisode: true });
+    });
+
+    it("should not detect half episode from imdb season and episode title", () => {
+        const releaseName = "S05E05 Episode #5.5.mkv";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from an episode title with a time after an underscore", () => {
+        const releaseName = "That.'70s.Show.S06E21.5_15.HDTV.720p.x264.RUS.mkv";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from a bare single digit season and episode", () => {
+        const releaseName = "Yes Minister 1.5 - The Writing On The Wall.avi";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from a mid season number before a part", () => {
+        const releaseName = "TPB 8.5 - Part 2 - Shit Shank.mp4";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from a date after the year", () => {
+        const releaseName = "WWF.Monday.Night.Raw.1996.8.5.PDTV.XviD-W4F";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from an ordinal number", () => {
+        const releaseName = "06. Duck Dodgers in the 24.5 th Century (1953) DVDRip.mkv";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from a dimensional title", () => {
+        const releaseName = "[RUBaDUB][1080p] 2.5 Dimensional Seduction - Clean Closing 1 [BD x265 10bit].mkv";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from a software version", () => {
+        const releaseName = "Face ID - Apple's iOS 14.5 Fix Fully Explained! [Full].mp4";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from a number in the episode title after the episode code", () => {
+        const releaseName = "Downton.Abbey.S05E05.Episode.5.5.1080p.BluRay.REMUX.AVC.FLAC.2.0-NOGRP.mkv";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from a measure in the episode title", () => {
+        const releaseName = "S01E05 - Attack of the 5.5 ft. geek.mkv";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from a distance", () => {
+        const releaseName = "2.Nordic.Combined.WC.2015.03.07.Lahti.Team.Sprint.Gundersen.2x7.5.km.mkv";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
+
+    it("should not detect half episode from a day and month before the year", () => {
+        const releaseName = "WWE.Friday.Night.Smackdown.16.5.2014.HDTV.x264-jkkk.mp4";
+
+        expect(parse(releaseName)).to.not.have.property("halfEpisode");
+    });
 });

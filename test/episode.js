@@ -1324,4 +1324,16 @@ describe("Parsing episode", () => {
         expect(parse("[clubfate]sandglass02.avi")).to.deep.include({ episodes: [2] });
         expect(parse("[group]Apollo13.mkv")).to.not.have.property("episodes");
     });
+
+    it("should detect zero padded season and episode at the start before the year", () => {
+        const releaseName = "2-07.Быть человеком.2010.WEB-DL1080p.GeneralFilm.mkv";
+
+        expect(parse(releaseName)).to.deep.include({ season: 2, episodes: [7] });
+    });
+
+    it("should detect zero padded episode range at the start before the year", () => {
+        const releaseName = "03-04.Slomannyje.sudby.2013.WEB-DLRip.Files-x.avi";
+
+        expect(parse(releaseName)).to.deep.include({ episodes: [3, 4] });
+    });
 });

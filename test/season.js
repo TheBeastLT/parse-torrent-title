@@ -677,4 +677,28 @@ describe("Parsing season", () => {
         expect(parse("Ocean's11.avi")).to.not.have.property("seasons");
         expect(parse("Ocean's.11.2001.1080p.BluRay.mkv")).to.not.have.property("seasons");
     });
+
+    it("should not detect season from an episode count after seasons", () => {
+        const releaseName = "Transformers Armada - Complete series all Seasons 52 episodes [DVDRip]";
+
+        expect(parse(releaseName)).to.not.have.property("seasons");
+    });
+
+    it("should detect season after seasons word followed by an episode", () => {
+        const releaseName = "The Walking Dead Seasons 5 episode 2.mkv";
+
+        expect(parse(releaseName)).to.deep.include({ seasons: [5], episodes: [2] });
+    });
+
+    it("should detect season before a parenthesized russian episode of total", () => {
+        const releaseName = "Grazhdanin.Nachalnik.2.(1.seriy.iz.12).2005.DviX.DVDRip.avi";
+
+        expect(parse(releaseName)).to.deep.include({ seasons: [2], episodes: [1] });
+    });
+
+    it("should detect season before a transliterated series word and episode", () => {
+        const releaseName = "Den.rozhdeniya.burzhuya.2.ser.01.avi";
+
+        expect(parse(releaseName)).to.deep.include({ seasons: [2], episodes: [1] });
+    });
 });
