@@ -192,6 +192,16 @@ describe("Parsing episode", () => {
         expect(parse(releaseName)).to.not.have.property("episodes");
     });
 
+    it("should not detect hashtag number after a numbered index as episode", () => {
+        const releaseName = "[AliQ] 16 - TV Shorts #1 [1080p].mp4";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect hashtag number in parentheses as episode", () => {
+        const releaseName = "[AliQ] Steven Universe Short 03 We Are the Crystal Gems (Classroom Gems #2) [1080p;WEB-DL].mp4";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
     it("should detect four digit episode range", () => {
         const releaseName = "[PrinceOtaku] One Piece - Egghead Island - Episodes 1123-1133 (English Dub) 720p";
         const result = parse(releaseName);
