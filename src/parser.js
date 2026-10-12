@@ -38,7 +38,7 @@ function createHandlerFromRegExp(name, regExp, transformer, options) {
             const transformed = transformer(cleanMatch || rawMatch, result[name]);
             const beforeTitleMatch = title.match(BEFORE_TITLE_REGEX);
             const isBeforeTitle = beforeTitleMatch && match.index < beforeTitleMatch[0].length;
-            const otherMatches = Object.entries(matched).filter(e => e[0] !== name);
+            const otherMatches = options.skipIfFirst && Object.entries(matched).filter(e => e[0] !== name);
             const isSkipIfFirst = options.skipIfFirst && otherMatches.length &&
                 otherMatches.every(e => match.index < e[1].matchIndex);
             const isSkipIfBefore = options.skipIfBefore.some(group => matched[group] && match.index < matched[group].matchIndex);
@@ -136,10 +136,12 @@ class Parser {
         title = title.replace(/_+/g, " ");
         const result = {};
         const matched = {};
+        const context = { title, result, matched };
         let endOfTitle = title.length;
 
         for (const handler of this.handlers) {
-            const matchResult = handler({ title, result, matched });
+            context.title = title;
+            const matchResult = handler(context);
             if (matchResult && matchResult.remove) {
                 title = title.slice(0, matchResult.matchIndex) + title.slice(matchResult.matchIndex + matchResult.rawMatch.length);
             }
