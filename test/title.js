@@ -305,4 +305,24 @@ describe("Parsing title", () => {
         const releaseName = "24/7 2022 WEB-DL";
         expect(parse(releaseName)).to.deep.include({ title: "24/7", year: 2022 });
     });
+
+    it("should keep accented first letter", () => {
+        const releaseName = "Último Alvo 2024 WEB-DL 1080p x264 DUAL 5.1";
+        expect(parse(releaseName)).to.deep.include({ title: "Último Alvo", year: 2024 });
+    });
+
+    it("should keep accented first letter with brackets", () => {
+        const releaseName = "Área 15 2018 (720p) DUBLADO WWW.BLUDV.COM";
+        expect(parse(releaseName)).to.deep.include({ title: "Área 15", year: 2018 });
+    });
+
+    it("should prefer latin only alt title over accented one", () => {
+        const releaseName = "Полный рабочий день / À plein temps / Full Time (2021) BDRip 720p от msltel";
+        expect(parse(releaseName)).to.deep.include({ title: "Full Time", year: 2021 });
+    });
+
+    it("should keep accented title when it is the only one", () => {
+        const releaseName = "Безумно грустная принцесса / Šíleně smutná princezna [1968, DVDRip]";
+        expect(parse(releaseName)).to.deep.include({ title: "Šíleně smutná princezna", year: 1968 });
+    });
 });

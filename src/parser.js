@@ -1,12 +1,14 @@
 const { none } = require("./transformers");
 
 // chinese/japanese/russian chars https://stackoverflow.com/a/43419070
+const ACCENTED_LATIN_CHARS = "\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u024f";
 const NON_ENGLISH_CHARS = "\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f\u0400-\u04ff";
 const RUSSIAN_CAST_REGEX = new RegExp("(?:\\([^)]*[\u0400-\u04ff][^)]*\\)|(?<=\\/.*)\\(.*\\))(?=\\s*(?:\\[[^\\]]*)?$)");
 const ALT_TITLES_REGEX = new RegExp(`[^/|(]*[${NON_ENGLISH_CHARS}][^/|]*[/|]|[/|][^/|(]*[${NON_ENGLISH_CHARS}][^/|]*`, "g");
+const ACCENTED_LATIN_REGEX = new RegExp(`[${ACCENTED_LATIN_CHARS}]`);
 const NOT_ONLY_NON_ENGLISH_REGEX = new RegExp(`(?<=[a-zA-Z][^${NON_ENGLISH_CHARS}]+)[${NON_ENGLISH_CHARS}].*[${NON_ENGLISH_CHARS}]|[${NON_ENGLISH_CHARS}].*[${NON_ENGLISH_CHARS}](?=[^${NON_ENGLISH_CHARS}]+[a-zA-Z])`, "g");
-const NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${NON_ENGLISH_CHARS}#[【★]+|[ \\-:,/\\\\[|{(#$&^]+$`, "g");
-const REMAINING_NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${NON_ENGLISH_CHARS}#]+|[[\\]({} ]+$`, "g");
+const NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${ACCENTED_LATIN_CHARS}${NON_ENGLISH_CHARS}#[【★]+|[ \\-:,/\\\\[|{(#$&^]+$`, "g");
+const REMAINING_NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${ACCENTED_LATIN_CHARS}${NON_ENGLISH_CHARS}#]+|[[\\]({} ]+$`, "g");
 const BEFORE_TITLE_REGEX = new RegExp(`^\\[[^[\\]]+]|^(?:[^/[]*[${NON_ENGLISH_CHARS}][^/[]*/)+(?=\\s*[a-zA-Z])`);
 const UNCLOSED_BRACKET_AT_END = /\s*[([{][^)\]}]*$/;
 const UNOPENED_BRACKET = /^([^([{]*)[)\]}]/;
@@ -60,6 +62,12 @@ function createHandlerFromRegExp(name, regExp, transformer, options) {
     return handler;
 }
 
+function removeAccentedAltTitles(title) {
+    const titles = title.split(/\s+[/|]\s+/);
+    const plainTitles = titles.filter(alias => !ACCENTED_LATIN_REGEX.test(alias));
+    return plainTitles.length && plainTitles.length < titles.length ? plainTitles.join(" / ") : title;
+}
+
 function cleanTitle(rawTitle) {
     let cleanedTitle = rawTitle;
 
@@ -80,6 +88,7 @@ function cleanTitle(rawTitle) {
         .replace(/^[^\s.]*\.\S*$/, title => title.replace(/\./g, " ")) // replace dots with spaces if title is dot separated
         .replace(UNCLOSED_BRACKET_AT_END, "") // remove unclosed bracket section at the end
         .replace(UNOPENED_BRACKET, "$1") // remove closing bracket without an opening one
+        .replace(/.*/, removeAccentedAltTitles) // prefer alt titles without accented chars
         .replace(/\s+/g, " ")
         .trim();
 
