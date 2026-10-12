@@ -202,6 +202,31 @@ describe("Parsing episode", () => {
         expect(parse(releaseName)).to.not.have.property("episodes");
     });
 
+    it("should not detect hashtag number after a dotted index as episode", () => {
+        const releaseName = "04. Panel Discussion #2 by  Various from Together for the Gospel 2006.avi";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect hashtag number after a date as episode", () => {
+        const releaseName = "2023-04-14 Jays Catch #2.mkv";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should detect hashtag episode after a year", () => {
+        const releaseName = "[AI-Raws] 鉄腕アトム(1980) #29 (BD HEVC 1528x1080 FLAC)[DA03CCC3].mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "鉄腕アトム", episodes: [29] });
+    });
+
+    it("should detect hashtag episode after a bare year", () => {
+        const releaseName = "Billy Connolly - World Tour Of Scotland 1994 #6.avi";
+        expect(parse(releaseName)).to.deep.include({ title: "Billy Connolly - World Tour Of Scotland", episodes: [6] });
+    });
+
+    it("should detect japanese episode marker", () => {
+        const releaseName = "[ドラマ] ハケンの品格 第02話 「大論争！派遣VS正社員」 (1280x720 DivX640).avi";
+        expect(parse(releaseName)).to.deep.include({ title: "ハケンの品格", episodes: [2] });
+    });
+
     it("should detect four digit episode range", () => {
         const releaseName = "[PrinceOtaku] One Piece - Egghead Island - Episodes 1123-1133 (English Dub) 720p";
         const result = parse(releaseName);

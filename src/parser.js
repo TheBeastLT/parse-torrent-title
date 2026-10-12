@@ -17,6 +17,7 @@ const DEFAULT_OPTIONS = {
     skipFromTitle: false, // whether to exclude found match from the end result title
     skipIfFirst: false, // whether to skip this matcher if there are no other groups matched before it's matchIndex
     skipIfBefore: [], // whether to skip this matcher if it appears before specified matcher group in the name
+    skipIfAfter: [], // whether to skip this matcher if it appears after specified matcher group in the name
     remove: false // whether to remove the found match from further matchers
 };
 
@@ -41,8 +42,9 @@ function createHandlerFromRegExp(name, regExp, transformer, options) {
             const isSkipIfFirst = options.skipIfFirst && otherMatches.length &&
                 otherMatches.every(e => match.index < e[1].matchIndex);
             const isSkipIfBefore = options.skipIfBefore.some(group => matched[group] && match.index < matched[group].matchIndex);
+            const isSkipIfAfter = options.skipIfAfter.some(group => matched[group] && match.index >= matched[group].matchIndex);
 
-            if (transformed && !isSkipIfFirst && !isSkipIfBefore) {
+            if (transformed && !isSkipIfFirst && !isSkipIfBefore && !isSkipIfAfter) {
                 matched[name] = matched[name] || { rawMatch, matchIndex: match.index };
                 result[name] = options.value || transformed;
                 return {
