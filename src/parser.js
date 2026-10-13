@@ -59,8 +59,6 @@ function createHandlerFromRegExp(name, regExp, transformer, options) {
         return null;
     }
 
-    handler.handlerName = name;
-
     return handler;
 }
 
@@ -97,39 +95,85 @@ function cleanTitle(rawTitle) {
     return cleanedTitle;
 }
 
+function findPosition(handlers, before, after) {
+    if (before && after) {
+        throw new Error("Handler can not be positioned both before and after another handler");
+    }
+    if (!before && !after) {
+        return handlers.length;
+    }
+
+    // a category name targets its first handler for `before` and its last handler for `after`
+    const target = before || after;
+    const { name, index = before ? 0 : -1 } = typeof target === "string" ? { name: target } : target;
+    const positions = handlers.flatMap((entry, position) => (entry.name === name ? [position] : []));
+    const position = positions[index < 0 ? positions.length + index : index];
+
+    if (typeof position === "undefined") {
+        throw new Error(`No handler found for ${JSON.stringify(target)}`);
+    }
+
+    return before ? position : position + 1;
+}
+
 class Parser {
 
     constructor() {
         this.handlers = [];
+        this.parse = this.parse.bind(this);
     }
 
     addHandler(handlerName, handler, transformer, options) {
-        if (typeof handler === "undefined" && typeof handlerName === "function") {
+        if (typeof handlerName === "function") {
 
             // If no name is provided and a function handler is directly given
-            handler = handlerName;
-            handler.handlerName = "unknown";
+            [handlerName, handler, transformer] = ["unknown", handlerName, handler];
+        }
+        if (transformer && typeof transformer === "object") {
 
-        } else if (typeof handlerName === "string" && handler instanceof RegExp) {
-
-            // If the handler provided is a regular expression
-            transformer = typeof transformer === "function" ? transformer : none;
-            options = extendOptions(typeof transformer === "object" ? transformer : options);
-            handler = createHandlerFromRegExp(handlerName, handler, transformer, options);
-
-        } else if (typeof handler === "function") {
-
-            // If the handler is a function
-            handler.handlerName = handlerName;
-
-        } else {
-
-            // If the handler is neither a function nor a regular expression, throw an error
-            throw new Error(`Handler for ${handlerName} should be a RegExp or a function. Got: ${typeof handler}`);
-
+            // If options are given in place of the transformer
+            [transformer, options] = [none, transformer];
         }
 
-        this.handlers.push(handler);
+        const { before, after, ...matchOptions } = options || {};
+        let entry;
+
+        if (handler instanceof RegExp) {
+            const regExpOptions = extendOptions(matchOptions);
+            const regExpHandler = createHandlerFromRegExp(handlerName, handler, transformer || none, regExpOptions);
+            entry = { name: handlerName, handler: regExpHandler, regExp: handler, options: regExpOptions };
+        } else if (typeof handler === "function") {
+            entry = { name: handlerName, handler };
+        } else {
+            throw new Error(`Handler for ${handlerName} should be a RegExp or a function. Got: ${typeof handler}`);
+        }
+
+        this.handlers.splice(findPosition(this.handlers, before, after), 0, entry);
+    }
+
+    removeHandlers(target) {
+        const shouldRemove = typeof target === "function" ? target : handler => [].concat(target).includes(handler.name);
+        const handlers = this.getHandlers();
+        const count = this.handlers.length;
+
+        this.handlers = this.handlers.filter((_, position) => !shouldRemove(handlers[position]));
+
+        return count - this.handlers.length;
+    }
+
+    getHandlers() {
+        const counts = {};
+
+        return this.handlers.map(({ name, regExp, options }, position) => {
+            counts[name] = (counts[name] || 0) + 1;
+            return { name, index: counts[name] - 1, position, ...regExp && { regExp, options: { ...options } } };
+        });
+    }
+
+    clone() {
+        const parser = new this.constructor();
+        parser.handlers = this.handlers.slice();
+        return parser;
     }
 
     parse(title) {
@@ -139,7 +183,7 @@ class Parser {
         const context = { title, result, matched };
         let endOfTitle = title.length;
 
-        for (const handler of this.handlers) {
+        for (const { handler } of this.handlers) {
             context.title = title;
             const matchResult = handler(context);
             if (matchResult && matchResult.remove) {

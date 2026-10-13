@@ -1,6 +1,16 @@
 declare namespace ParseTorrentTitle {
 
-    interface ParserOptions {
+    /** A category name, or a specific handler of a category by its 0-based index (negative counts from the end) */
+    type HandlerTarget = string | { name: string, index?: number };
+
+    interface PositionOptions {
+        /** Insert before this handler, or before the first handler of this category */
+        before?: HandlerTarget;
+        /** Insert after this handler, or after the last handler of this category */
+        after?: HandlerTarget;
+    }
+
+    interface ParserOptions extends PositionOptions {
         /** Whether to skip a matcher if another matcher from this group was already found */
         skipIfAlreadyFound?: boolean;
         /** Whether to exclude found match from the end result title */
@@ -68,12 +78,14 @@ declare namespace ParseTorrentTitle {
         matched: { [field: string]: Match };
     }
 
-    interface HandlerResult extends Match {
-        /** Whether to remove the match from the name for further handlers */
-        remove?: boolean;
+    type HandlerResult = Match & {
         /** Whether to exclude the match from the end result title */
         skipFromTitle?: boolean;
-    }
+    } & (
+        { remove?: false } |
+        /** Removing the match from the name for further handlers needs its text */
+        { remove: true, rawMatch: string }
+    );
 
     interface Handler<ParserResult = DefaultParserResult> {
         (context: HandlerContext<ParserResult>): HandlerResult | null | void;
@@ -106,12 +118,31 @@ declare namespace ParseTorrentTitle {
     interface AddHandlerFunction<ParserResult = DefaultParserResult> {
         (handlerName: string, handler: RegExp, transformer?: Transformer, options?: ParserOptions): void;
         (handlerName: string, handler: RegExp, options?: ParserOptions): void;
-        (handlerName: string, handler: Handler<ParserResult>): void;
-        (handler: Handler<ParserResult>): void;
+        (handlerName: string, handler: Handler<ParserResult>, options?: PositionOptions): void;
+        (handler: Handler<ParserResult>, options?: PositionOptions): void;
+    }
+
+    interface HandlerInfo {
+        name: string;
+        /** Index of the handler within its category */
+        index: number;
+        /** Index of the handler within all handlers of the parser */
+        position: number;
+        /** Only present for regular expression handlers */
+        regExp?: RegExp;
+        /** Only present for regular expression handlers, with all defaults filled in */
+        options?: Required<Omit<ParserOptions, "before" | "after" | "value">> & Pick<ParserOptions, "value">;
+    }
+
+    type RemoveHandlersTarget = string | Array<string> | ((handler: HandlerInfo) => boolean);
+
+    interface AddDefaultsOptions {
+        /** Categories to leave out */
+        exclude?: Array<string>;
     }
 
     interface AddDefaultsFunction {
-        (parser: Parser<any>): void;
+        (parser: Parser<any>, options?: AddDefaultsOptions): void;
     }
 
     class Parser<ParserResult = DefaultParserResult> {
@@ -120,6 +151,10 @@ declare namespace ParseTorrentTitle {
 
         addHandler: AddHandlerFunction<ParserResult>;
         parse: ParseFunction<ParserResult>;
+        /** Removes handlers and returns the number of removed handlers */
+        removeHandlers(target: RemoveHandlersTarget): number;
+        getHandlers(): Array<HandlerInfo>;
+        clone(): Parser<ParserResult>;
     }
 }
 
@@ -127,13 +162,20 @@ declare module "parse-torrent-title" {
 
     export interface DefaultParserResult extends ParseTorrentTitle.DefaultParserResult { }
     export type ParserOptions = ParseTorrentTitle.ParserOptions;
+    export type PositionOptions = ParseTorrentTitle.PositionOptions;
+    export type HandlerTarget = ParseTorrentTitle.HandlerTarget;
+    export type HandlerInfo = ParseTorrentTitle.HandlerInfo;
+    export type AddDefaultsOptions = ParseTorrentTitle.AddDefaultsOptions;
     export type Handler<ParserResult = DefaultParserResult> = ParseTorrentTitle.Handler<ParserResult>;
     export type HandlerContext<ParserResult = DefaultParserResult> = ParseTorrentTitle.HandlerContext<ParserResult>;
     export type HandlerResult = ParseTorrentTitle.HandlerResult;
+    export type RemoveHandlersTarget = ParseTorrentTitle.RemoveHandlersTarget;
     export type Transformer = ParseTorrentTitle.Transformer;
     export class Parser<ParserResult = DefaultParserResult> extends ParseTorrentTitle.Parser<ParserResult> { }
     export const parse: ParseTorrentTitle.ParseFunction;
     export const addHandler: ParseTorrentTitle.AddHandlerFunction;
+    export const removeHandlers: (target: ParseTorrentTitle.RemoveHandlersTarget) => number;
+    export const createParser: () => Parser;
     export const addDefaults: ParseTorrentTitle.AddDefaultsFunction;
     export const Transformers: ParseTorrentTitle.Transformers;
 }

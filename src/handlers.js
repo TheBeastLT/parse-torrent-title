@@ -10,7 +10,7 @@ const HALF_EPISODE_END = "\\.5(?:v\\d)?(?=[ ._\\-)\\][]|$)(?![ .-]\\d)(?![ ._]?(
 const MARKED_HALF_EPISODE = `(?<!${EPISODE_CODE}.*)(?:\\bs\\d{1,2}e|\\be|\\bep(?:isode)?[ .]*|[ .]-[ .]?|^(?=\\d{1,3}\\.5(?:v\\d)? - \\D))0*(\\d{1,3})${HALF_EPISODE_END}(?!.*${EPISODE_CODE})`;
 const BARE_HALF_EPISODE = `(?<!${EPISODE_CODE}.*|\\d - .*|(?:imdb|part|seasons?|sezon|сезон|ios|android|version)[ ._]?|\\b(?:19|20)\\d{2})(?:[ .]|\\[)(?=\\d{2})0*(\\d{1,3})${HALF_EPISODE_END}(?!.*(?:${EPISODE_CODE}| - \\d))`;
 
-exports.addDefaults = /** @type Parser */ parser => {
+exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
 
     // Site
     parser.addHandler("site", /^(www?[., ][\w-]+[. ][\w-]+(?:[. ][\w-]+)?)\s+-\s*/i, none, { skipFromTitle: true, remove: true });
@@ -120,8 +120,8 @@ exports.addDefaults = /** @type Parser */ parser => {
     parser.addHandler("source", /\bR5\b/i, value("R5"), { remove: true });
     parser.addHandler("source", /\bWEB[ .-]*DL(?:Rip)?\b/i, value("WEB-DL"), { remove: true });
     parser.addHandler("source", /\bWEB[ .-]*Rip\b/i, value("WEBRip"), { remove: true });
-    parser.addHandler("source", /\b(?:DL|WEB|BD|BR)MUX\b/i, { remove: true });
-    parser.addHandler("source", /\b(DivX|XviD)\b/, { remove: true });
+    parser.addHandler("source", /\b(?:DL|WEB|BD|BR)MUX\b/i);
+    parser.addHandler("source", /\b(DivX|XviD)\b/);
 
     // HDR
     parser.addHandler("hdr", /\bDV\b|dolby.?vision|\bDoVi\b/i, uniqConcat(value("DV")), { remove: true, skipIfAlreadyFound: false });
@@ -164,7 +164,7 @@ exports.addDefaults = /** @type Parser */ parser => {
     parser.addHandler("audioChannels", /(?:\b(?:DTS(?:-?HD)?(?:[ .-]?MA)?|E?AC-?3|AAC|TrueHD|FLAC|Opus|L?PCM)[ .-]?|[[(])([257]\.[01])(?:ch)?(?=[\]) .,_-]|$)/i, none, { remove: true });
 
     // Group
-    parser.addHandler("group", /- ?(?!\d+$|S\d+|\d+x|ep?\d+|[^[]+]$)([^\-. []+[^\-. [)\]\d][^\-. [)\]]*)(?:\[[\w.-]+])?(?=\.\w{2,4}$|$)/i, { remove: true });
+    parser.addHandler("group", /- ?(?!\d+$|S\d+|\d+x|ep?\d+|[^[]+]$)([^\-. []+[^\-. [)\]\d][^\-. [)\]]*)(?:\[[\w.-]+])?(?=\.\w{2,4}$|$)/i);
 
     // Container
     parser.addHandler("container", /\.?[[(]?\b(MKV|AVI|MP4|WMV|MPG|MPEG)\b[\])]?/i, lowercase);
@@ -536,4 +536,8 @@ exports.addDefaults = /** @type Parser */ parser => {
 
     // Extension
     parser.addHandler("extension", new RegExp(`\\.(${VIDEO_EXTENSIONS}|iso|vob|${SUBTITLE_EXTENSIONS}|idx|ttxt|txt|nfo|html)$`, "i"), lowercase);
+
+    if (exclude) {
+        parser.removeHandlers(exclude);
+    }
 };

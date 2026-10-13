@@ -101,23 +101,27 @@ Only fields that were found are present in the result, except for `title`, which
 
 ## Advanced usage
 
-The parser is a list of handlers that run in order. Each handler can fill fields in the result.
+The parser is a list of handlers that run in order. Each handler belongs to a category, the result field it fills,
+such as `resolution` or `languages`. A category usually has several handlers, tried one after another.
 The title is the part of the name before the earliest match, cleaned of dots, underscores, brackets and
 alternative-language titles.
 
-### Regular expression handlers
-
-To populate an extra field, add a handler with a regular expression:
+To customize the parser, create your own copy of the default one:
 
 ```javascript
 const ptt = require("parse-torrent-title");
-const { integer } = ptt.Transformers;
 
-ptt.addHandler("part", /Part[. ]([0-9])/i, integer);
-const information = ptt.parse("Silent.Witness.S18E03.Falling.Angels.Part.1.720p.HDTV.x264-FTP");
+const parser = ptt.createParser(); // a copy of the default parser
+parser.addHandler("part", /Part[. ]([0-9])/i, ptt.Transformers.integer);
 
-console.log(information.part); // 1
+console.log(parser.parse("Silent.Witness.S18E03.Falling.Angels.Part.1.720p.HDTV.x264-FTP").part); // 1
+console.log(ptt.parse("Silent.Witness.S18E03.Falling.Angels.Part.1.720p.HDTV.x264-FTP").part);    // undefined
 ```
+
+The module level `ptt.addHandler` and `ptt.removeHandlers` change the shared default parser used by `ptt.parse`,
+and with it every other user of `ptt.parse` in your process.
+
+### Regular expression handlers
 
 The signature is `addHandler(name, regExp, [transformer], [options])`.
 If the regular expression has a [capturing group](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Groups_and_backreferences),
@@ -155,52 +159,106 @@ Built-in transformers are exported as `Transformers`:
 | `skipIfBefore`       | `[]`    | Skip the match if it comes before a match of any of the listed fields.                            |
 | `skipIfAfter`        | `[]`    | Skip the match if it comes after a match of any of the listed fields.                             |
 | `value`              |         | Store this value instead of the transformer result.                                              |
+| `before` / `after`   |         | Where to insert the handler, see [Positioning handlers](#positioning-handlers).                   |
 
 The options object can be passed as the third argument when no transformer is needed:
 
 ```javascript
-ptt.addHandler("network", /\b(AMZN|NF|DSNP)\b/, { remove: true });
+parser.addHandler("network", /\b(AMZN|NF|DSNP)\b/, { remove: true });
 ```
 
 ### Function handlers
 
-A handler can also be a function. It receives a context object with:
+A handler can also be a function, added with `addHandler(name, fn, [options])` or `addHandler(fn, [options])`.
+Only the `before` and `after` options apply to function handlers.
+It receives a context object with:
 
 * `title`: the name being parsed, with the matches of earlier `remove` handlers taken out
 * `result`: the result object, which the handler can change
 * `matched`: the matches found so far, as `{ [field]: { rawMatch, matchIndex } }`
 
 ```javascript
-const ptt = require("parse-torrent-title");
+const parser = ptt.createParser();
 
-ptt.addHandler(({ title, result }) => {
+parser.addHandler("isHarryPotterRelated", ({ title, result }) => {
     if (/harry.potter/i.test(title)) {
         result.isHarryPotterRelated = true;
     }
 });
 
-const information = ptt.parse("[REQ] Harry Potter And The Prisoner Of Azkaban 2004 1080p BluRay DTS x264-hV");
+const information = parser.parse("[REQ] Harry Potter And The Prisoner Of Azkaban 2004 1080p BluRay DTS x264-hV");
 console.log(information.isHarryPotterRelated); // true
 ```
 
-A named function handler is added with `addHandler(name, fn)`.
 If the matched text should end the title, return `{ matchIndex }` from the handler.
 Return `{ rawMatch, matchIndex, remove: true }` to also remove the match from the name.
 
-### Multiple parsers
+### Customizing handlers
 
-`addHandler` and `parse` on the module work on a shared default parser.
-To keep your handlers separate, create a new parser:
+#### Positioning handlers
+
+By default a new handler is added at the end, so it runs after all default handlers.
+Use the `before` or `after` option to run it earlier:
+
+```javascript
+const parser = ptt.createParser();
+
+// before the first resolution handler
+parser.addHandler("resolution", /\b(8k|4320p)\b/i, ptt.Transformers.value("8k"), { before: "resolution", remove: true });
+
+// after the last resolution handler
+parser.addHandler("network", /\b(AMZN|NF|DSNP)\b/, { after: "resolution", remove: true });
+
+// after the handler with index 3 of the seasons category (0-based, negative counts from the end)
+parser.addHandler("myStep", ({ result }) => { /* ... */ }, { after: { name: "seasons", index: 3 } });
+```
+
+The position is resolved when the handler is added. `addHandler` throws if the target does not exist,
+or if both `before` and `after` are given.
+
+#### Removing handlers
+
+`removeHandlers` takes a category name, an array of names or a filter function, and returns how many handlers it removed:
+
+```javascript
+parser.removeHandlers("site");
+parser.removeHandlers(["languages", "dubbed"]);
+parser.removeHandlers(handler => handler.name === "resolution" && handler.index > 5);
+```
+
+Some categories are derived from others: `season` from `seasons`, `episode` from `episodes`,
+and `dubbed` partly from `languages`. Removing a category does not remove the categories derived from it,
+they just find nothing.
+
+To leave categories out when adding the default handlers to a parser, use `exclude`:
 
 ```javascript
 const { Parser, addDefaults } = require("parse-torrent-title");
 
 const parser = new Parser(); // has no handlers
-addDefaults(parser);         // adds the default handlers
-parser.addHandler("part", /Part[. ]([0-9])/i, require("parse-torrent-title").Transformers.integer);
+addDefaults(parser, { exclude: ["site", "languages"] });
 ```
 
-Handlers run in the order they are added, so handlers added after `addDefaults` run after the default ones.
+#### Listing handlers
+
+`getHandlers` returns a description of each handler, which helps to find the index to target:
+
+```javascript
+parser.getHandlers().filter(handler => handler.name === "resolution");
+// [
+//   { name: "resolution", index: 0, position: 3, regExp: /(?<=\b(?:4k|2160p)\b.*)\b(480|720|1080)p\b/i, options: { ... } },
+//   { name: "resolution", index: 1, position: 4, regExp: /\b[([]?4k[)\]]?\b/i, options: { ... } },
+//   ...
+// ]
+```
+
+`index` is the position within the category and `position` the position within all handlers.
+`regExp` and `options` are only present for regular expression handlers.
+
+#### Copying parsers
+
+`parser.clone()` returns a copy of a parser, which can be changed without affecting the original.
+`ptt.createParser()` is the same as cloning the default parser.
 
 ### Usage with TypeScript
 

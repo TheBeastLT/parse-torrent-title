@@ -7,7 +7,9 @@ const defaultParser = new Parser();
 handlers.addDefaults(defaultParser);
 
 exports.addDefaults = handlers.addDefaults;
-exports.addHandler = (handlerName, handler, options) => defaultParser.addHandler(handlerName, handler, options);
+exports.addHandler = (...args) => defaultParser.addHandler(...args);
+exports.removeHandlers = target => defaultParser.removeHandlers(target);
+exports.createParser = () => defaultParser.clone();
 exports.parse = title => defaultParser.parse(title);
 exports.Parser = Parser;
 exports.Transformers = trasformers;
