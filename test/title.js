@@ -331,6 +331,32 @@ describe("Parsing title", () => {
         expect(parse(releaseName)).to.deep.include({ title: "Tokyo ESP", episodes: [8] });
     });
 
+    it("should skip tag sections after the release group", () => {
+        const releaseName = "[BonoboSubs][4k]Renegade Immortal - Xian Ni Episode 100";
+        expect(parse(releaseName)).to.deep.include({ title: "Renegade Immortal - Xian Ni", episodes: [100] });
+    });
+
+    it("should skip a year section after the release group", () => {
+        const releaseName = "[Fansubber] [1995] Hyper Doll - Dub[EN,ES,IT,JP] & Sub[EN,FR]";
+        expect(parse(releaseName)).to.deep.include({ title: "Hyper Doll", year: 1995 });
+    });
+
+    it("should keep the longest section when the name is only bracketed sections", () => {
+        const releaseName = "[Wu Dong Qian Kun][2022][S3E06][1080p+] ENG SUB (Softsub)";
+        expect(parse(releaseName)).to.deep.include({ title: "Wu Dong Qian Kun" });
+    });
+
+    it("should keep a hyphenated Ru as part of the title", () => {
+        const releaseName = "[PUNCH] To Love-Ru Darkness 2nd - 10 (1080p) [rich_jc].mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "To Love-Ru Darkness 2nd", episodes: [10] });
+        expect(parse(releaseName)).to.not.have.property("languages");
+    });
+
+    it("should keep the Code Geass R2 season in the title", () => {
+        const releaseName = "Code Geass R2 - 218 - Final Battle Tokyo II {C_P}.avi";
+        expect(parse(releaseName)).to.deep.include({ title: "Code Geass R2", episodes: [218] });
+    });
+
     it("should not keep the episode word before an episode dash", () => {
         const releaseName = "[GoGoAnime.net] One Piece episode - 436 [English Sub][480p].avi";
         expect(parse(releaseName)).to.deep.include({ title: "One Piece", episodes: [436] });

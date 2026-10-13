@@ -78,7 +78,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("unrated", /\bunrated|uncensored\b/i, boolean);
 
     // Region
-    parser.addHandler("region", /R\d\b/, none, { skipIfFirst: true });
+    parser.addHandler("region", /R\d\b(?![ ._]+(?:-[ ._]*)?(?:[Ee][Pp]\.?[ ._]*)?\d)/, none, { skipIfFirst: true });
 
     // Video depth
     parser.addHandler("bitDepth", /(?:8|10|12)[- ]?bit/i, lowercase, { remove: true });
@@ -447,7 +447,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("languages", /\b(?<=[ .,/-]+[A-Z]{2}[ .,/-]+)de(?=[ .,/-]+[A-Z]{2}[ .,/-]+)\b/i, uniqConcat(value("german")), { skipFromTitle: true, skipIfAlreadyFound: false });
     parser.addHandler("languages", /\bde(?=\.(?:ass|ssa|srt|sub|idx)$)/i, uniqConcat(value("german")), { skipFromTitle: true, skipIfAlreadyFound: false });
     parser.addHandler("languages", /\b(german|alem[aã]o)\b/i, uniqConcat(value("german")), { skipIfFirst: true, skipIfAlreadyFound: false });
-    parser.addHandler("languages", /\bRUS?\b/i, uniqConcat(value("russian")), { skipIfAlreadyFound: false });
+    parser.addHandler("languages", /\bRUS?\b(?<!\w-RUS?(?=\s+(?!sub|dub|audio)[a-z{]))/i, uniqConcat(value("russian")), { skipIfAlreadyFound: false });
     parser.addHandler("languages", /\b(russian|russo)\b/i, uniqConcat(value("russian")), { skipIfFirst: true, skipIfAlreadyFound: false });
     parser.addHandler("languages", /\bUKR\b/i, uniqConcat(value("ukrainian")), { skipIfAlreadyFound: false });
     parser.addHandler("languages", /\bukrainian\b/i, uniqConcat(value("ukrainian")), { skipIfFirst: true, skipIfAlreadyFound: false });
