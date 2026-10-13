@@ -9,7 +9,7 @@ const ACCENTED_LATIN_REGEX = new RegExp(`[${ACCENTED_LATIN_CHARS}]`);
 const NOT_ONLY_NON_ENGLISH_REGEX = new RegExp(`(?<=[a-zA-Z][^${NON_ENGLISH_CHARS}]+)[${NON_ENGLISH_CHARS}].*[${NON_ENGLISH_CHARS}]|[${NON_ENGLISH_CHARS}].*[${NON_ENGLISH_CHARS}](?=[^${NON_ENGLISH_CHARS}]+[a-zA-Z])`, "g");
 const NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${ACCENTED_LATIN_CHARS}${NON_ENGLISH_CHARS}#[【★]+|[ \\-:,/\\\\[|{(#$&^]+$`, "g");
 const REMAINING_NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${ACCENTED_LATIN_CHARS}${NON_ENGLISH_CHARS}#]+|[[\\]({} ]+$`, "g");
-const BEFORE_TITLE_REGEX = new RegExp(`^(?:\\[[^[\\]]*]\\s*)+(?=[^\\s[(.…])|^\\[[^[\\]]+]|^(?:[^/[]*[${NON_ENGLISH_CHARS}][^/[]*/)+(?=\\s*[a-zA-Z])`);
+const BEFORE_TITLE_REGEX = new RegExp(`^(?:\\[[^[\\]]*]\\s*)+(?=[^\\s[(.…（【])|^\\[[^[\\]]+]|^(?:[^/[]*[${NON_ENGLISH_CHARS}][^/[]*/)+(?=\\s*[a-zA-Z])`);
 const UNCLOSED_BRACKET_AT_END = /\s*[([{][^)\]}]*$/;
 const UNOPENED_BRACKET = /^([^([{]*)[)\]}]/;
 const DEFAULT_OPTIONS = {
@@ -98,7 +98,7 @@ function cleanTitle(rawTitle) {
 
 // a name made only of bracketed sections ("[Show Name][2022][S3E06]") keeps its longest one as the title
 function longestBracketText(text, tags) {
-    const remainder = tags.reduce((rest, tag) => rest.replace(tag, ""), text.replace(/\[[^[\]]*]/g, ""));
+    const remainder = tags.reduce((rest, tag) => rest.replace(tag, ""), text.replace(/\[[^[\]]*]|[（【][^（）【】]*[）】]/g, ""));
     if (/[^\s+-]/u.test(remainder)) {
         return "";
     }

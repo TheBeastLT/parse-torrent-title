@@ -356,6 +356,11 @@ describe("Parsing title", () => {
         expect(parse("[philosophy-raws][COWBOY BEBOP][TV 01-26+Movie+SP]][BDRIP][1080p 10bit][Three Audio]").title).to.not.equal("philosophy-raws");
     });
 
+    it("should not take a full width bracket section after the tags as title", () => {
+        expect(parse("[SweetSub][小書痴的下剋上 領主的養女][Honzuki no Gekokujou S04][16][WebRip][1080P][AVC 8bit][繁日雙語]（第四季）")).to.deep.include({ title: "Honzuki no Gekokujou", seasons: [4], episodes: [16] });
+        expect(parse("[Group][Show Name][05][1080P]【Season 2】").title).to.equal("Show Name");
+    });
+
     it("should keep a short title after the release group", () => {
         expect(parse("[HorribleSubs] K - 11 [720p].mkv")).to.deep.include({ title: "K", episodes: [11] });
         expect(parse("[HDTV - Eng - SubITA] 24 S07E04 [CR-Bt]")).to.deep.include({ title: "24", episodes: [4] });
