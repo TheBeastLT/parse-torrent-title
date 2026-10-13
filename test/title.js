@@ -325,4 +325,14 @@ describe("Parsing title", () => {
         const releaseName = "Безумно грустная принцесса / Šíleně smutná princezna [1968, DVDRip]";
         expect(parse(releaseName)).to.deep.include({ title: "Šíleně smutná princezna", year: 1968 });
     });
+
+    it("should keep ESP as part of the title before an episode dash", () => {
+        const releaseName = "[HorribleSubs] Tokyo ESP - 08 [720p].mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Tokyo ESP", episodes: [8] });
+    });
+
+    it("should not keep the episode word before an episode dash", () => {
+        const releaseName = "[GoGoAnime.net] One Piece episode - 436 [English Sub][480p].avi";
+        expect(parse(releaseName)).to.deep.include({ title: "One Piece", episodes: [436] });
+    });
 });
