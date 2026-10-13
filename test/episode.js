@@ -1443,4 +1443,29 @@ describe("Parsing episode", () => {
 
         expect(parse(releaseName)).to.deep.include({ episodes: [3, 4] });
     });
+
+    it("should not detect an episode in a dotted single letter abbreviation", () => {
+        const releaseName = "[Fansubber] [2006] C.E. 73 Stargazer --- sub[EN,ES,IT]";
+        expect(parse(releaseName)).to.deep.include({ title: "C.E. 73 Stargazer" });
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect an episode in an undotted single letter abbreviation", () => {
+        const releaseName = "[SnOF + Nks] SEED C.E.73 STARGAZER  - SEED ASTRAY";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should detect a zero padded episode after a dotted single letter", () => {
+        expect(parse("P.E.01")).to.deep.include({ episodes: [1] });
+        expect(parse("Zoo.2.T.E.01.02.Dual.WWW.AZTORRENTS.ORG")).to.deep.include({ episodes: [1] });
+    });
+    it("should detect an E episode marker after a dotted single letter word", () => {
+        expect(parse("Street.Fighter.II.V.E23.iNTERNAL.DVDRip.x264-WaLMaRT")).to.deep.include({ title: "Street Fighter II V", episodes: [23] });
+        expect(parse("To.Be.Hero.X.E22.MULTi.1080p.WEB.x264-AMB3R")).to.deep.include({ title: "To Be Hero X", episodes: [22] });
+    });
+
+    it("should detect a spaced E episode marker after a word", () => {
+        const releaseName = "Show Name E. 05 720p";
+        expect(parse(releaseName)).to.deep.include({ title: "Show Name", episodes: [5] });
+    });
 });

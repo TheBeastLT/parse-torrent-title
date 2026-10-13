@@ -268,7 +268,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("episodes", /^(?!20-20)(\d{1,3}(?:-\d{1,3})+)(?!\.\d)(?:[ .)(\]]|$)/i, range, { skipIfBefore: ["year"] });
     parser.addHandler("episodes", /(?<!^\d{1,3}(?:-\d{1,3})+[ .)(\]-].*)(?<!(?:seasons?|[Сс]езони?)\W*)(?!20-20)(?:[ .([]|(?<!^\d{1,3}(?:-\d{1,3})*)-)(\d{1,3}(?:-\d{1,3})+)(?!\.\d)(?:[ .)(\]]|-\D|$)/i, range);
     parser.addHandler("episodes", /\bEp(?:isode)?\W+(?:#|(?!\d{1,2}\.5\b))\d{1,2}\.(\d{1,3})\b/i, array(integer));
-    parser.addHandler("episodes", /(?:\b[ée]p?(?:isode)?|[Ээ]пизод|[Сс]ер(?:ии|ия|\.)?|seri[jy]a|caa?p(?:itulo)?|epis[oó]dio|epizoda|odcinek|avsnitt|aflevering|folge|jakso|puntata)[. ]?[-:#№]?[. ]?(\d{1,4})(?:[abc]|v0?[1-4]|\W|$)/i, array(integer));
+    parser.addHandler("episodes", /(?:\b(?!(?<=(?:^|[^a-z])[a-z]\.)[ée]\.\s*[1-9])[ée]p?(?:isode)?|[Ээ]пизод|[Сс]ер(?:ии|ия|\.)?|seri[jy]a|caa?p(?:itulo)?|epis[oó]dio|epizoda|odcinek|avsnitt|aflevering|folge|jakso|puntata)[. ]?[-:#№]?[. ]?(\d{1,4})(?:[abc]|v0?[1-4]|\W|$)/i, array(integer));
     parser.addHandler("episodes", /\d{1,2}\.sezon\.(\d{1,3}\.\d{1,3})\.ser/i, range);
     parser.addHandler("episodes", /\b(\d{1,3}-\d{1,3})[ ._]*(?:ser(?:i?[iyj]a|\b)|[Сс]ер(?:ии|ия|\.)?)/i, range);
     parser.addHandler("episodes", /\b(\d{1,3})(?:-?(?:я|ja|ya))?[ ._-]*(?:ser(?:i?[iyj]a|\b)|[Сс]ер(?:ии|ия|\.)?)/i, array(integer));

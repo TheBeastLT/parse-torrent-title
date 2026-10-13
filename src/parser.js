@@ -88,6 +88,7 @@ function cleanTitle(rawTitle) {
         .replace(/^[^\s.]*\.\S*$/, title => title.replace(/\./g, " ")) // replace dots with spaces if title is dot separated
         .replace(UNCLOSED_BRACKET_AT_END, "") // remove unclosed bracket section at the end
         .replace(UNOPENED_BRACKET, "$1") // remove closing bracket without an opening one
+        .replace(/\s+-+\s*(?:sub|dub)s?$/i, "")
         .replace(/.*/, removeAccentedAltTitles) // prefer alt titles without accented chars
         .replace(/\s+/g, " ")
         .trim();
@@ -96,8 +97,9 @@ function cleanTitle(rawTitle) {
 }
 
 // a name made only of bracketed sections ("[Show Name][2022][S3E06]") keeps its longest one as the title
-function longestBracketText(text) {
-    if (/[^\s+-]/u.test(text.replace(/\[[^[\]]*]/g, ""))) {
+function longestBracketText(text, tags) {
+    const remainder = tags.reduce((rest, tag) => rest.replace(tag, ""), text.replace(/\[[^[\]]*]/g, ""));
+    if (/[^\s+-]/u.test(remainder)) {
         return "";
     }
     const sections = (text.match(/\[[^[\]]*[a-zA-Z][^[\]]*]/g) || []).map(section => section.slice(1, -1));
@@ -191,10 +193,14 @@ class Parser {
         const matched = {};
         const context = { title, result, matched };
         let endOfTitle = title.length;
+        const tagMatches = [];
 
         for (const { handler } of this.handlers) {
             context.title = title;
             const matchResult = handler(context);
+            if (matchResult && matchResult.skipFromTitle) {
+                tagMatches.push(matchResult.rawMatch.trim());
+            }
             if (matchResult && matchResult.remove) {
                 title = title.slice(0, matchResult.matchIndex) + title.slice(matchResult.matchIndex + matchResult.rawMatch.length);
             }
@@ -209,7 +215,9 @@ class Parser {
         }
 
         const titlePart = title.slice(0, endOfTitle);
-        result.title = cleanTitle(titlePart) || cleanTitle(longestBracketText(titlePart));
+        const cleanedTitle = cleanTitle(titlePart);
+        const isTagTitle = tagMatches.some(match => match.toLowerCase() === cleanedTitle.toLowerCase());
+        result.title = cleanedTitle && !isTagTitle ? cleanedTitle : cleanTitle(longestBracketText(titlePart, tagMatches)) || cleanedTitle;
 
         return result;
     }

@@ -346,6 +346,32 @@ describe("Parsing title", () => {
         expect(parse(releaseName)).to.deep.include({ title: "Wu Dong Qian Kun" });
     });
 
+    it("should take the longest section when only a short tag is left outside the sections", () => {
+        const releaseName = "[Kurina][Dou Luo Da Lu][Soul Land][120][1080P]EN";
+        expect(parse(releaseName)).to.deep.include({ title: "Dou Luo Da Lu", episodes: [120] });
+    });
+
+    it("should not take the release group as title when other text remains", () => {
+        expect(parse("[tvN] 미생.E20.END.141220.HDTV.H264.720p-WITH.mp4").title).to.not.equal("tvN");
+        expect(parse("[philosophy-raws][COWBOY BEBOP][TV 01-26+Movie+SP]][BDRIP][1080p 10bit][Three Audio]").title).to.not.equal("philosophy-raws");
+    });
+
+    it("should keep a short title after the release group", () => {
+        expect(parse("[HorribleSubs] K - 11 [720p].mkv")).to.deep.include({ title: "K", episodes: [11] });
+        expect(parse("[HDTV - Eng - SubITA] 24 S07E04 [CR-Bt]")).to.deep.include({ title: "24", episodes: [4] });
+        expect(parse("[NC-Raws] 谎颜 - 10 (B-Global Donghua 1920x1080 HEVC AAC MKV)")).to.deep.include({ title: "谎颜", episodes: [10] });
+    });
+
+    it("should not keep a dangling sub marker before language codes", () => {
+        const releaseName = "[Fansubber] [1998] Gekiganger 3 - Sub[EN,ES]";
+        expect(parse(releaseName)).to.deep.include({ title: "Gekiganger 3", year: 1998 });
+    });
+
+    it("should keep sub when it is part of the title", () => {
+        const releaseName = "The.Sub.2019.1080p.WEBRip.x264";
+        expect(parse(releaseName)).to.deep.include({ title: "The Sub", year: 2019 });
+    });
+
     it("should keep a hyphenated Ru as part of the title", () => {
         const releaseName = "[PUNCH] To Love-Ru Darkness 2nd - 10 (1080p) [rich_jc].mkv";
         expect(parse(releaseName)).to.deep.include({ title: "To Love-Ru Darkness 2nd", episodes: [10] });
