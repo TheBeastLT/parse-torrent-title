@@ -11,6 +11,17 @@ exports.value = value => input => {
 
 exports.integer = input => parseInt(input, 10);
 
+// arabic, full width or chinese numerals, i.e. `4`, `４`, `四`, `十二`
+const CJK_DIGITS = { 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9 };
+exports.cjkInteger = input => {
+    const digits = input.replace(/[０-９]/g, digit => String.fromCodePoint(digit.codePointAt(0) - 0xFEE0));
+    if (/^\d+$/.test(digits)) {
+        return parseInt(digits, 10);
+    }
+    const [tens, units] = digits.includes("十") ? digits.split("十") : ["", digits];
+    return (digits.includes("十") ? CJK_DIGITS[tens] || 1 : 0) * 10 + (CJK_DIGITS[units] || 0);
+};
+
 exports.boolean = () => true;
 
 exports.lowercase = input => input.toLowerCase();

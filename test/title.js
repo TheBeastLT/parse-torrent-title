@@ -422,4 +422,14 @@ describe("Parsing title", () => {
         const releaseName = "Dragon Ball Z - 117A (132A) (TV3) [P][DragoonClawNZ].mkv";
         expect(parse(releaseName)).to.deep.include({ title: "Dragon Ball Z", episodes: [132] });
     });
+
+    it("should remove a chinese season marker from the title", () => {
+        const releaseName = "[ANi] 葬送的芙莉蓮 第二季 - 03 [1080P][Baha][WEB-DL][AAC AVC][CHT].mp4";
+        expect(parse(releaseName)).to.deep.include({ title: "葬送的芙莉蓮", seasons: [2], episodes: [3] });
+    });
+
+    it("should keep the romaji title after a chinese title with a season marker", () => {
+        const releaseName = "[晚街与灯][Re：从零开始的异世界生活 第四季 / Re:Zero kara Hajimeru Isekai Seikatsu 4th Season][15 / 总第81][简日双语][1080P]";
+        expect(parse(releaseName)).to.deep.include({ title: "Re:Zero kara Hajimeru Isekai Seikatsu", seasons: [4], episodes: [15] });
+    });
 });

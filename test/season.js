@@ -714,4 +714,29 @@ describe("Parsing season", () => {
 
         expect(parse(releaseName)).to.not.have.property("seasons");
     });
+
+    it("should detect a chinese season marker", () => {
+        const releaseName = "[ANi] Re：從零開始的異世界生活 第四季 - 17 [1080P][Baha][WEB-DL][AAC AVC][CHT].mp4";
+        expect(parse(releaseName)).to.deep.include({ seasons: [4], episodes: [17] });
+    });
+
+    it("should detect a chinese season marker with a two character numeral", () => {
+        const releaseName = "[Nekomoe kissaten][Kusuriya no Hitorigoto][第十二季][05][1080p].mp4";
+        expect(parse(releaseName)).to.deep.include({ title: "Kusuriya no Hitorigoto", seasons: [12], episodes: [5] });
+    });
+
+    it("should detect a chinese season marker with full width digits", () => {
+        const releaseName = "Show 第４季 - 05.mkv";
+        expect(parse(releaseName)).to.deep.include({ seasons: [4], episodes: [5] });
+    });
+
+    it("should not detect a chinese issue number as season", () => {
+        const releaseName = "奔跑吧 第5期 20231020.mp4";
+        expect(parse(releaseName)).to.not.have.property("seasons");
+    });
+
+    it("should detect an ordinal season in a bracketed episode section", () => {
+        const releaseName = "[晚街与灯][Re Zero kara Hajimeru Isekai Seikatsu][4th - 16][总第82][WebRip][1080P_AVC_AAC][简日双语内嵌].mp4";
+        expect(parse(releaseName)).to.deep.include({ title: "Re Zero kara Hajimeru Isekai Seikatsu", seasons: [4], episodes: [16] });
+    });
 });

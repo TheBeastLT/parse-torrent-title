@@ -1,4 +1,4 @@
-const { none, value, integer, boolean, lowercase, uppercase, date, range, rangeUpTo, list, yearRange, array, uniqConcat } = require("./transformers");
+const { none, value, integer, cjkInteger, boolean, lowercase, uppercase, date, range, rangeUpTo, list, yearRange, array, uniqConcat } = require("./transformers");
 
 const VIDEO_EXTENSIONS = "3g2|3gp|avi|flv|mkv|mk3d|mov|mp2|mp4|m4v|mpe|mpeg|mpg|mpv|webm|wmv|ogm|divx|ts|m2ts";
 const SUBTITLE_EXTENSIONS = "sub|smi|srt|ssa|ass|vtt";
@@ -205,6 +205,8 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("seasons", /(?:[^\w-]|^)s(\d{1,2})$/i, array(integer));
     parser.addHandler("seasons", /(?:so?|t)(\d{1,2})[. ]?[xх-]?[. ]?(?:e|x|х|ep|-|\.)[. ]?\d{1,4}(?:[abc]|v0?[1-4]|\D|$)/i, array(integer));
     parser.addHandler("seasons", /(?:(?:\bthe\W)?\bcomplete\W)?(?:\W|^)(\d{1,2})[. ]?(?:st|nd|rd|th)[. ]*season/i, array(integer));
+    parser.addHandler("seasons", /第[ ]?([0-9０-９]{1,2}|[一二三四五六七八九十]{1,3})[ ]?季/, array(cjkInteger), { remove: true, skipFromTitle: true });
+    parser.addHandler("seasons", /(?<=\[)(\d{1,2})(?:st|nd|rd|th)(?=[. ]*-[. ]*\d{1,4}\])/i, array(integer), { remove: true });
     parser.addHandler("seasons", /^(\d{1,2})[. ]season$/i, array(integer));
     parser.addHandler("seasons", /(?:\D|^)(\d{1,2})[Xxх]\d{1,3}(?:\D|$)/, array(integer));
     parser.addHandler("seasons", /^x(?!26[45]\b|(?:480|576|720|1080|2160)\b)(\d{1,2})\d{2}(?= - )/i, array(integer));
