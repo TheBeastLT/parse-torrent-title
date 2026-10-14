@@ -74,6 +74,31 @@ describe("Parsing extras", () => {
         expect(parse(releaseName)).to.deep.include({ title: "Hyouka TV", extras: true });
     });
 
+    it("should end the title before a numbered special section", () => {
+        const releaseName = "[Moozzi2] Aria The Animation [SP01] TV-Spot - 01 (BD 1440x1080 x.264 Flac).mkv";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Aria The Animation", extras: true });
+    });
+
+    it("should end the title before a numbered special section with a named special", () => {
+        const releaseName = "[BananaBoat] Yuyushiki [SP03] Nyanyashiki - 01 (BD 1920x1080 x.264 Flac).mkv";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Yuyushiki", extras: true });
+    });
+
+    it("should not detect extras from a leading special section", () => {
+        const releaseName = "[SP01] Show - 01.mkv";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Show" });
+        expect(parse(releaseName)).to.not.have.property("extras");
+    });
+
+    it("should not detect extras from a special word without a number", () => {
+        const releaseName = "[Group] Show [SP] - 01.mkv";
+
+        expect(parse(releaseName)).to.not.have.property("extras");
+    });
+
     it("should not detect extras from other in an ampersand title", () => {
         const releaseName = "[uba] Love, Chunibyo & Other Delusions! (2012) - S02 v3 (BD Remux)";
 

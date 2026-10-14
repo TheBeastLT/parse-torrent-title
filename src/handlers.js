@@ -392,6 +392,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("complete", /duology|trilogy|quadr[oi]logy|tetralogy|pentalogy|hexalogy|heptalogy|anthology/i, boolean, { skipIfAlreadyFound: false });
     parser.addHandler("complete", /\bsaga\b/i, boolean, { skipFromTitle: true });
 
+    parser.addHandler("extras", /(?<=\S[ ._-]?)\[SP\d{1,2}]/i, boolean, { skipIfAlreadyFound: false });
     parser.addHandler("extras", new RegExp(`\\s*\\(?\\s*[+&]\\s*${PACK_EXTRA}(?:\\s*(?:[+&,]|and)\\s*${PACK_EXTRA})*\\)?`, "i"), boolean, { remove: true });
 
     // Language
