@@ -46,6 +46,16 @@ describe("Parsing title", () => {
         expect(parse(releaseName)).to.deep.include({ title: "Eizouken ni wa Te wo Dasu na!" });
     });
 
+    it("should keep a star inside the title after a group section", () => {
+        const releaseName = "[UCCUSS] BLACK★ROCK SHOOTER ブラック★ロックシューター 全8話 + OVA (BD 1920x1080p AVC FLAC SUPx2)";
+        expect(parse(releaseName)).to.deep.include({ title: "BLACK★ROCK SHOOTER" });
+    });
+
+    it("should keep a star inside the title before a trailing group section", () => {
+        const releaseName = "Lucky☆Star ★Hi10★ [1080p]";
+        expect(parse(releaseName)).to.deep.include({ title: "Lucky☆Star" });
+    });
+
     it("should remove japanese alt titles without separators", () => {
         const releaseName = "[Seed-Raws] 劇場版 ペンギン・ハイウェイ Penguin Highway The Movie (BD 1280x720 AVC AACx4 [5.1+2.0+2.0+2.0]).mp4";
         expect(parse(releaseName)).to.deep.include({ title: "Penguin Highway The Movie" });

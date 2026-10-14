@@ -10,6 +10,9 @@ const NOT_ONLY_NON_ENGLISH_REGEX = new RegExp(`(?<=[a-zA-Z][^${NON_ENGLISH_CHARS
 const NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${ACCENTED_LATIN_CHARS}${NON_ENGLISH_CHARS}#[【★]+|[ \\-:,/\\\\[|{(#$&^]+$`, "g");
 const REMAINING_NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${ACCENTED_LATIN_CHARS}${NON_ENGLISH_CHARS}#]+|[[\\]({} ]+$`, "g");
 const BEFORE_TITLE_REGEX = new RegExp(`^(?:\\[[^[\\]]*]\\s*)+(?=[^\\s[(.…（【])|^\\[[^[\\]]+]|^(?:[^/[]*[${NON_ENGLISH_CHARS}][^/[]*/)+(?=\\s*[a-zA-Z])`);
+const MARKING_SECTION = "(?:\\[[^\\]]*]|【[^】]*】|★[^★]*★)";
+const LEADING_MARKING_SECTIONS = new RegExp(`^(?:${MARKING_SECTION}[ .]?)+(.+)`);
+const TRAILING_MARKING_SECTIONS = new RegExp(`(.+?)(?:[ .]?${MARKING_SECTION})+$`);
 const UNCLOSED_BRACKET_AT_END = /\s*[([{][^)\]}]*$/;
 const UNOPENED_BRACKET = /^([^([{]*)[)\]}]/;
 const DEFAULT_OPTIONS = {
@@ -80,8 +83,8 @@ function cleanTitle(rawTitle) {
         .replace(/[[(]movie[)\]]/i, "") // clear movie indication flag
         .replace(NOT_ALLOWED_SYMBOLS_AT_START_AND_END, "")
         .replace(RUSSIAN_CAST_REGEX, "") // clear russian cast information
-        .replace(/^[[【★].*[\]】★][ .]?(.+)/, "$1") // remove release group markings sections from the start
-        .replace(/(.+)[ .]?[[【★].*[\]】★]$/, "$1") // remove unneeded markings section at the end if present
+        .replace(LEADING_MARKING_SECTIONS, "$1") // remove release group markings sections from the start
+        .replace(TRAILING_MARKING_SECTIONS, "$1") // remove unneeded markings section at the end if present
         .replace(ALT_TITLES_REGEX, "") // remove alt language titles
         .replace(NOT_ONLY_NON_ENGLISH_REGEX, "") // remove non english chars if they are not the only ones left
         .replace(REMAINING_NOT_ALLOWED_SYMBOLS_AT_START_AND_END, "")
