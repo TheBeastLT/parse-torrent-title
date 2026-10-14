@@ -1468,4 +1468,9 @@ describe("Parsing episode", () => {
         const releaseName = "Show Name E. 05 720p";
         expect(parse(releaseName)).to.deep.include({ title: "Show Name", episodes: [5] });
     });
+
+    it("should detect the bracketed episode of a dual numbered episode", () => {
+        const releaseName = "Dragon Ball Z - 155 (170) (Toonami Midnight Run) [P][C][No NEP][RetroCCN].mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Dragon Ball Z", episodes: [170] });
+    });
 });

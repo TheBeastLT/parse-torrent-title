@@ -313,7 +313,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
             const middleTitle = title.slice(startIndex, endIndex);
 
             // try to match the episode inside the title with a separator, if not found include the start of the title as well
-            const matches = Array.from(beginningTitle.matchAll(/(?<!movie\W*|film\W*|^)(?:[ .]+-[ .]+|[([][ .]*(?!\d+-[a-z]+\)))(\d{1,4})(?![. _]?(?:-?й)?[. _]?(?:[Сс]езон|sez(?:on)?\b)(?![. _]?finali))(?:a|b|v\d|\.\d)?(?:\W|$)(?!movie|film|\d+)/gi)).pop() ||
+            const matches = Array.from(beginningTitle.matchAll(/(?<!movie\W*|film\W*|^)(?:[ .]+-[ .]+\d{1,4}(?:a|b|v\d)?[ .]*[([][ .]*(?!\d+-[a-z]+\))|[ .]+-[ .]+|[([][ .]*(?!\d+-[a-z]+\)))(\d{1,4})(?![. _]?(?:-?й)?[. _]?(?:[Сс]езон|sez(?:on)?\b)(?![. _]?finali))(?:a|b|v\d|\.\d)?(?:\W|$)(?!movie|film|\d+)/gi)).pop() ||
                 middleTitle.match(/^(?:[([-][ .]?)?(\d{1,4})(?![. _]?(?:-?й)?[. _]?(?:[Сс]езон|sez(?:on)?\b)(?![. _]?finali))(?:a|b|v\d)?(?!\Wmovie|\Wfilm|-\d)(?:\W|$)/i);
 
             if (matches) {

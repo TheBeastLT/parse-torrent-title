@@ -402,4 +402,24 @@ describe("Parsing title", () => {
         const releaseName = "[GoGoAnime.net] One Piece episode - 436 [English Sub][480p].avi";
         expect(parse(releaseName)).to.deep.include({ title: "One Piece", episodes: [436] });
     });
+
+    it("should end the title before a dual numbered episode", () => {
+        const releaseName = "Dragon Ball Z - 058 (072) (Toonami) [P][C][marktrade].mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Dragon Ball Z" });
+    });
+
+    it("should keep a dashed part number in the title before a dual numbered episode", () => {
+        const releaseName = "Show - Part 2 - 05 (17).mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Show - Part 2" });
+    });
+
+    it("should end the title before an unspaced dual numbered episode", () => {
+        const releaseName = "[Orphan] Smash Hit! - 03(1.5) (DVD) [632E4274].mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Smash Hit!" });
+    });
+
+    it("should end the title before a dual numbered episode with a part letter", () => {
+        const releaseName = "Dragon Ball Z - 117A (132A) (TV3) [P][DragoonClawNZ].mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Dragon Ball Z", episodes: [132] });
+    });
 });
