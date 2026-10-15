@@ -354,7 +354,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
         return null;
     });
     parser.addHandler("episodes", /(?<!(?:audio|subtitles?|season|movie|film)\W*|\b\d{1,3}(?: -|\.) .*|\([^)]*)(?:^|[ ._])#(\d{1,3})(?![.,]?\d)(?=[ ._\])]|$)/i, array(integer), { skipIfAfter: ["date"] });
-    parser.addHandler("episodes", /第(\d{1,4})話/, array(integer));
+    parser.addHandler("episodes", /第(\d{1,4})[話话集]/, array(integer));
     parser.addHandler("episodes", /\bphase[ .](\d{2,3})\b/i, array(integer));
 
     // the parsed episode written as `12.5`: an episode inserted after 12, i.e. a recap or special

@@ -227,6 +227,26 @@ describe("Parsing episode", () => {
         expect(parse(releaseName)).to.deep.include({ title: "ハケンの品格", episodes: [2] });
     });
 
+    it("should detect a simplified chinese episode marker", () => {
+        const releaseName = "[Doomdos] - Clevatess Ⅱ - 第13话 - [1080p BILIBILI COM WEB-DL]";
+        expect(parse(releaseName)).to.deep.include({ title: "Clevatess Ⅱ", episodes: [13] });
+    });
+
+    it("should detect a simplified chinese episode marker after a chinese season", () => {
+        const releaseName = "[Doomdos] - 小P优优 第五季 中文配音 - 第23话 - [1080p BILIBILI COM WEB-DL]";
+        expect(parse(releaseName)).to.deep.include({ seasons: [5], episodes: [23] });
+    });
+
+    it("should detect a chinese ji episode marker in a bracketed episode title", () => {
+        const releaseName = "[银色子弹字幕组][名侦探柯南][第1209集 被盯上的是谁？][WEBRIP][简日双语MP4][1080P]";
+        expect(parse(releaseName)).to.deep.include({ title: "名侦探柯南", episodes: [1209] });
+    });
+
+    it("should detect a chinese ji episode marker before a codec", () => {
+        const releaseName = "【极影字幕·毁片党】完全相反的你和我 第17集 GB_CN AV1_opus 1080p";
+        expect(parse(releaseName)).to.deep.include({ title: "完全相反的你和我", episodes: [17] });
+    });
+
     it("should detect four digit episode range", () => {
         const releaseName = "[PrinceOtaku] One Piece - Egghead Island - Episodes 1123-1133 (English Dub) 720p";
         const result = parse(releaseName);

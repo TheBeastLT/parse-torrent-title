@@ -756,19 +756,42 @@ describe("Parsing season", () => {
     });
 
     it("should detect a dashed season with a dashed episode", () => {
-        expect(parse("South Park (1997) S-17 E-08 a Song of Ass and Fire 1080p Blu Ray x265 Rcvr")).to.deep.include({ title: "South Park", seasons: [17], episodes: [8] });
-        expect(parse("el.juego.del.calamar.-s-02-e-03.2024.-web-dl.-1080p-dual-lat")).to.deep.include({ title: "el juego del calamar", seasons: [2], episodes: [3] });
-        expect(parse("Prehistoric Planet (2022) S-02 E 01.720p Atvp Webrip x264 Galaxy TV")).to.deep.include({ title: "Prehistoric Planet", seasons: [2], episodes: [1] });
+        const releaseName = "South Park (1997) S-17 E-08 a Song of Ass and Fire 1080p Blu Ray x265 Rcvr";
+        expect(parse(releaseName)).to.deep.include({ title: "South Park", seasons: [17], episodes: [8] });
     });
 
-    it("should detect a dashed season at the end or before a disc", () => {
-        expect(parse("Peaky Blinders S-06")).to.deep.include({ title: "Peaky Blinders", seasons: [6] });
-        expect(parse("SANCTUARY S-3 DISC 5 dvdrip")).to.deep.include({ title: "SANCTUARY", seasons: [3] });
-        expect(parse("Greatest American Hero s-3 dvd rip")).to.deep.include({ title: "Greatest American Hero", seasons: [3] });
+    it("should detect a dashed season and episode in a dotted name", () => {
+        const releaseName = "el.juego.del.calamar.-s-02-e-03.2024.-web-dl.-1080p-dual-lat";
+        expect(parse(releaseName)).to.deep.include({ title: "el juego del calamar", seasons: [2], episodes: [3] });
+    });
+
+    it("should detect a dashed season before a spaced episode", () => {
+        const releaseName = "Prehistoric Planet (2022) S-02 E 01.720p Atvp Webrip x264 Galaxy TV";
+        expect(parse(releaseName)).to.deep.include({ title: "Prehistoric Planet", seasons: [2], episodes: [1] });
+    });
+
+    it("should detect a dashed season at the end", () => {
+        const releaseName = "Peaky Blinders S-06";
+        expect(parse(releaseName)).to.deep.include({ title: "Peaky Blinders", seasons: [6] });
+    });
+
+    it("should detect a dashed season before a disc", () => {
+        const releaseName = "SANCTUARY S-3 DISC 5 dvdrip";
+        expect(parse(releaseName)).to.deep.include({ title: "SANCTUARY", seasons: [3] });
+    });
+
+    it("should detect a dashed season before a dvd source", () => {
+        const releaseName = "Greatest American Hero s-3 dvd rip";
+        expect(parse(releaseName)).to.deep.include({ title: "Greatest American Hero", seasons: [3] });
+    });
+
+    it("should keep an explicit season over a later dashed model number", () => {
+        const releaseName = "Pimp My RIde S3 E02 Chevrolet S-10 Pickup";
+        expect(parse(releaseName)).to.deep.include({ seasons: [3], episodes: [2] });
     });
 
     it("should not detect a dashed model number as season", () => {
-        expect(parse("Chevrolet S-10 Pickup Restoration 1080p")).to.not.have.property("seasons");
-        expect(parse("Pimp My RIde S3 E02 Chevrolet S-10 Pickup")).to.deep.include({ seasons: [3], episodes: [2] });
+        const releaseName = "Chevrolet S-10 Pickup Restoration 1080p";
+        expect(parse(releaseName)).to.not.have.property("seasons");
     });
 });
