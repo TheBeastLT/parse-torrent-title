@@ -754,4 +754,21 @@ describe("Parsing season", () => {
         const releaseName = "Serie T01E05 HDTV 720p";
         expect(parse(releaseName)).to.deep.include({ seasons: [1], episodes: [5] });
     });
+
+    it("should detect a dashed season with a dashed episode", () => {
+        expect(parse("South Park (1997) S-17 E-08 a Song of Ass and Fire 1080p Blu Ray x265 Rcvr")).to.deep.include({ title: "South Park", seasons: [17], episodes: [8] });
+        expect(parse("el.juego.del.calamar.-s-02-e-03.2024.-web-dl.-1080p-dual-lat")).to.deep.include({ title: "el juego del calamar", seasons: [2], episodes: [3] });
+        expect(parse("Prehistoric Planet (2022) S-02 E 01.720p Atvp Webrip x264 Galaxy TV")).to.deep.include({ title: "Prehistoric Planet", seasons: [2], episodes: [1] });
+    });
+
+    it("should detect a dashed season at the end or before a disc", () => {
+        expect(parse("Peaky Blinders S-06")).to.deep.include({ title: "Peaky Blinders", seasons: [6] });
+        expect(parse("SANCTUARY S-3 DISC 5 dvdrip")).to.deep.include({ title: "SANCTUARY", seasons: [3] });
+        expect(parse("Greatest American Hero s-3 dvd rip")).to.deep.include({ title: "Greatest American Hero", seasons: [3] });
+    });
+
+    it("should not detect a dashed model number as season", () => {
+        expect(parse("Chevrolet S-10 Pickup Restoration 1080p")).to.not.have.property("seasons");
+        expect(parse("Pimp My RIde S3 E02 Chevrolet S-10 Pickup")).to.deep.include({ seasons: [3], episodes: [2] });
+    });
 });

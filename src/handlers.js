@@ -203,6 +203,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("seasons", /(?<![a-z])t(\d{1,3})(?:[ex]+|$)/i, array(integer), { remove: true });
     parser.addHandler("seasons", /(?:(?:\bthe\W)?\bcomplete)?(?:[^\w'’]|^)so?([01]?[0-5]?[1-9])(?:[\Wex]|\d{2}\b)/i, array(integer), { skipIfAlreadyFound: false });
     parser.addHandler("seasons", /(?:[^\w-]|^)s(\d{1,2})$/i, array(integer));
+    parser.addHandler("seasons", /(?:\W|^)s-(\d{1,2})(?=[. -]*e[. -]?\d{1,3}\b|[. ]+(?:d(?:isc)?[. -]?\d|dvd)\b|[. ]*$)/i, array(integer));
     parser.addHandler("seasons", /(?:so?|t)(\d{1,2})[. ]?[xх-]?[. ]?(?:e|x|х|ep|-|\.)[. ]?\d{1,4}(?:[abc]|v0?[1-4]|\D|$)/i, array(integer));
     parser.addHandler("seasons", /(?:(?:\bthe\W)?\bcomplete\W)?(?:\W|^)(\d{1,2})[. ]?(?:st|nd|rd|th)[. ]*season/i, array(integer));
     parser.addHandler("seasons", /第[ ]?([0-9０-９]{1,2}|[一二三四五六七八九十]{1,3})[ ]?季/, array(cjkInteger), { remove: true, skipFromTitle: true });
