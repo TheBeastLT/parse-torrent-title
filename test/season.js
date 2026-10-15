@@ -739,4 +739,19 @@ describe("Parsing season", () => {
         const releaseName = "[晚街与灯][Re Zero kara Hajimeru Isekai Seikatsu][4th - 16][总第82][WebRip][1080P_AVC_AAC][简日双语内嵌].mp4";
         expect(parse(releaseName)).to.deep.include({ title: "Re Zero kara Hajimeru Isekai Seikatsu", seasons: [4], episodes: [16] });
     });
+
+    it("should not detect a codec glued to an hdr tag as season", () => {
+        const releaseName = "The Tomorrow War 2021 REPACK UHD WebRip 1080p DD Atmos 5 1 DoVi HDR10x265-SM737";
+        expect(parse(releaseName)).to.not.have.any.keys("seasons", "episodes");
+    });
+
+    it("should not detect a release group ending in t and a number as season", () => {
+        expect(parse("The Sisterhood of the Traveling Pants 2 2008 1080p BluRay x264-nikt0")).to.not.have.property("seasons");
+        expect(parse("Iron Man 2008.2160p.60fps.Ai-Remaster.RIFE4.18.DV.HDR10.Atmos-Acemt01")).to.not.have.property("seasons");
+    });
+
+    it("should still detect a spanish temporada short marker", () => {
+        const releaseName = "Serie T01E05 HDTV 720p";
+        expect(parse(releaseName)).to.deep.include({ seasons: [1], episodes: [5] });
+    });
 });
