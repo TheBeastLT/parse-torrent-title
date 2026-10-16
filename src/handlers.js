@@ -206,7 +206,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("seasons", /(?:\W|^)s-(\d{1,2})(?=[. -]*e[. -]?\d{1,3}\b|[. ]+(?:d(?:isc)?[. -]?\d|dvd)\b|[. ]*$)/i, array(integer));
     parser.addHandler("seasons", /(?:so?|t)(\d{1,2})[. ]?[xх-]?[. ]?(?:e|x|х|ep|-|\.)[. ]?\d{1,4}(?:[abc]|v0?[1-4]|\D|$)/i, array(integer));
     parser.addHandler("seasons", /(?:(?:\bthe\W)?\bcomplete\W)?(?:\W|^)(\d{1,2})[. ]?(?:st|nd|rd|th)[. ]*season/i, array(integer));
-    parser.addHandler("seasons", /第[ ]?([0-9０-９]{1,2}|[一二三四五六七八九十]{1,3})[ ]?季/, array(cjkInteger), { remove: true, skipFromTitle: true });
+    parser.addHandler("seasons", /第[ ]?([0-9０-９]{1,2}|[一二三四五六七八九十]{1,3})[ ]?(?:季|期(?=.*(?:[\u3040-\u30ff]|第\d+[話话])))(?:[(（][^)）]*[)）])?/, array(cjkInteger), { remove: true, skipFromTitle: true });
     parser.addHandler("seasons", /(?<=\[)(\d{1,2})(?:st|nd|rd|th)(?=[. ]*-[. ]*\d{1,4}\])/i, array(integer), { remove: true });
     parser.addHandler("seasons", /^(\d{1,2})[. ]season$/i, array(integer));
     parser.addHandler("seasons", /(?:\D|^)(\d{1,2})[Xxх](?!26[45]\b)\d{1,3}(?:\D|$)/, array(integer));
@@ -235,6 +235,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     });
 
     // Episode
+    parser.addHandler("episodes", /\bS\d{1,2} \d{1,3}-(\d{3})(?=\.\w{2,4}$)/i, array(integer));
     parser.addHandler("episodes", /(?<=[a-z]\.)(?<!sezon\.)\d{1,2}\.(\d{1,3}(?:-\d{1,3})?)\.ser[ijya]{0,3}(?=\.)/i, range);
     parser.addHandler("episodes", /(?<=[a-z]\.)\d{1,2}\.ser\.(\d{1,3})(?=\.)/i, array(integer));
     parser.addHandler("episodes", /(?:[\W\d]|^)e[ .]?[([]?(\d{1,3}(?:[ .-]*(?:[&+]|e){1,2}[ .]?\d{1,3})+)(?:\W|$)/i, range);
@@ -357,7 +358,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
         return null;
     });
     parser.addHandler("episodes", /(?<!(?:audio|subtitles?|season|movie|film)\W*|\b\d{1,3}(?: -|\.) .*|\([^)]*)(?:^|[ ._])#(\d{1,3})(?![.,]?\d)(?=[ ._\])]|$)/i, array(integer), { skipIfAfter: ["date"] });
-    parser.addHandler("episodes", /第(\d{1,4})[話话集]/, array(integer));
+    parser.addHandler("episodes", /第(\d{1,4}(?:-\d{1,4})?)[話话集]/, range);
     parser.addHandler("episodes", /\bphase[ .](\d{2,3})\b/i, array(integer));
 
     // the parsed episode written as `12.5`: an episode inserted after 12, i.e. a recap or special

@@ -730,6 +730,16 @@ describe("Parsing season", () => {
         expect(parse(releaseName)).to.deep.include({ seasons: [4], episodes: [5] });
     });
 
+    it("should detect a japanese season marker with its season name", () => {
+        const releaseName = "[アニメ BD] みなみけ 第2期(おかわり) 第01話「おかわり」(1920x1080 HEVC 10bit FLAC softSub(chi+eng) chap).mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "みなみけ", seasons: [2], episodes: [1] });
+    });
+
+    it("should detect a japanese season marker followed by a kana name", () => {
+        const releaseName = "[アニメ BD] みなみけ 第4期(ただいま)「メニュー画面 4」(1920x1080 HEVC 10bit FLAC).mkv";
+        expect(parse(releaseName)).to.deep.include({ seasons: [4] });
+    });
+
     it("should not detect a chinese issue number as season", () => {
         const releaseName = "奔跑吧 第5期 20231020.mp4";
         expect(parse(releaseName)).to.not.have.property("seasons");

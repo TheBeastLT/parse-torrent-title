@@ -1528,4 +1528,24 @@ describe("Parsing episode", () => {
         const releaseName = "БК_1сезон 261-263.mp4";
         expect(parse(releaseName)).to.deep.include({ seasons: [1], episodes: [261, 262, 263] });
     });
+
+    it("should detect the absolute episode of a season numbered past its first part", () => {
+        const releaseName = "S02_56-082.avi";
+        expect(parse(releaseName)).to.deep.include({ seasons: [2], episodes: [82] });
+    });
+
+    it("should detect the absolute episode of a first season episode", () => {
+        const releaseName = "S01_01-001.avi";
+        expect(parse(releaseName)).to.deep.include({ seasons: [1], episodes: [1] });
+    });
+
+    it("should detect an episode range after a season without an extension", () => {
+        const releaseName = "Show S02 01-026";
+        expect(parse(releaseName)).to.deep.include({ seasons: [2], episodes: Array.from({ length: 26 }, (_, i) => i + 1) });
+    });
+
+    it("should detect a japanese double episode range marker", () => {
+        const releaseName = "[アニメ BD] ギャラクシーエンジェル 第2期(Z) 第09-10話「GA解析懐石／お好み♥復讐ランチ」(1440x1072 HEVC 10bit FLAC softSub(chi+eng) chap).mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "ギャラクシーエンジェル", seasons: [2], episodes: [9, 10] });
+    });
 });
