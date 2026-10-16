@@ -1493,4 +1493,39 @@ describe("Parsing episode", () => {
         const releaseName = "Dragon Ball Z - 155 (170) (Toonami Midnight Run) [P][C][No NEP][RetroCCN].mkv";
         expect(parse(releaseName)).to.deep.include({ title: "Dragon Ball Z", episodes: [170] });
     });
+
+    it("should detect a glued ova episode and keep the ova word in the title", () => {
+        const releaseName = "[D3] Shingeki no Kyojin OVA3 (576p Hi10 FLAC).mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Shingeki no Kyojin OVA", episodes: [3] });
+    });
+
+    it("should detect a glued zero padded ova episode", () => {
+        const releaseName = "Girls und Panzer OVA01.mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Girls und Panzer OVA", episodes: [1] });
+    });
+
+    it("should detect a dash separated oad episode with an episode letter", () => {
+        const releaseName = "Attack on Titan - OADE01 - Ilse's Notebook.mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Attack on Titan - OAD", episodes: [1] });
+    });
+
+    it("should detect a dash separated ova episode and end the title before its number", () => {
+        const releaseName = "[Doki] To LOVE-Ru Darkness - OVA 01 (1280x720 Hi10P AAC) [12345678].mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "To LOVE-Ru Darkness - OVA", episodes: [1] });
+    });
+
+    it("should detect a numbered special after a season", () => {
+        const releaseName = "[Judas] High School DxD S1 - SP01.mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "High School DxD", seasons: [1], episodes: [1] });
+    });
+
+    it("should detect a dash separated numbered special", () => {
+        const releaseName = "[FFF] Highschool DxD - SP05 [BD][1080p-FLAC][AF78DBF4].mkv";
+        expect(parse(releaseName)).to.deep.include({ episodes: [5] });
+    });
+
+    it("should detect an episode range after a russian season glued to its number", () => {
+        const releaseName = "БК_1сезон 261-263.mp4";
+        expect(parse(releaseName)).to.deep.include({ seasons: [1], episodes: [261, 262, 263] });
+    });
 });

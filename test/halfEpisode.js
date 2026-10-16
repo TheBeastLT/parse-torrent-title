@@ -403,4 +403,9 @@ describe("Parsing half episode", () => {
 
         expect(parse(releaseName)).to.not.have.property("halfEpisode");
     });
+
+    it("should detect the oad episode labelled with a half episode instead of the half episode", () => {
+        const releaseName = "[Cat66] Shingeki no Kyojin - 3.5 OAD1 - Ilse's Notebook (BD 1920x1080 x265 FLAC).mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Shingeki no Kyojin", episodes: [1] }).and.not.have.property("halfEpisode");
+    });
 });

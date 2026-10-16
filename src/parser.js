@@ -191,7 +191,7 @@ class Parser {
     }
 
     parse(title) {
-        title = title.replace(/_+/g, " ");
+        title = title.replace(/_+/g, " ").replace(/^\[([^[\]]+)\[(?=\s)/, "[$1]");
         const result = {};
         const matched = {};
         const context = { title, result, matched };

@@ -139,4 +139,29 @@ describe("Parsing group", () => {
 
         expect(parse(releaseName)).to.not.have.property("group");
     });
+
+    it("should not detect a dash separated numbered special as group", () => {
+        const releaseName = "[Judas] High School DxD S1 - SP01.mkv";
+        expect(parse(releaseName)).to.deep.include({ group: "Judas" });
+    });
+
+    it("should not detect a dash separated ova as group after a bracket group", () => {
+        const releaseName = "[Judas] High School DxD S3 - OVA.mkv";
+        expect(parse(releaseName)).to.deep.include({ group: "Judas" });
+    });
+
+    it("should not detect a dash separated ova as group", () => {
+        const releaseName = "Girls Und Panzer - OVA.mkv";
+        expect(parse(releaseName)).to.not.have.property("group");
+    });
+
+    it("should not detect a chinese episode marker as group", () => {
+        const releaseName = "Soul Land - S14E04 - 第225集.mkv";
+        expect(parse(releaseName)).to.not.have.property("group");
+    });
+
+    it("should detect group from a bracket closed with an opening bracket", () => {
+        const releaseName = "[Anime Time[ Attack On Titan OAD - Lost Girls 01.mkv";
+        expect(parse(releaseName)).to.deep.include({ group: "Anime Time", title: "Attack On Titan OAD - Lost Girls 01" });
+    });
 });

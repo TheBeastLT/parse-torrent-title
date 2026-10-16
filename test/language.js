@@ -1204,4 +1204,10 @@ describe("Parsing language", () => {
         const releaseName = "X-Men Complete 13 Movie Collection Sci-Fi 2000 - 2020 Eng Rus Multi-Subs 1080p [H264-mp4]";
         expect(parse(releaseName)).to.deep.include({ languages: ["multi subs", "english", "russian"] });
     });
+
+    it("should not detect dual audio from an exclaimed show name", () => {
+        const releaseName = "[km&sxales] Dual! Parallel Trouble Adventures 01 [DVD 576p x264 AC3][80EE2516].mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Dual! Parallel Trouble Adventures 01" })
+            .and.not.have.any.keys("languages", "dubbed");
+    });
 });

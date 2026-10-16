@@ -164,7 +164,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("audioChannels", /(?:\b(?:DTS(?:-?HD)?(?:[ .-]?MA)?|E?AC-?3|AAC|TrueHD|FLAC|Opus|L?PCM)[ .-]?|[[(])([257]\.[01])(?:ch)?(?=[\]) .,_-]|$)/i, none, { remove: true });
 
     // Group
-    parser.addHandler("group", /- ?(?!\d+$|S\d+|\d+x|ep?\d+|[^[]+]$)([^\-. []+[^\-. [)\]\d][^\-. [)\]]*)(?:\[[\w.-]+])?(?=\.\w{2,4}$|$)/i);
+    parser.addHandler("group", /- ?(?!\d+$|S\d+|\d+x|ep?\d+|[^[]+]$|(?:OVA|OAV|OAD|ONA|SP|Specials?)\d*(?:\.\w{2,4})?$|第\d+[話话集])([^\-. []+[^\-. [)\]\d][^\-. [)\]]*)(?:\[[\w.-]+])?(?=\.\w{2,4}$|$)/i);
 
     // Container
     parser.addHandler("container", /\.?[[(]?\b(MKV|AVI|MP4|WMV|MPG|MPEG)\b[\])]?/i, lowercase);
@@ -274,6 +274,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("episodes", /(?:\b(?!(?<=(?:^|[^a-z])[a-z]\.)[ée]\.\s*[1-9])[ée]p?(?:isode)?|[Ээ]пизод|[Сс]ер(?:ии|ия|\.)?|seri[jy]a|caa?p(?:itulo)?|epis[oó]dio|epizoda|odcinek|avsnitt|aflevering|folge|jakso|puntata)[. ]?[-:#№]?[. ]?(\d{1,4})(?:[abc]|v0?[1-4]|\W|$)/i, array(integer));
     parser.addHandler("episodes", /\d{1,2}\.sezon\.(\d{1,3}\.\d{1,3})\.ser/i, range);
     parser.addHandler("episodes", /\b(\d{1,3}-\d{1,3})[ ._]*(?:ser(?:i?[iyj]a|\b)|[Сс]ер(?:ии|ия|\.)?)/i, range);
+    parser.addHandler("episodes", /(?<=\d[ ._]?[Сс]езон[ ._]+)(\d{1,4}-\d{1,4})(?![\d-])/, range);
     parser.addHandler("episodes", /\b(\d{1,3})(?:-?(?:я|ja|ya))?[ ._-]*(?:ser(?:i?[iyj]a|\b)|[Сс]ер(?:ии|ия|\.)?)/i, array(integer));
     parser.addHandler("episodes", /(?:\D|^)\d{1,2}[. ]?[Xxх][. ]?(?!26[45]\b)(\d{1,3})(?:[abc]|v0?[1-4]|\D|$)/, array(integer));
     parser.addHandler("episodes", /^x(?!26[45]\b|(?:480|576|720|1080|2160)\b)\d{1,2}(\d{2})(?= - )/i, array(integer));
@@ -292,7 +293,9 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("episodes", new RegExp(`(?<=^(?:\\[[^\\]]+\\])?[a-z]{3,})(?<!part|pt|cd|dvd|dis[ck]|vol|title|season)(0\\d{1,2})(?=\\.(?:${VIDEO_EXTENSIONS}|${SUBTITLE_EXTENSIONS})$)`, "i"), array(integer));
     parser.addHandler("episodes", /\b(\d{1,4})\.?[ ._-]*b[öo]l[üu]m\b/i, array(integer));
     parser.addHandler("episodes", /\bb[öo]l[üu]m[ ._-]*(\d{1,4})\b/i, array(integer));
-    parser.addHandler("episodes", /\bOVA[ ._]+(\d{1,2})(?:v\d)?\b(?![ .]*[-~&+.]\d)/i, array(integer), { skipFromTitle: true });
+    parser.addHandler("episodes", /[ .]-[ .]\d{1,3}\.5[ ._]+(?:OVA|OAV|OAD|ONA)[ ._]*E?0*(\d{1,2})\b/i, array(integer));
+    parser.addHandler("episodes", /(?<=(?<!\d,\d+[ ._]*)\b(?:OVA|OAV|OAD|ONA)[ ._]*)E?0*(\d{1,2})(?:v\d)?\b(?![ .]*[-~&+.]\d)/i, array(integer));
+    parser.addHandler("episodes", /(?<=(?:^|[ ._-])SP)0*(\d{1,2})(?=[ ._]*(?:[[(]|\.\w{2,4}$|$))/i, array(integer));
 
     parser.addHandler("episodes", /^(\d{3,4})[. ]+-[. ]+(?=[^\W\d])/, array(integer), { remove: true, skipIfBefore: ["year"] });
 
@@ -403,7 +406,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("languages", /\bmulti(?:ple)?[ .-]*(?:lang(?:uages?)?|audio|VF2)?\b/i, uniqConcat(value("multi audio")), { skipIfAlreadyFound: false });
     parser.addHandler("languages", /\btri(?:ple)?[ .-]*(?:audio|dub\w*)\b/i, uniqConcat(value("multi audio")), { skipIfAlreadyFound: false });
     parser.addHandler("languages", /\bdual[ .-]*(?:au?$|[aá]udio|line)\b/i, uniqConcat(value("dual audio")), { skipIfAlreadyFound: false });
-    parser.addHandler("languages", /\bdual\b(?![ .-]*sub)/i, uniqConcat(value("dual audio")), { skipIfAlreadyFound: false });
+    parser.addHandler("languages", /\bdual\b(?![ .-]*sub|!)/i, uniqConcat(value("dual audio")), { skipIfAlreadyFound: false });
     parser.addHandler("languages", /\bengl?(?:sub[A-Z]*)?\b/i, uniqConcat(value("english")), { skipIfAlreadyFound: false });
     parser.addHandler("languages", /\beng?sub[A-Z]*\b/i, uniqConcat(value("english")), { skipIfAlreadyFound: false });
     parser.addHandler("languages", /\bing(?:l[eéê]s)?\b/i, uniqConcat(value("english")), { skipIfAlreadyFound: false });
