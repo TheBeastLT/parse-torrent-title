@@ -775,6 +775,14 @@ describe("Parsing season", () => {
         expect(parse("The.Naked.Gun.2025.PLSUB.Ai.1080p.WEB-DL.H264.DDP5.1.Atmos-S56.mkv")).to.not.have.property("seasons");
     });
 
+    it("should not detect a bracketed release group of s and a number after an audio tag as season", () => {
+        expect(parse("Armand (2024) [1080p] [WEB-DL] [H264] [DD5.1-S56] [Lektor PL] [ToAlien]")).to.not.have.property("seasons");
+    });
+
+    it("should detect a bracketed season range ending in a two digit season", () => {
+        expect(parse("Shameless (US) 2011 - 2021 [S01-S11] [720p.MAX.WEB-DL.HEVC.E-AC-3-FT][Lektor PL][Alusia]")).to.deep.include({ seasons: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] });
+    });
+
     it("should detect a single digit season after a dash before the extension", () => {
         expect(parse("04. Horrible Histories-S3.mp4")).to.deep.include({ seasons: [3] });
     });
