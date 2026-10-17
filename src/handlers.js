@@ -200,8 +200,9 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("seasons", /(?:(?:\bthe\W)?\bcomplete\W)?(?<!\bopen[ ._])(?:saison|seizoen|sezona|sezon(?:SO?)?|stagione|seasons?|series|temp(?:orada)?|sesong|s[äæ]song|sæson|staffel):?[. ]?(\d{1,2})(?!\d|(?<=seasons\W?\d+)[. ]?(?:episodes?|eps)\b(?![. -]*\d))/i, array(integer));
     parser.addHandler("seasons", /[Сс]езон:?[. _]?№?(\d{1,2})(?!\d)/i, array(integer));
     parser.addHandler("seasons", /(?:\D|^)(\d{1,2})Â?[°ºªa]?[. ]*temporada/i, array(integer), { remove: true });
-    parser.addHandler("seasons", /(?<![a-z])t(\d{1,3})(?:[ex]+|$)/i, array(integer), { remove: true });
-    parser.addHandler("seasons", /(?:(?:\bthe\W)?\bcomplete)?(?:[^\w'’]|^)so?([01]?[0-5]?[1-9])(?:[\Wex]|\d{2}\b)/i, array(integer), { skipIfAlreadyFound: false });
+    parser.addHandler("seasons", /(?<![a-z])t(\d{1,3})[ex]+/i, array(integer), { remove: true });
+    parser.addHandler("seasons", /(?<=\s)(?<!\bby\s)t(\d{1,2})$/i, array(integer), { remove: true });
+    parser.addHandler("seasons", /(?:(?:\bthe\W)?\bcomplete)?(?!-so?[1-9]\d\.[a-z\d]{2,4}$)(?:[^\w'’]|^)so?([01]?[0-5]?[1-9])(?:[\Wex]|\d{2}\b)/i, array(integer), { skipIfAlreadyFound: false });
     parser.addHandler("seasons", /(?:[^\w-]|^)s(\d{1,2})$/i, array(integer));
     parser.addHandler("seasons", /(?:\W|^)s-(\d{1,2})(?=[. -]*e[. -]?\d{1,3}\b|[. ]+(?:d(?:isc)?[. -]?\d|dvd)\b|[. ]*$)/i, array(integer));
     parser.addHandler("seasons", /(?:so?|t)(\d{1,2})[. ]?[xх-]?[. ]?(?:e|x|х|ep|-|\.)[. ]?\d{1,4}(?:[abc]|v0?[1-4]|\D|$)/i, array(integer));

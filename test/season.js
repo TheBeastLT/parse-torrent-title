@@ -755,6 +755,34 @@ describe("Parsing season", () => {
         expect(parse(releaseName)).to.not.have.any.keys("seasons", "episodes");
     });
 
+    it("should not detect a release group of t and a number after a dash as season", () => {
+        expect(parse("Hell.Fest.2018.FRENCH.BDRip.XviD-T911")).to.not.have.property("seasons");
+    });
+
+    it("should not detect an uploader tag of t and a number as season", () => {
+        expect(parse("Le nostre anime di notte 2017 1080p iTALiAN ENGLiSH Subbed WEBMux x265 AC3 by T7")).to.not.have.property("seasons");
+    });
+
+    it("should not detect a release group ending in a digit, t and a number as season", () => {
+        expect(parse("Movie.2019.1080p.AMZN.WEBRip.DDP5.1.x264-V3T0")).to.not.have.property("seasons");
+    });
+
+    it("should detect a spanish season of t and a number ending a folder name", () => {
+        expect(parse("Liga de la Justicia Ilimitada T1")).to.deep.include({ seasons: [1] });
+    });
+
+    it("should not detect a release group of s and a number after a dash before the extension as season", () => {
+        expect(parse("The.Naked.Gun.2025.PLSUB.Ai.1080p.WEB-DL.H264.DDP5.1.Atmos-S56.mkv")).to.not.have.property("seasons");
+    });
+
+    it("should detect a single digit season after a dash before the extension", () => {
+        expect(parse("04. Horrible Histories-S3.mp4")).to.deep.include({ seasons: [3] });
+    });
+
+    it("should detect a season of s and a number ending the title", () => {
+        expect(parse("Have I Got A Bit More News For You S56")).to.deep.include({ seasons: [56] });
+    });
+
     it("should not detect a release group ending in t and a number as season", () => {
         expect(parse("The Sisterhood of the Traveling Pants 2 2008 1080p BluRay x264-nikt0")).to.not.have.property("seasons");
         expect(parse("Iron Man 2008.2160p.60fps.Ai-Remaster.RIFE4.18.DV.HDR10.Atmos-Acemt01")).to.not.have.property("seasons");
