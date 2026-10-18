@@ -61,7 +61,7 @@ exports.rangeUpTo = input => {
 exports.yearRange = input => {
     const parts = input.split(/\D+/);
     const start = parts[0] && parseInt(parts[0], 10);
-    let end = parts[1] && parseInt(parts[1], 10);
+    let end = parts.length > 1 && parseInt(parts[parts.length - 1], 10);
 
     if (!end) {
         return start;

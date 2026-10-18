@@ -50,4 +50,34 @@ describe("Paring year", () => {
         const releaseName = "Anatomia De Grey - Temporada 19 [HDTV][Cap.1905][Castellano][www.AtomoHD.nu].avi";
         expect(parse(releaseName)).to.not.have.property("year");
     });
+
+    it("should detect a bracketed list of years as a year range", () => {
+        const releaseName = "Багровые реки 1,2 / Les Rivières pourpres 1,2 [2000, 2004 г., триллер, криминал, детектив, DVDRip]";
+        expect(parse(releaseName)).to.deep.include({ year: "2000-2004" });
+    });
+
+    it("should detect a bracketed list of many years as a year range", () => {
+        const releaseName = "Бетховен 1,2,3,4,5,6 / Beethoven 1,2,3,4,5,6 [1992,1993,2000,2001,2003,2008 г., Комедия, DVDRip]";
+        expect(parse(releaseName)).to.deep.include({ year: "1992-2008" });
+    });
+
+    it("should detect an em dash year range", () => {
+        const releaseName = "Назад в будущее 1, 2, 3 / Back to the Future 1, 2, 3 [1985—1990, США, Комедии, Приключения]";
+        expect(parse(releaseName)).to.deep.include({ year: "1985-1990" });
+    });
+
+    it("should detect a single bracketed year before other tags", () => {
+        const releaseName = "4 дня в мае / 4 Tage im Mai [2011, BDRip]";
+        expect(parse(releaseName)).to.deep.include({ year: 2011 });
+    });
+
+    it("should detect a space separated list of years as a year range", () => {
+        const releaseName = "Перевозчик 1,2,3 / The Transporter 1,2,3 [2002 2005 2008, BDRip] Dub";
+        expect(parse(releaseName)).to.deep.include({ year: "2002-2008" });
+    });
+
+    it("should detect a slash separated list of years as a year range", () => {
+        const releaseName = "Миссия: Невыполнима [Трилогия] / Mission: Impossible [Trilogy] [1996 / 2000 / 2006 г., боевик]";
+        expect(parse(releaseName)).to.deep.include({ year: "1996-2006" });
+    });
 });

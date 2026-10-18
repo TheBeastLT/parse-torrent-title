@@ -142,6 +142,33 @@ describe("Parsing complete collection", () => {
         expect(parse(releaseName)).to.deep.include({ title: "Terminátor", complete: true, languages: ["english", "czech"] });
     });
 
+    it("should detect a russian dilogy as complete", () => {
+        const releaseName = "Ночь в музее. Дилогия / Night at the Museum. Dilogy [2006 / 2009 г. фэнтези, США, комедия]";
+        expect(parse(releaseName)).to.deep.include({ complete: true });
+    });
+
+    it("should keep the english title of a russian trilogy", () => {
+        const releaseName = "Ледниковый период [Трилогия] / Ice Age [Trilogy] (2002-2009) HDRip- BDRip-AVC 720p";
+        expect(parse(releaseName)).to.deep.include({ title: "Ice Age", complete: true });
+    });
+
+    it("should detect a russian count of films as complete", () => {
+        const releaseName = "Короткие истории о любви - 9 фильмов [Драма, SATRip] [Израиль]";
+        expect(parse(releaseName)).to.deep.include({ title: "Короткие истории о любви", complete: true });
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should detect a bracketed russian count of films as complete", () => {
+        const releaseName = "Мистер Питкин / Mister Pitkin [12 фильмов из 12] (1953-1966) DVDRip от MediaClub";
+        expect(parse(releaseName)).to.deep.include({ complete: true });
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect a word film without a count as complete", () => {
+        const releaseName = "Надо снимать фильмы о любви (2024) WEBRip-AVC от ExKinoRay";
+        expect(parse(releaseName)).to.not.have.property("complete");
+    });
+
     it("should remove czech kolekce filmů from title", () => {
         const releaseName = "Harry Potter Kolekce filmů CZ";
         expect(parse(releaseName)).to.deep.include({ title: "Harry Potter", complete: true });
