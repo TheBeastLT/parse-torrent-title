@@ -840,4 +840,15 @@ describe("Parsing season", () => {
         const releaseName = "Chevrolet S-10 Pickup Restoration 1080p";
         expect(parse(releaseName)).to.not.have.property("seasons");
     });
+
+    it("should not keep a spelled season range in the title before the same S range", () => {
+        const releaseName = "Game of Thrones Season 1-8 S01-S08 2160 (4K HDR10 AV1) (Opus 5.1 384bit)";
+        expect(parse(releaseName)).to.deep.include({ title: "Game of Thrones", seasons: [1, 2, 3, 4, 5, 6, 7, 8] });
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not keep a spaced spelled seasons range in the title before the same S range", () => {
+        const releaseName = "Game of Thrones Seasons 1 - 8 S01-S08 1080p";
+        expect(parse(releaseName)).to.deep.include({ title: "Game of Thrones", seasons: [1, 2, 3, 4, 5, 6, 7, 8] });
+    });
 });
