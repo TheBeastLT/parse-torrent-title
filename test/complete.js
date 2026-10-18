@@ -137,6 +137,21 @@ describe("Parsing complete collection", () => {
         expect(parse(releaseName)).to.deep.include({ title: "Halloween", complete: true });
     });
 
+    it("should remove czech kolekce from title", () => {
+        const releaseName = "Terminátor - Kolekce CZ/EN 2160p";
+        expect(parse(releaseName)).to.deep.include({ title: "Terminátor", complete: true, languages: ["english", "czech"] });
+    });
+
+    it("should remove czech kolekce filmů from title", () => {
+        const releaseName = "Harry Potter Kolekce filmů CZ";
+        expect(parse(releaseName)).to.deep.include({ title: "Harry Potter", complete: true });
+    });
+
+    it("should not detect the kolekcia release group as complete", () => {
+        const releaseName = "Criminal 2016.480p.BluRay.x264.AC3-KOLEKCiA";
+        expect(parse(releaseName)).to.not.have.property("complete");
+    });
+
     it("should detect trailing complete and keep it out of the title", () => {
         const releaseName = "Gurren Lagann Complete [BD 1080p]";
 

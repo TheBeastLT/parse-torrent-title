@@ -399,7 +399,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("complete", /(?<![([{【][^)\]}】]*|\bbad[ ._-]?)\b(?:(?:full|complete|unofficial)[ ._-]?)?batch\b/i, boolean, { remove: true, skipFromTitle: true, skipIfAlreadyFound: false });
     parser.addHandler("complete", /\bcomplet[eo]s?\b(?=[ ._-]*(?:$|[[\]()]))/i, boolean, { skipIfAlreadyFound: false });
     parser.addHandler("complete", /\b(collection|completa)\b/i, boolean, { skipFromTitle: true });
-    parser.addHandler("complete", /\bkolekcja\b(?:\Wfilm(?:y|ów|ow)?)?/i, boolean, { remove: true });
+    parser.addHandler("complete", /\bkolekc(?:ja|e)\b(?:\Wfilm(?:y|ów|ow|ů|u)?)?/i, boolean, { remove: true });
     parser.addHandler("complete", /duology|trilogy|quadr[oi]logy|tetralogy|pentalogy|hexalogy|heptalogy|anthology/i, boolean, { skipIfAlreadyFound: false });
     parser.addHandler("complete", /\bsaga\b/i, boolean, { skipFromTitle: true });
 
