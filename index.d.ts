@@ -34,6 +34,7 @@ declare namespace ParseTorrentTitle {
         resolution?: string;
         extended?: boolean;
         unrated?: boolean;
+        uncut?: boolean;
         proper?: boolean;
         repack?: boolean;
         convert?: boolean;

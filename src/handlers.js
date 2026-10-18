@@ -15,6 +15,9 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     // Site
     parser.addHandler("site", /^(www?[., ][\w-]+[. ][\w-]+(?:[. ][\w-]+)?)\s+-\s*/i, none, { skipFromTitle: true, remove: true });
 
+    // Uncut
+    parser.addHandler("uncut", /(?<=\w[ ._-]+)[[(]?\buncut\b[\])]?(?=[ ._-]*(?:[[(]?(?:19\d|20[012])\d\b|\d{3,4}p\b|S\d|$))/i, boolean);
+
     // Episode code
     parser.addHandler("episodeCode", /[[(]([a-z0-9]{8}|[A-Z0-9]{8})[\])](?=\.[a-zA-Z0-9]{1,5}$|$)/, uppercase, { remove: true });
     parser.addHandler("episodeCode", /\[(?=[A-Z]+\d|\d+[A-Z])([A-Z0-9]{8})]/, uppercase, { remove: true });

@@ -180,6 +180,7 @@ describe("Random releases", () => {
         const releaseName = "You.[Uncut].S01.SweSub.1080p.x264-Justiso";
         expect(parse(releaseName)).to.deep.equal({
             title: "You",
+            uncut: true,
             seasons: [1],
             season: 1,
             languages: ["swedish"],

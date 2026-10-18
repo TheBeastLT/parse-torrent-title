@@ -92,6 +92,7 @@ Only fields that were found are present in the result, except for `title`, which
 | `region`        | `string`   | `"R5"`                                                                                          |
 | `extended`      | `boolean`  |                                                                                                 |
 | `unrated`       | `boolean`  | also set for uncensored releases                                                                |
+| `uncut`         | `boolean`  | only when uncut ends the title before its year, resolution or season                            |
 | `remastered`    | `boolean`  |                                                                                                 |
 | `proper`        | `boolean`  |                                                                                                 |
 | `repack`        | `boolean`  | also set for rerips                                                                             |
