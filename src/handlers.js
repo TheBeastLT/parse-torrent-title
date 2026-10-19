@@ -56,6 +56,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("year", /[([*]?[ .]?(?<!\bE)((?:19\d|20[012])\d[ .]?-[ .]?(?:19\d|20[012])\d)(?:\s?[*)\]])?/, yearRange, { remove: true });
     parser.addHandler("year", /[([*][ .]?((?:19\d|20[012])\d[ .]?-[ .]?\d{2})(?:\s?[*)\]])?/, yearRange, { remove: true });
     parser.addHandler("year", /[([][ .]?((?:19\d|20[012])\d(?:(?:[ .]?[,—–/][ .]?|[ .])(?:19\d|20[012])\d)+)(?!\d)/, yearRange, { remove: true });
+    parser.addHandler("year", /[([]((?:19\d|20[012])\d(?:[)\]][ .]*&(?:(?!\bS\d)[^()[\]])*[([](?:19\d|20[012])\d)+)[)\]]/i, yearRange, { remove: true });
     parser.addHandler("year", /(?<=[ .](?:19\d|20[012])\d[ .]+)[([]((?:19\d|20[012])\d)[)\]]/, integer, { remove: true });
     parser.addHandler("year", /[([*]?(?!^)(?<!\d|Cap[. ]?|\bep[. ]?|\bE|\bS(?=\d{4}E\d))((?:19\d|20[012])\d)(?!\d|kbps)[*)\]]?/i, integer, { remove: true });
     parser.addHandler("year", /^[([]?((?:19\d|20[012])\d)(?!\d|kbps)[)\]]?(?![ ._]+(?:S\d{1,2}[ .]?E\d|E\d{1,3}\b))/i, integer, { remove: true });
@@ -408,6 +409,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("complete", /\bkolekc(?:ja|e)\b(?:\Wfilm(?:y|ów|ow|ů|u)?)?/i, boolean, { remove: true });
     parser.addHandler("complete", /(?<![\p{L}\d])\d{1,3}[ .]+фильм(?:ов|а)(?!\p{L})/iu, boolean, { remove: true });
     parser.addHandler("complete", /duology|trilogy|quadr[oi]logy|tetralogy|pentalogy|hexalogy|heptalogy|anthology/i, boolean, { skipIfAlreadyFound: false });
+    parser.addHandler("complete", /\b(?:dualogy|(?:du[ao]|dy|tri|quadr[oi]|tetra|penta)log[ií]a)\b/i, boolean, { skipFromTitle: true, skipIfAlreadyFound: false });
     parser.addHandler("complete", /(?<!\p{L})(?:дилоги|трилоги|квадрологи|тетралоги|пенталоги|гексалоги|антологи)[яи](?!\p{L})/iu, boolean, { skipIfAlreadyFound: false, skipFromTitle: true });
     parser.addHandler("complete", /\bsaga\b/i, boolean, { skipFromTitle: true });
 

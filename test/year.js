@@ -80,4 +80,29 @@ describe("Paring year", () => {
         const releaseName = "Миссия: Невыполнима [Трилогия] / Mission: Impossible [Trilogy] [1996 / 2000 / 2006 г., боевик]";
         expect(parse(releaseName)).to.deep.include({ year: "1996-2006" });
     });
+
+    it("should detect two bracketed years of films joined by an ampersand as a year range", () => {
+        const releaseName = "Wonder Woman(2017) & Wonder Woman 1984(2020) [1080p] [H264] [Dubbing,Lektor PL] SYRIX";
+        expect(parse(releaseName)).to.deep.include({ title: "Wonder Woman", year: "2017-2020" });
+    });
+
+    it("should detect two bracketed years of numbered films joined by an ampersand as a year range", () => {
+        const releaseName = "Legion samobójców 1(2016) & Legion samobójców 2(2021) [1080p] [H264] [Lektor] SYRIX";
+        expect(parse(releaseName)).to.deep.include({ year: "2016-2021" });
+    });
+
+    it("should not detect a year range in a title with an ampersand and one year", () => {
+        const releaseName = "Tom & Jerry (2021) 1080p WEBRip";
+        expect(parse(releaseName)).to.deep.include({ title: "Tom & Jerry", year: 2021 });
+    });
+
+    it("should detect three bracketed years of films joined by ampersands as a year range", () => {
+        const releaseName = "John Wick 1(2014)  &  John Wick 2(2017) &  John Wick 3(2019) [1080p] [H264] [Lektor PL] SYRIX";
+        expect(parse(releaseName)).to.deep.include({ year: "2014-2019" });
+    });
+
+    it("should keep seasons joined by an ampersand with their own years", () => {
+        const releaseName = "[Ari-M] Berserk Memorial Edition + Berserk S1 (2016) & S2 (2017) [CR Web-dl 1080p]";
+        expect(parse(releaseName)).to.deep.include({ seasons: [1, 2] });
+    });
 });

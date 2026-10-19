@@ -251,4 +251,19 @@ describe("Parsing complete collection", () => {
         expect(parse(releaseName)).to.deep.include({ title: "Star Wars The Bad Batch" });
         expect(parse(releaseName)).to.not.have.property("complete");
     });
+
+    it("should detect a leading spanish duologia as complete", () => {
+        const releaseName = "Duologia Guardianes de la Galaxia [BluRay 1080p HEVC X265][10Bits][AC3 5.1 Castellano AC3 5.1-Ingles+Subs][ES-EN]";
+        expect(parse(releaseName)).to.deep.include({ title: "Duologia Guardianes de la Galaxia", complete: true });
+    });
+
+    it("should detect dualogy as complete", () => {
+        const releaseName = "The Witch Dualogy Part 1 & 2 The Subversion & The Other One Multiple Audios DDP5 1 1080p";
+        expect(parse(releaseName)).to.deep.include({ complete: true });
+    });
+
+    it("should detect an accented spanish trilogia as complete", () => {
+        const releaseName = "El Padrino Trilogía 1080p BluRay";
+        expect(parse(releaseName)).to.deep.include({ title: "El Padrino Trilogía", complete: true });
+    });
 });
