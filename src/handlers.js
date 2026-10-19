@@ -173,8 +173,6 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("audioChannels", /\[[257][.-][01]]/, lowercase, { remove: true });
     parser.addHandler("audioChannels", /(?:\b(?:DTS(?:-?HD)?(?:[ .-]?MA)?|E?AC-?3|AAC|TrueHD|FLAC|Opus|L?PCM)[ .-]?|[[(])([257]\.[01])(?:ch)?(?=[\]) .,_-]|$)/i, none, { remove: true });
 
-    // Group
-    parser.addHandler("group", /- ?(?!\d+$|S\d+|\d+x|ep?\d+|[^[]+]$|(?:OVA|OAV|OAD|ONA|SP|Specials?)\d*(?:\.\w{2,4})?$|第\d+[話话集])([^\-. []+[^\-. [)\]\d][^\-. [)\]]*)(?:\[[\w.-]+])?(?=\.\w{2,4}$|$)/i);
 
     // Container
     parser.addHandler("container", /\.?[[(]?\b(?<!\p{L})(MKV|AVI|MP4|WMV|MPG|MPEG)\b(?!\p{L})[\])]?/iu, lowercase);
@@ -562,6 +560,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     });
 
     // Group
+    parser.addHandler("group", /- ?(?!\d+$|S\d+|\d+x|ep?\d+|[^[]+]$|(?:OVA|OAV|OAD|ONA|SP|Specials?)\d*(?:\.\w{2,4})?$|第\d+[話话集])([^\-. []+[^\-. [)\]\d][^\-. [)\]]*)(?:\[[\w.-]+])?(?=\.\w{2,4}$|$)/i, { skipIfNothingBefore: true });
     parser.addHandler("group", /^\[([^[\]]+)]/);
     parser.addHandler("group", /\(([\w-]+)\)(?:$|\.\w{2,4}$)/);
     parser.addHandler("group", ({ result, matched }) => {

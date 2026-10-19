@@ -164,4 +164,14 @@ describe("Parsing group", () => {
         const releaseName = "[Anime Time[ Attack On Titan OAD - Lost Girls 01.mkv";
         expect(parse(releaseName)).to.deep.include({ group: "Anime Time", title: "Attack On Titan OAD - Lost Girls 01" });
     });
+
+    it("should not detect a group in a bare file name with a dashed subtitle", () => {
+        const releaseName = "Spider-Man - Homecoming.mkv";
+        expect(parse(releaseName)).to.not.have.property("group");
+    });
+
+    it("should detect a group right after a removed codec", () => {
+        const releaseName = "BKFC.33.WEB.x264-HEADKICK.mp4";
+        expect(parse(releaseName)).to.deep.include({ group: "HEADKICK" });
+    });
 });

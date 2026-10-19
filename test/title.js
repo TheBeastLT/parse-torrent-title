@@ -527,4 +527,14 @@ describe("Parsing title", () => {
         const releaseName = "Aviões 2 (2014) BluRay 1080p 5.1 Dublado - S4F";
         expect(parse(releaseName)).to.deep.include({ title: "Aviões 2", year: 2014 }).and.not.have.property("container");
     });
+
+    it("should keep a dashed subtitle of a bare file name in the title", () => {
+        const releaseName = "Thor - Ragnarok.mp4";
+        expect(parse(releaseName)).to.deep.include({ title: "Thor - Ragnarok" });
+    });
+
+    it("should keep a hyphenated bare file name whole in the title", () => {
+        const releaseName = "Ant-Man.mp4";
+        expect(parse(releaseName)).to.deep.include({ title: "Ant-Man" });
+    });
 });
