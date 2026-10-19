@@ -488,6 +488,21 @@ describe("Parsing title", () => {
         expect(parse(releaseName)).to.deep.include({ title: "The French Connection", year: 1971 }).and.not.have.property("languages");
     });
 
+    it("should keep a language name followed by title words before any tag in the title without a year", () => {
+        const releaseName = "A.Serbian.Film.1080p.Multi.Subs.AAC.x264-DLKING.mp4";
+        expect(parse(releaseName)).to.deep.include({ title: "A Serbian Film", languages: ["multi subs"] });
+    });
+
+    it("should keep a language name before the season in the title while reading the caps language tag", () => {
+        const releaseName = "A.French.Village.S02.FRENCH.1080p.AMZN.WEBRip.DDP2.0.x264-SbR[rartv]";
+        expect(parse(releaseName)).to.deep.include({ title: "A French Village", seasons: [2], languages: ["french"] });
+    });
+
+    it("should keep a leading language name in the title of a series", () => {
+        const releaseName = "Swedish.Dicks.S01E01.WEB-DL.x264-RARBG";
+        expect(parse(releaseName)).to.deep.include({ title: "Swedish Dicks", seasons: [1] }).and.not.have.property("languages");
+    });
+
     it("should keep a language name in the middle of a title before the year", () => {
         const releaseName = "The French Dispatch 2021 WEB-DL Sonata Premiere";
         expect(parse(releaseName)).to.deep.include({ title: "The French Dispatch", year: 2021 }).and.not.have.property("languages");

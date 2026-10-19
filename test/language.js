@@ -1280,4 +1280,19 @@ describe("Parsing language", () => {
         const releaseName = "Políticamente incorrectos (2024) [Bluray 720p][Esp]";
         expect(parse(releaseName)).to.deep.include({ title: "Políticamente incorrectos", languages: ["spanish"] });
     });
+
+    it("should detect a bracketed language followed by subtitles without a year", () => {
+        const releaseName = "The Obama Deception [French subtitles].avi";
+        expect(parse(releaseName)).to.deep.include({ title: "The Obama Deception", languages: ["french"] });
+    });
+
+    it("should detect a language followed by subtitles without a year", () => {
+        const releaseName = "28 weeks later Dutch Subtitles Lilmjkl DVDRip";
+        expect(parse(releaseName)).to.deep.include({ languages: ["dutch"] });
+    });
+
+    it("should detect a leading language in a plain comma separated language list", () => {
+        const releaseName = "french,english,spanish.srt";
+        expect(parse(releaseName)).to.deep.include({ languages: ["english", "french", "spanish"] });
+    });
 });

@@ -418,8 +418,8 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     function addLanguageName(name, language, { skipIfFirst, ...options } = {}) {
         const caps = name.replace(/[a-z]/g, letter => (letter === "i" ? "[iI]" : letter.toUpperCase()));
         parser.addHandler("languages", new RegExp(`(?<=\\p{Ll}.*)\\b(?:${caps})\\b`, "u"), uniqConcat(value(language)), { skipIfAlreadyFound: false, ...options });
-        parser.addHandler("languages", new RegExp(`\\b(?:${name})\\b(?![ .]+\\p{L}+(?![\\p{L}\\p{N}]|$))`, "iu"), uniqConcat(value(language)), { skipIfFirst, skipIfAlreadyFound: false, ...options });
-        parser.addHandler("languages", new RegExp(`\\b(?:${name})\\b`, "iu"), uniqConcat(value(language)), { skipIfFirst, skipIfBefore: ["year"], skipIfAlreadyFound: false, ...options });
+        parser.addHandler("languages", new RegExp(`\\b(?:${name})\\b(?![ .]+(?!(?:sub(?:title)?s?|language|dub\\w*)\\b)\\p{L}+(?![\\p{L}\\p{N}]|$))`, "iu"), uniqConcat(value(language)), { skipIfFirst, skipIfAlreadyFound: false, ...options });
+        parser.addHandler("languages", new RegExp(`\\b(?:${name})\\b`, "iu"), uniqConcat(value(language)), { skipIfFirst: true, skipIfBefore: ["year"], skipIfAlreadyFound: false, ...options });
     }
     parser.addHandler("languages", /\bmulti(?:ple)?[ .-]*(?:su?$|sub\w*|dub\w*)\b|msub/i, uniqConcat(value("multi subs")), { skipIfAlreadyFound: false, remove: true });
     parser.addHandler("languages", /\bmulti(?:ple)?[ .-]*(?:lang(?:uages?)?|audio|VF2)?\b/i, uniqConcat(value("multi audio")), { skipIfAlreadyFound: false });
