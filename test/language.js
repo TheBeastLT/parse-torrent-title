@@ -1210,4 +1210,74 @@ describe("Parsing language", () => {
         expect(parse(releaseName)).to.deep.include({ title: "Dual! Parallel Trouble Adventures 01" })
             .and.not.have.any.keys("languages", "dubbed");
     });
+
+    it("should detect a caps language tag after a mixed case title", () => {
+        const releaseName = "Movie.Name.SERBIAN.1080p";
+        expect(parse(releaseName)).to.deep.include({ title: "Movie Name", languages: ["serbian"] });
+    });
+
+    it("should detect a lowercase language tag directly before the year", () => {
+        const releaseName = "Tanu Weds Manu hindi 2011 DVDRip";
+        expect(parse(releaseName)).to.deep.include({ title: "Tanu Weds Manu", languages: ["hindi"] });
+    });
+
+    it("should detect a bracketed language tag before the year", () => {
+        const releaseName = "Celda 211 [DVDRIP][Spanish AC3 5.1][2010]";
+        expect(parse(releaseName)).to.deep.include({ title: "Celda 211", languages: ["spanish"] });
+    });
+
+    it("should detect a language tag followed by movie before the year", () => {
+        const releaseName = "ram teri ganga maili hindi movie 1985";
+        expect(parse(releaseName)).to.deep.include({ title: "ram teri ganga maili", languages: ["hindi"] });
+    });
+
+    it("should detect a spanish line tag before the year", () => {
+        const releaseName = "Millenium 2 DVD-Screener Spanish Line 2009";
+        expect(parse(releaseName)).to.deep.include({ title: "Millenium 2", languages: ["spanish"] });
+    });
+
+    it("should detect a caps french tag before the year", () => {
+        const releaseName = "Taken 3 FRENCH BDRip 2014";
+        expect(parse(releaseName)).to.deep.include({ title: "Taken 3", languages: ["french"] });
+    });
+
+    it("should detect a caps french tag before the episode and year", () => {
+        const releaseName = "Mayor Of Kingstown FRENCH S03E03 HDTV 2024";
+        expect(parse(releaseName)).to.deep.include({ title: "Mayor Of Kingstown", languages: ["french"] });
+    });
+
+    it("should detect a caps korean tag after a title that starts with the language", () => {
+        const releaseName = "Korean.Pork.Belly.Rhapsody.S01E01.KOREAN.WEBRip.x264-ION10";
+        expect(parse(releaseName)).to.deep.include({ title: "Korean Pork Belly Rhapsody", languages: ["korean"] });
+    });
+
+    it("should detect english dub after the title", () => {
+        const releaseName = "Yu Yu Hakusho English Dub 001-112 BD (1280x720 AAC)";
+        expect(parse(releaseName)).to.deep.include({ title: "Yu Yu Hakusho", languages: ["english"] });
+    });
+
+    it("should detect english dubbed before the year", () => {
+        const releaseName = "Duel of the IRON FIST (english dubbed) 1971 release.avi";
+        expect(parse(releaseName)).to.deep.include({ title: "Duel of the IRON FIST", languages: ["english"] });
+    });
+
+    it("should not detect a language from a title word before the year", () => {
+        const releaseName = "The Danish Girl 2015 1080p BluRay x264 DTS-JYK";
+        expect(parse(releaseName)).to.deep.include({ title: "The Danish Girl" }).and.not.have.property("languages");
+    });
+
+    it("should not detect a language code inside an accented title word", () => {
+        const releaseName = "Fränk 2025 1080p WEBRip";
+        expect(parse(releaseName)).to.deep.include({ title: "Fränk" }).and.not.have.property("languages");
+    });
+
+    it("should not detect swedish from an accented spanish word", () => {
+        const releaseName = "Perdoname Señor - Temporada 1 [HDTV 720p][Cap.101][AC3 5.1 Español Castellano]";
+        expect(parse(releaseName)).to.deep.include({ title: "Perdoname Señor", languages: ["spanish"] });
+    });
+
+    it("should not detect polish from an accented spanish word", () => {
+        const releaseName = "Políticamente incorrectos (2024) [Bluray 720p][Esp]";
+        expect(parse(releaseName)).to.deep.include({ title: "Políticamente incorrectos", languages: ["spanish"] });
+    });
 });

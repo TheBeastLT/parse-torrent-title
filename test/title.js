@@ -477,4 +477,54 @@ describe("Parsing title", () => {
         const releaseName = "Ch4.Graysons.Art.Club.Series.2.1080p.HDTV.x265.AAC.MVGroup.org.mkv";
         expect(parse(releaseName)).to.deep.include({ title: "Graysons Art Club" });
     });
+
+    it("should keep a language name followed by title words before the year in the title", () => {
+        const releaseName = "A Serbian Film 2010 1080p BluRay";
+        expect(parse(releaseName)).to.deep.include({ title: "A Serbian Film", year: 2010 }).and.not.have.property("languages");
+    });
+
+    it("should keep a dot separated language name followed by title words before the year in the title", () => {
+        const releaseName = "The.French.Connection.1971.x264.DTS-WAF";
+        expect(parse(releaseName)).to.deep.include({ title: "The French Connection", year: 1971 }).and.not.have.property("languages");
+    });
+
+    it("should keep a language name in the middle of a title before the year", () => {
+        const releaseName = "The French Dispatch 2021 WEB-DL Sonata Premiere";
+        expect(parse(releaseName)).to.deep.include({ title: "The French Dispatch", year: 2021 }).and.not.have.property("languages");
+    });
+
+    it("should keep a language surname followed by title words before the year", () => {
+        const releaseName = "Dawn.French.Live-Thirty.Million.Minutes.2016.1080p.WEBRip.x265-RARBG";
+        expect(parse(releaseName)).to.deep.include({ title: "Dawn French Live-Thirty Million Minutes", year: 2016 }).and.not.have.property("languages");
+    });
+
+    it("should end the title at a scene caps language tag after a mixed case title", () => {
+        const releaseName = "Vuoi.Sapere.Un.Segreto.iTALiAN.DVDRip.XviD-Republic";
+        expect(parse(releaseName)).to.deep.include({ title: "Vuoi Sapere Un Segreto", languages: ["italian"] });
+    });
+
+    it("should end the title at a caps language tag before the year", () => {
+        const releaseName = "The Reader ITALIAN 2009-BY NERO69.avi";
+        expect(parse(releaseName)).to.deep.include({ title: "The Reader", year: 2009, languages: ["italian"] });
+    });
+
+    it("should keep a caps language word inside an all caps title", () => {
+        const releaseName = "THE ITALIAN JOB 2003 1080p BluRay x264";
+        expect(parse(releaseName)).to.deep.include({ title: "THE ITALIAN JOB", year: 2003 }).and.not.have.property("languages");
+    });
+
+    it("should not detect a language code inside an accented word", () => {
+        const releaseName = "Mistrovský plán / Masterplan (2026)(CZ/EN)[2160p][HDR10+/DV][HEVC]";
+        expect(parse(releaseName)).to.deep.include({ title: "Masterplan", year: 2026, languages: ["english", "czech"] });
+    });
+
+    it("should not detect an episode marker inside an accented word", () => {
+        const releaseName = "Sonríe 2 (2024).1080p.dual-lat.cinecalidad.day.mp4";
+        expect(parse(releaseName)).to.deep.include({ title: "Sonríe 2", year: 2024 }).and.not.have.property("episodes");
+    });
+
+    it("should not detect a container inside an accented word", () => {
+        const releaseName = "Aviões 2 (2014) BluRay 1080p 5.1 Dublado - S4F";
+        expect(parse(releaseName)).to.deep.include({ title: "Aviões 2", year: 2014 }).and.not.have.property("container");
+    });
 });
