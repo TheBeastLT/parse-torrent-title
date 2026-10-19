@@ -117,6 +117,12 @@ describe("Parsing extras", () => {
         expect(parse(releaseName)).to.deep.include({ title: "Macross Plus Movie Edition", year: 1995 });
     });
 
+    it("should keep plus in a title when followed by a special", () => {
+        const releaseName = "Amagami SS Plus Special";
+
+        expect(parse(releaseName).title).to.equal("Amagami SS Plus Special");
+    });
+
     it("should keep plus in a title when followed by an ova", () => {
         const releaseName = "[SpurdoMux] Macross Plus OVA 1-2 BD 720p (Dual audio)";
 
