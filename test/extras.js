@@ -104,4 +104,22 @@ describe("Parsing extras", () => {
 
         expect(parse(releaseName)).to.deep.include({ title: "Love, Chunibyo & Other Delusions!" });
     });
+
+    it("should detect extras added with plus and keep them out of the title", () => {
+        const releaseName = "Magic Boy plus Extra Princess Kuro | 1959 | DVDRip | 720p | x265 | AC3 | German";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Magic Boy", year: 1959, extras: true });
+    });
+
+    it("should keep plus in a title when followed by a movie", () => {
+        const releaseName = "Macross Plus Movie Edition 1995 720p BluRay x264-GeneMige";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Macross Plus Movie Edition", year: 1995 });
+    });
+
+    it("should keep plus in a title when followed by an ova", () => {
+        const releaseName = "[SpurdoMux] Macross Plus OVA 1-2 BD 720p (Dual audio)";
+
+        expect(parse(releaseName).title).to.equal("Macross Plus OVA");
+    });
 });

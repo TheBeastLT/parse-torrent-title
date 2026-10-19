@@ -3,6 +3,7 @@ const { none, value, integer, cjkInteger, boolean, lowercase, uppercase, date, r
 const VIDEO_EXTENSIONS = "3g2|3gp|avi|flv|mkv|mk3d|mov|mp2|mp4|m4v|mpe|mpeg|mpg|mpv|webm|wmv|ogm|divx|ts|m2ts";
 const SUBTITLE_EXTENSIONS = "sub|smi|srt|ssa|ass|vtt";
 const PACK_EXTRA = "(?:\\d+\\s*)?(?:OVAs?|OAVs?|OADs?|ONAs?|Specials?|SPs?|Movies?|Films?|Extras?|Bonus(?:es)?|Novels?|Mangas?|OSTs?|Soundtracks?|Artbooks?|OP|ED|NC ?(?:OP|ED)s?)\\b";
+const PLUS_EXTRA = "(?:\\d+\\s*)?(?:Extras?|Bonus(?:es)?|Specials?)\\b";
 const EPISODE_CODE = "(?:\\bS\\d{1,2}E\\d{1,3}|\\b\\d{1,2}x\\d{1,3}\\b)";
 const HALF_EPISODE_END = "\\.5(?:v\\d)?(?=[ ._\\-)\\][]|$)(?![ .-]\\d)(?![ ._]?(?:gb|mb|ch|kbps|fps|bit|x\\d|th\\b|km\\b|dimensional))" +
     "(?![._-](?:minut[eio]s?|seconds?|hours?|days?|weeks?|months?|years?|anni|o'?clock|[ap]m|to|million|ways|signs|stages|" +
@@ -74,7 +75,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     // Retail
     parser.addHandler("retail", /\bRetail\b/i, boolean);
 
-    // RemasteredREKONSTRUKCJA
+    // Remastered
     parser.addHandler("remastered", /\bRemaster(?:ed)?\b/i, boolean);
     parser.addHandler("remastered", /\b[[(]?REKONSTRUKCJA[\])]?\b/i, boolean);
 
@@ -407,7 +408,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("complete", /\bsaga\b/i, boolean, { skipFromTitle: true });
 
     parser.addHandler("extras", /(?<=\S[ ._-]?)\[SP\d{1,2}]/i, boolean, { skipIfAlreadyFound: false });
-    parser.addHandler("extras", new RegExp(`\\s*\\(?\\s*[+&]\\s*${PACK_EXTRA}(?:\\s*(?:[+&,]|and)\\s*${PACK_EXTRA})*\\)?`, "i"), boolean, { remove: true });
+    parser.addHandler("extras", new RegExp(`\\s*\\(?\\s*(?:[+&]\\s*${PACK_EXTRA}|\\bplus\\s+${PLUS_EXTRA})(?:\\s*(?:[+&,]|and)\\s*${PACK_EXTRA})*\\)?`, "i"), boolean, { remove: true });
 
     // Language
     parser.addHandler("languages", /\bmulti(?:ple)?[ .-]*(?:su?$|sub\w*|dub\w*)\b|msub/i, uniqConcat(value("multi subs")), { skipIfAlreadyFound: false, remove: true });

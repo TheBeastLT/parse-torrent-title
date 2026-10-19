@@ -432,4 +432,49 @@ describe("Parsing title", () => {
         const releaseName = "[晚街与灯][Re：从零开始的异世界生活 第四季 / Re:Zero kara Hajimeru Isekai Seikatsu 4th Season][15 / 总第81][简日双语][1080P]";
         expect(parse(releaseName)).to.deep.include({ title: "Re:Zero kara Hajimeru Isekai Seikatsu", seasons: [4], episodes: [15] });
     });
+
+    it("should drop a quoted episode title and a glued year suffix after a japanese title", () => {
+        const releaseName = "NNNドキュメント’26「縁組み家族 こどもの権利にオトナはどうこたえる」";
+        expect(parse(releaseName)).to.deep.include({ title: "NNN" });
+    });
+
+    it("should keep a year suffix glued to a russian title", () => {
+        const releaseName = "Берлин'23 / Серии: 1-7 из 8 [2026, WEBRip-AVC]";
+        expect(parse(releaseName)).to.deep.include({ title: "Берлин'23" });
+    });
+
+    it("should drop a trailing quoted japanese episode title", () => {
+        const releaseName = "ガリレオX「躍進するフィジカルAI開発 次世代ロボットは何ができるのか？」";
+        expect(parse(releaseName)).to.deep.include({ title: "ガリレオX" });
+    });
+
+    it("should drop a trailing quoted edition name", () => {
+        const releaseName = "[hydes] Patlabor: The Movie『Enthusiast's Collected Edition』JPBD Remux｜5xAudio/5xSub｜Extras";
+        expect(parse(releaseName)).to.deep.include({ title: "Patlabor: The Movie" });
+    });
+
+    it("should drop a trailing quoted subtitle with the dash before it", () => {
+        const releaseName = "[JMAX] [2026.08.18] 学園アイドルマスター - 「ねえ、言っちゃうよ。」 [FLAC 96kHz/24bit]";
+        expect(parse(releaseName)).to.deep.include({ title: "学園アイドルマスター" });
+    });
+
+    it("should keep a quoted title after a movie prefix", () => {
+        const releaseName = "Movie『 Your Name. 』2016 1080p.MP4";
+        expect(parse(releaseName).title).to.not.equal("Movie");
+    });
+
+    it("should keep removing chinese chars glued to a latin title", () => {
+        const releaseName = "[LoliHouse] MAO摩绪 - 20 [WebRip 1080p HEVC-10bit AAC][简繁内封字幕]";
+        expect(parse(releaseName)).to.deep.include({ title: "MAO" });
+    });
+
+    it("should remove a channel number prefix from the title", () => {
+        const releaseName = "Ch5 The Rise and Fall of the King of Spain 2021 1080p HDTV x265-MVGroup";
+        expect(parse(releaseName)).to.deep.include({ title: "The Rise and Fall of the King of Spain", year: 2021 });
+    });
+
+    it("should remove a dotted channel 4 prefix from the title", () => {
+        const releaseName = "Ch4.Graysons.Art.Club.Series.2.1080p.HDTV.x265.AAC.MVGroup.org.mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Graysons Art Club" });
+    });
 });

@@ -2,7 +2,8 @@ const { none } = require("./transformers");
 
 // chinese/japanese/russian chars https://stackoverflow.com/a/43419070
 const ACCENTED_LATIN_CHARS = "\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u024f";
-const NON_ENGLISH_CHARS = "\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f\u0400-\u04ff";
+const CJK_CHARS = "\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f";
+const NON_ENGLISH_CHARS = `${CJK_CHARS}\u0400-\u04ff`;
 const RUSSIAN_CAST_REGEX = new RegExp("(?:\\([^)]*[\u0400-\u04ff][^)]*\\)|(?<=\\/.*)\\(.*\\))(?=\\s*(?:\\[[^\\]]*)?$)");
 const ALT_TITLES_REGEX = new RegExp(`[^/|(]*[${NON_ENGLISH_CHARS}][^/|]*[/|]|[/|][^/|(]*[${NON_ENGLISH_CHARS}][^/|]*`, "g");
 const ACCENTED_LATIN_REGEX = new RegExp(`[${ACCENTED_LATIN_CHARS}]`);
@@ -10,6 +11,9 @@ const NOT_ONLY_NON_ENGLISH_REGEX = new RegExp(`(?<=[a-zA-Z][^${NON_ENGLISH_CHARS
 const NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${ACCENTED_LATIN_CHARS}${NON_ENGLISH_CHARS}#[【★]+|[ \\-:,/\\\\[|{(#$&^]+$`, "g");
 const REMAINING_NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${ACCENTED_LATIN_CHARS}${NON_ENGLISH_CHARS}#]+|[[\\]({} ]+$`, "g");
 const BEFORE_TITLE_REGEX = new RegExp(`^(?:\\[[^[\\]]*]\\s*)+(?=[^\\s[(.…（【])|^\\[[^[\\]]+]|^(?:[^/[]*[${NON_ENGLISH_CHARS}][^/[]*/)+(?=\\s*[a-zA-Z])`);
+const TRAILING_QUOTED_SECTION = /^(?!movie[\s-]*[「『])(.+?)[\s-]*[「『][^「『」』]*[」』]$/i;
+const YEAR_SUFFIX_AFTER_NON_ENGLISH = new RegExp(`(?<=[${CJK_CHARS}])['’]\\d{2}$`);
+const CHANNEL_PREFIX = /^ch[45][ .]+(?=\S)/i;
 const MARKING_SECTION = "(?:\\[[^\\]]*]|【[^】]*】|★[^★]*★)";
 const LEADING_MARKING_SECTIONS = new RegExp(`^(?:${MARKING_SECTION}[ .]?)+(.+)`);
 const TRAILING_MARKING_SECTIONS = new RegExp(`(.+?)(?:[ .]?${MARKING_SECTION})+$`);
@@ -80,11 +84,14 @@ function cleanTitle(rawTitle) {
 
     cleanedTitle = cleanedTitle
         .replace(/_/g, " ")
+        .replace(CHANNEL_PREFIX, "")
         .replace(/[[(]movie[)\]]/i, "") // clear movie indication flag
         .replace(NOT_ALLOWED_SYMBOLS_AT_START_AND_END, "")
         .replace(RUSSIAN_CAST_REGEX, "") // clear russian cast information
         .replace(LEADING_MARKING_SECTIONS, "$1") // remove release group markings sections from the start
         .replace(TRAILING_MARKING_SECTIONS, "$1") // remove unneeded markings section at the end if present
+        .replace(TRAILING_QUOTED_SECTION, "$1")
+        .replace(YEAR_SUFFIX_AFTER_NON_ENGLISH, "")
         .replace(ALT_TITLES_REGEX, "") // remove alt language titles
         .replace(NOT_ONLY_NON_ENGLISH_REGEX, "") // remove non english chars if they are not the only ones left
         .replace(REMAINING_NOT_ALLOWED_SYMBOLS_AT_START_AND_END, "")
