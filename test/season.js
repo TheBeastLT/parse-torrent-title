@@ -851,4 +851,49 @@ describe("Parsing season", () => {
         const releaseName = "Game of Thrones Seasons 1 - 8 S01-S08 1080p";
         expect(parse(releaseName)).to.deep.include({ title: "Game of Thrones", seasons: [1, 2, 3, 4, 5, 6, 7, 8] });
     });
+
+    it("should detect season 10 followed by a resolution", () => {
+        const releaseName = "Friends S10 1080p";
+        expect(parse(releaseName)).to.deep.include({ title: "Friends", seasons: [10] });
+    });
+
+    it("should detect season 10 followed by a source", () => {
+        const releaseName = "MASH S10 DVDRip";
+        expect(parse(releaseName)).to.deep.include({ title: "MASH", seasons: [10] });
+    });
+
+    it("should detect a dotted season 10 followed by a source", () => {
+        const releaseName = "Friends.S10.DVDRip.XviD";
+        expect(parse(releaseName)).to.deep.include({ title: "Friends", seasons: [10] });
+    });
+
+    it("should detect season 20 followed by a resolution", () => {
+        const releaseName = "Midsomer.Murders.S20.720p.AMZN.WEBRip.DDP2.0.x264-NTb[rartv]";
+        expect(parse(releaseName)).to.deep.include({ title: "Midsomer Murders", seasons: [20] });
+    });
+
+    it("should detect season 30 followed by a resolution", () => {
+        const releaseName = "Mister.Rogers.Neighborhood.S30.720p.WEBRip.AAC2.0.x264-NOGRP[rartv]";
+        expect(parse(releaseName)).to.deep.include({ title: "Mister Rogers Neighborhood", seasons: [30] });
+    });
+
+    it("should detect a bracketed season 10", () => {
+        const releaseName = "The Walking Dead [S10] [720p] [DSNP] [WEB-DL] [x264] [AC3-r4u] [Lektor PL]";
+        expect(parse(releaseName)).to.deep.include({ title: "The Walking Dead", seasons: [10] });
+    });
+
+    it("should not detect a release group of s10 after an audio tag as season", () => {
+        const releaseName = "The Killer's Game 2024 PL 1080p WEB-DL H264 DD5.1-S10";
+        expect(parse(releaseName)).to.not.have.property("seasons");
+    });
+
+    it("should not detect a bracketed release group of s10 after an audio tag as season", () => {
+        const releaseName = "Apollo 13 (1995) [1080p] [WEB-DL] [x264] [E-AC3-S10] [Lektor PL]";
+        expect(parse(releaseName)).to.not.have.property("seasons");
+    });
+
+    it("should not detect a release group of s20 before the extension as season", () => {
+        const releaseName = "Movie 2024 1080p WEB-DL x264-S20.mkv";
+        expect(parse(releaseName)).to.not.have.property("seasons");
+    });
 });
