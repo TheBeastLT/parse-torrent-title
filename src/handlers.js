@@ -400,6 +400,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("complete", /\bcollection\b.*\b(?:set|pack|movies)\b/i, boolean);
     parser.addHandler("complete", /\bint[ée]grale\b/i, boolean, { skipIfAlreadyFound: false });
     parser.addHandler("complete", /\b(?:la |primera |segunda )?(?:s[ée]rie|temporada)[ .]complet[ao]s?\b/i, boolean, { skipIfAlreadyFound: false });
+    parser.addHandler("complete", /[([{]seasons[)\]}]/i, boolean, { remove: true, skipIfAlreadyFound: false });
     parser.addHandler("complete", /[([{【](?:(?:full|complete|unofficial)[ ._-]?)?batch[)\]}】]/i, boolean, { remove: true, skipFromTitle: true, skipIfAlreadyFound: false });
     parser.addHandler("complete", /(?<![([{【][^)\]}】]*|\bbad[ ._-]?)\b(?:(?:full|complete|unofficial)[ ._-]?)?batch\b/i, boolean, { remove: true, skipFromTitle: true, skipIfAlreadyFound: false });
     parser.addHandler("complete", /\bcomplet[eo]s?\b(?=[ ._-]*(?:$|[[\]()]))/i, boolean, { skipIfAlreadyFound: false });

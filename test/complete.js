@@ -266,4 +266,14 @@ describe("Parsing complete collection", () => {
         const releaseName = "El Padrino Trilogía 1080p BluRay";
         expect(parse(releaseName)).to.deep.include({ title: "El Padrino Trilogía", complete: true });
     });
+
+    it("should detect bracketed seasons without a number as complete", () => {
+        const releaseName = "The.Lowdown.(Seasons).LostFilm";
+        expect(parse(releaseName)).to.deep.include({ title: "The Lowdown", complete: true });
+    });
+
+    it("should detect bracketed seasons as complete for a single word title", () => {
+        const releaseName = "Time.(Seasons).LostFilm";
+        expect(parse(releaseName)).to.deep.include({ title: "Time", complete: true });
+    });
 });
