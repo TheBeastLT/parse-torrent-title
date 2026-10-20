@@ -57,7 +57,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("year", /[([*][ .]?((?:19\d|20[012])\d[ .]?-[ .]?\d{2})(?:\s?[*)\]])?/, yearRange, { remove: true });
     parser.addHandler("year", /[([][ .]?((?:19\d|20[012])\d(?:(?:[ .]?[,—–/][ .]?|[ .])(?:19\d|20[012])\d)+)(?!\d)/, yearRange, { remove: true });
     parser.addHandler("year", /[([]((?:19\d|20[012])\d(?:[)\]][ .]*&(?:(?!\bS\d)[^()[\]])*[([](?:19\d|20[012])\d)+)[)\]]/i, yearRange, { remove: true });
-    parser.addHandler("year", /(?<=[ .](?:19\d|20[012])\d[ .]+)[([]((?:19\d|20[012])\d)[)\]]/, integer, { remove: true });
+    parser.addHandler("year", /(?<=[ .](?:19\d|20[012])\d(?:[ .]+\/[^/()[\]]+)*[ .]+)[([]((?:19\d|20[012])\d)[)\]]/, integer, { remove: true });
     parser.addHandler("year", /[([*]?(?!^)(?<!\d|Cap[. ]?|\bep[. ]?|\bE|\bS(?=\d{4}E\d))((?:19\d|20[012])\d)(?!\d|kbps)[*)\]]?/i, integer, { remove: true });
     parser.addHandler("year", /^[([]?((?:19\d|20[012])\d)(?!\d|kbps)[)\]]?(?![ ._]+(?:S\d{1,2}[ .]?E\d|E\d{1,3}\b))/i, integer, { remove: true });
 

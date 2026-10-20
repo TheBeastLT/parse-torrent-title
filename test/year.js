@@ -105,4 +105,19 @@ describe("Paring year", () => {
         const releaseName = "[Ari-M] Berserk Memorial Edition + Berserk S1 (2016) & S2 (2017) [CR Web-dl 1080p]";
         expect(parse(releaseName)).to.deep.include({ seasons: [1, 2] });
     });
+
+    it("should detect the bracketed year after a title year and an alternative title", () => {
+        const releaseName = "Захват самолёта / Hijack 1971 / Haijaeking (2024) WEB-DL 1080p от Scar";
+        expect(parse(releaseName)).to.deep.include({ title: "Hijack 1971 / Haijaeking", year: 2024 }).and.not.have.property("episodes");
+    });
+
+    it("should detect the bracketed year after Wonder Woman 1984 and an alternative title", () => {
+        const releaseName = "Чудо-женщина 1984 / Wonder Woman 1984 / WW84 (2020) BDRip";
+        expect(parse(releaseName)).to.deep.include({ title: "Wonder Woman 1984 / WW84", year: 2020 }).and.not.have.property("episodes");
+    });
+
+    it("should detect the bracketed year after a year in the original title", () => {
+        const releaseName = "Забастовка / Sulis 1907 / The Riot (2023) BDRip от MegaPeer | P2 | ViruseProject";
+        expect(parse(releaseName)).to.deep.include({ title: "Sulis 1907 / The Riot", year: 2023 }).and.not.have.property("episodes");
+    });
 });
