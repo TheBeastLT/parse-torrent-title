@@ -130,4 +130,16 @@ describe("Parsing audio", () => {
 
         expect(parse(releaseName)).to.deep.include({ audio: "7.1 Atmos" });
     });
+
+    it("should detect hyphenated E-AC3 audio", () => {
+        const releaseName = "Tu corazón será destrozado Lat-Rus Subt Esp H264 E-AC3 5.1 BDRip Hd 1080p";
+
+        expect(parse(releaseName)).to.deep.include({ audio: "eac3" });
+    });
+
+    it("should detect hyphenated E-AC-3 audio", () => {
+        const releaseName = "The Devil's Climb (2024) (1080p DS4K BluRay x265 10-bit SDR E-AC-3 5.1) [WeSLeY]";
+
+        expect(parse(releaseName)).to.deep.include({ audio: "eac3" });
+    });
 });

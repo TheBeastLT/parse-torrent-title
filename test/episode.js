@@ -1548,4 +1548,14 @@ describe("Parsing episode", () => {
         const releaseName = "[アニメ BD] ギャラクシーエンジェル 第2期(Z) 第09-10話「GA解析懐石／お好み♥復讐ランチ」(1440x1072 HEVC 10bit FLAC softSub(chi+eng) chap).mkv";
         expect(parse(releaseName)).to.deep.include({ title: "ギャラクシーエンジェル", seasons: [2], episodes: [9, 10] });
     });
+
+    it("should not detect episode from E-AC3 5.1 audio channels", () => {
+        const releaseName = "Tu corazón será destrozado Lat-Rus Subt Esp H264 E-AC3 5.1 BDRip Hd 1080p";
+        expect(parse(releaseName)).to.not.have.property("episode");
+    });
+
+    it("should not detect episode from E-AC3 7.1 audio channels", () => {
+        const releaseName = "Black Panther (2018) [IMAX] 2160p H265 HDR10 DV ITA E-AC3 7.1 ITA ENG AC3 5.1 SUB ITA ENG";
+        expect(parse(releaseName)).to.not.have.property("episode");
+    });
 });
