@@ -582,4 +582,17 @@ describe("Parsing title", () => {
         const releaseName = "Akira Kurosawa's - Samurai 7 (Anime) [2004]";
         expect(parse(releaseName)).to.deep.include({ title: "Akira Kurosawa's - Samurai 7" });
     });
+
+    it("should parse a russian title with many slash separated names without backtracking", function() {
+        this.timeout(2000);
+        const releaseName = "Ратные подвиги Александра Невского/ Битва на поле Куликовом/ Освобождение Москвы/ Полтавская битва/ Битва при Гангуте/ Сражение за Петербург/ Битва за Измаил/ Адмирал Ушаков/ Бородино и его герои/ Оборона. Севастополь/ Освобождение. Болгария/ (Л. Фишель) [2004-2012.г., Исторический, DVDRip]";
+
+        expect(parse(releaseName)).to.deep.include({ year: "2004-2012", source: "DVDRip" });
+    });
+
+    it("should still drop russian names before a latin title", () => {
+        const releaseName = "Ратные подвиги/ Битва на поле/ Освобождение Москвы/ Battle of the Field [2004, DVDRip]";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Battle of the Field", year: 2004 });
+    });
 });

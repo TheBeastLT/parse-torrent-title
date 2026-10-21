@@ -10,7 +10,7 @@ const ACCENTED_LATIN_REGEX = new RegExp(`[${ACCENTED_LATIN_CHARS}]`);
 const NOT_ONLY_NON_ENGLISH_REGEX = new RegExp(`(?<=[a-zA-Z][^${NON_ENGLISH_CHARS}]+)[${NON_ENGLISH_CHARS}].*[${NON_ENGLISH_CHARS}]|[${NON_ENGLISH_CHARS}].*[${NON_ENGLISH_CHARS}](?=[^${NON_ENGLISH_CHARS}]+[a-zA-Z])`, "g");
 const NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${ACCENTED_LATIN_CHARS}${NON_ENGLISH_CHARS}#[【★]+|[ \\-:,/\\\\[|{(#$&^]+$`, "g");
 const REMAINING_NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${ACCENTED_LATIN_CHARS}${NON_ENGLISH_CHARS}#]+|[[\\]({} ]+$`, "g");
-const BEFORE_TITLE_REGEX = new RegExp(`^(?:\\[[^[\\]]*]\\s*)+(?=[^\\s[(.…（【])|^\\[[^[\\]]+]|^(?:[^/[]*[${NON_ENGLISH_CHARS}][^/[]*/)+(?=\\s*[a-zA-Z])`);
+const BEFORE_TITLE_REGEX = new RegExp(`^(?:\\[[^[\\]]*]\\s*)+(?=[^\\s[(.…（【])|^\\[[^[\\]]+]|^(?:(?=[^/[]*[${NON_ENGLISH_CHARS}])[^/[]*/)+(?=\\s*[a-zA-Z])`);
 const TRAILING_QUOTED_SECTION = /^(?!movie[\s-]*[「『])(.+?)[\s-]*[「『][^「『」』]*[」』]$/i;
 const YEAR_SUFFIX_AFTER_NON_ENGLISH = new RegExp(`(?<=[${CJK_CHARS}])['’]\\d{2}$`);
 const CHANNEL_PREFIX = /^ch[45][ .]+(?=\S)/i;
