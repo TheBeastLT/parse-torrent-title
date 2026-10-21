@@ -413,8 +413,15 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("complete", /(?<!\p{L})(?:дилоги|трилоги|квадрологи|тетралоги|пенталоги|гексалоги|антологи)[яи](?!\p{L})/iu, boolean, { skipIfAlreadyFound: false, skipFromTitle: true });
     parser.addHandler("complete", /\bsaga\b/i, boolean, { skipFromTitle: true });
 
+    // Extras
     parser.addHandler("extras", /(?<=\S[ ._-]?)\[SP\d{1,2}]/i, boolean, { skipIfAlreadyFound: false });
     parser.addHandler("extras", new RegExp(`\\s*\\(?\\s*(?:[+&]\\s*${PACK_EXTRA}|\\bplus\\s+${PLUS_EXTRA})(?:\\s*(?:[+&,]|and)\\s*${PACK_EXTRA})*\\)?`, "i"), boolean, { remove: true });
+
+    // Trash for removal
+    parser.addHandler("trash", ({ title }) => {
+        const match = title.match(/[[(](?:movie|anime|series?(?:[ .](?:anime|de[ .]tv|tv|dibujos))?)[)\]]/i);
+        return match && { rawMatch: match[0], matchIndex: match.index, remove: true, skipFromTitle: true };
+    });
 
     // Language
     function addLanguageName(name, language, { skipIfFirst, ...options } = {}) {

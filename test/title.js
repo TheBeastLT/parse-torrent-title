@@ -552,4 +552,34 @@ describe("Parsing title", () => {
         const releaseName = "Ant-Man.mp4";
         expect(parse(releaseName)).to.deep.include({ title: "Ant-Man" });
     });
+
+    it("should remove a spanish anime series flag from the title", () => {
+        const releaseName = "Cyberpunk Edgerunners 2 (Serie Anime) Temp 02 Sub";
+        expect(parse(releaseName)).to.deep.include({ title: "Cyberpunk Edgerunners 2" });
+    });
+
+    it("should remove a spanish tv series flag from the title", () => {
+        const releaseName = "Halt and Catch Fire (Serie de TV) [HDTv][AC3][Cas] (1T) [E02]";
+        expect(parse(releaseName)).to.deep.include({ title: "Halt and Catch Fire" });
+    });
+
+    it("should remove a series tv flag from the title", () => {
+        const releaseName = "Crisis (Series TV) [HDiTunes][AC3][Esp] [1x11] (1T)";
+        expect(parse(releaseName)).to.deep.include({ title: "Crisis" });
+    });
+
+    it("should remove a bare serie flag from the title", () => {
+        const releaseName = "Grimm (Serie) [T03][HDiTunes][DUAL][E02/16]";
+        expect(parse(releaseName)).to.deep.include({ title: "Grimm" });
+    });
+
+    it("should remove a spanish cartoon series flag from the title", () => {
+        const releaseName = "Primal (Serie Dibujos) Temp 3 - 03x04 Lat";
+        expect(parse(releaseName)).to.deep.include({ title: "Primal" });
+    });
+
+    it("should remove an anime flag from the title", () => {
+        const releaseName = "Akira Kurosawa's - Samurai 7 (Anime) [2004]";
+        expect(parse(releaseName)).to.deep.include({ title: "Akira Kurosawa's - Samurai 7" });
+    });
 });
