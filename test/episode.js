@@ -1558,4 +1558,34 @@ describe("Parsing episode", () => {
         const releaseName = "Black Panther (2018) [IMAX] 2160p H265 HDR10 DV ITA E-AC3 7.1 ITA ENG AC3 5.1 SUB ITA ENG";
         expect(parse(releaseName)).to.not.have.property("episode");
     });
+
+    it("should read a cyrillic E after the season as the episode marker", () => {
+        const releaseName = "Skins(UK).S03Е06.Naomi.720p.WEB-DL.1001cinema.mkv";
+
+        expect(parse(releaseName)).to.deep.include({ seasons: [3], episodes: [6] });
+    });
+
+    it("should read a cyrillic E in a dotted LostFilm release", () => {
+        const releaseName = "Carnival.Row.S01Е06.AMZN.WEB-DL.1080p.LostFilm.mkv";
+
+        expect(parse(releaseName)).to.deep.include({ seasons: [1], episodes: [6] });
+    });
+
+    it("should read a cyrillic E in a comma separated name", () => {
+        const releaseName = "Malory Towers, S06Е04, The Band.mkv";
+
+        expect(parse(releaseName)).to.deep.include({ seasons: [6], episodes: [4] });
+    });
+
+    it("should read a lowercase cyrillic e in an underscore separated name", () => {
+        const releaseName = "S05/Leverage_2012_S05е12_rus[LostFilm_TV]_DD5.1_x264_Nikolai.Baranov_WEB-DLRip.AVC_(720p).mp4";
+
+        expect(parse(releaseName)).to.deep.include({ seasons: [5], episodes: [12] });
+    });
+
+    it("should keep a cyrillic word starting with E next to a season untouched", () => {
+        const releaseName = "Show S1 Епизод 4 [2020, WEB-DL]";
+
+        expect(parse(releaseName)).to.deep.include({ seasons: [1] });
+    });
 });

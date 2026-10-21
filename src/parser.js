@@ -11,6 +11,8 @@ const NOT_ONLY_NON_ENGLISH_REGEX = new RegExp(`(?<=[a-zA-Z][^${NON_ENGLISH_CHARS
 const NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${ACCENTED_LATIN_CHARS}${NON_ENGLISH_CHARS}#[【★]+|[ \\-:,/\\\\[|{(#$&^]+$`, "g");
 const REMAINING_NOT_ALLOWED_SYMBOLS_AT_START_AND_END = new RegExp(`^[^\\w${ACCENTED_LATIN_CHARS}${NON_ENGLISH_CHARS}#]+|[[\\]({} ]+$`, "g");
 const BEFORE_TITLE_REGEX = new RegExp(`^(?:\\[[^[\\]]*]\\s*)+(?=[^\\s[(.…（【])|^\\[[^[\\]]+]|^(?:(?=[^/[]*[${NON_ENGLISH_CHARS}])[^/[]*/)+(?=\\s*[a-zA-Z])`);
+const LATIN_E_OF_CYRILLIC_E = new Map([["\u0415", "E"], ["\u0435", "e"]]);
+const CYRILLIC_E_IN_EPISODE_CODE = /(?<=\b[Ss]\d{1,3})[\u0415\u0435](?=\d)/g;
 const TRAILING_QUOTED_SECTION = /^(?!movie[\s-]*[「『])(.+?)[\s-]*[「『][^「『」』]*[」』]$/i;
 const YEAR_SUFFIX_AFTER_NON_ENGLISH = new RegExp(`(?<=[${CJK_CHARS}])['’]\\d{2}$`);
 const CHANNEL_PREFIX = /^ch[45][ .]+(?=\S)/i;
@@ -202,6 +204,7 @@ class Parser {
 
     parse(title) {
         title = title.replace(/_+/g, " ").replace(/^\[([^[\]]+)\[(?=\s)/, "[$1]");
+        title = title.replace(CYRILLIC_E_IN_EPISODE_CODE, letter => LATIN_E_OF_CYRILLIC_E.get(letter));
         const result = {};
         const matched = {};
         const context = { title, result, matched };
