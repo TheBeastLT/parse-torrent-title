@@ -120,4 +120,44 @@ describe("Paring year", () => {
         const releaseName = "Забастовка / Sulis 1907 / The Riot (2023) BDRip от MegaPeer | P2 | ViruseProject";
         expect(parse(releaseName)).to.deep.include({ title: "Sulis 1907 / The Riot", year: 2023 }).and.not.have.property("episodes");
     });
+
+    it("should read the second of two years as the year and keep the first in the title", () => {
+        const releaseName = "Hijack.1971.2024.1080p.WEB-DL.mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Hijack 1971", year: 2024 });
+    });
+
+    it("should keep a title year before a dotted release year without a trailing dot", () => {
+        const releaseName = "Chernobyl 1986.2021.1080p.WEBRip.x264-EVO";
+        expect(parse(releaseName)).to.deep.include({ title: "Chernobyl 1986", year: 2021 });
+    });
+
+    it("should read a release year older than the year in the title", () => {
+        const releaseName = "Godzilla.2000.1999.720p.BluRay.x264-WaLMaRT";
+        expect(parse(releaseName)).to.deep.include({ title: "Godzilla 2000", year: 1999 });
+    });
+
+    it("should not keep a repeated year in the title", () => {
+        const releaseName = "Silent House 2011 2011 480p BRRiP XViD AC3-LEGi0N";
+        expect(parse(releaseName)).to.deep.include({ title: "Silent House", year: 2011 });
+    });
+
+    it("should read the first of three years of a trilogy as the year", () => {
+        const releaseName = "Poltergeist Trilogy 1982 1986 1988 720p BRRip x264 -MgB";
+        expect(parse(releaseName)).to.deep.include({ year: 1982 });
+    });
+
+    it("should read the first year of a collection with two years", () => {
+        const releaseName = "House On Haunted Hill Complete Collection - Horror 1959 2007 Eng Subs 720p [H264-mp4]";
+        expect(parse(releaseName)).to.deep.include({ year: 1959 });
+    });
+
+    it("should read the first year of two films joined by and", () => {
+        const releaseName = "Doom And Doom Annihilation - Unrated Extended 2005 2019 Eng Rus Multi Subs 720p [H264-mp4]";
+        expect(parse(releaseName)).to.deep.include({ year: 2005 });
+    });
+
+    it("should not read a resolution width after a year as the year", () => {
+        const releaseName = "Arrival 2016 1920 x 808 x264 Phun Psyz";
+        expect(parse(releaseName)).to.deep.include({ title: "Arrival", year: 2016 });
+    });
 });
