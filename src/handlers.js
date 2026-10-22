@@ -342,6 +342,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
         }
         return null;
     });
+    parser.addHandler("episodes", new RegExp(`(?<=^\\[[^\\]]+\\][ .]?\\S.*?(?<!\\b(?:movie|film|pel[ií]cula|ova|oad|ona|part|pt|vol|volume|chapter|season|series)[ .]*)[ .](?<!\\d\\.))(\\d{2,3})(?=[ .]+-[ .]+(?!S\\d|.*\\b(?:movie|film|pel[ií]cula)\\b)\\p{L}.*\\.(?:${VIDEO_EXTENSIONS})$)`, "iu"), array(integer), { skipIfBefore: ["year"] });
 
     parser.addHandler("episodes", ({ title, result }) => {
         if (!result.episodes && !result.seasons && !result.year) {

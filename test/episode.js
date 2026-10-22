@@ -796,6 +796,71 @@ describe("Parsing episode", () => {
         expect(parse(releaseName)).to.deep.include({ episode: 35 });
     });
 
+    it("should detect anime absolute episode before episode name", () => {
+        const releaseName = "[HnY] Beyblade X 136 - The 88th Prince.mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Beyblade X", episode: 136 });
+    });
+
+    it("should detect anime absolute episode before episode name with version number", () => {
+        const releaseName = "[HnY] Beyblade X 135 - Version 2.0.mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Beyblade X", episode: 135 });
+    });
+
+    it("should detect anime zero padded episode before episode name", () => {
+        const releaseName = "[HnY] Beyblade Burst Sparking 09 - Phantom Dragon! Mirage Fafnir!! (1080p).mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Beyblade Burst Sparking", episode: 9 });
+    });
+
+    it("should not detect anime movie number before movie name as episode", () => {
+        const releaseName = "[Ah-le-le] Detective Conan Movie 13 - The Raven Chaser (BDRip 720p x264 AAC AC3) [D38C77B7].mkv";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect title number before movie name as episode", () => {
+        const releaseName = "[Hudie] Digimon Adventure 02 - Digimon Hurricane Touchdown!! - Transcendent Evolution!! The Golden Digimentals (Movie 3, BD) [2B6CA1B4].mkv";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect sequel number before name with year as episode", () => {
+        const releaseName = "[ATG] Resident evil 05 - Retribution [ATG 2012] 720p.mp4";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect title number before movie part name as episode", () => {
+        const releaseName = "[Koten_Gars] Adieu Galaxy Express 999 - Movie 2 [BD][Hi10][1080p][LPCM+TrueHD] [3C8686BC].mkv";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect movie number after spaced movie word as episode", () => {
+        const releaseName = "[Anime Time] Dragon Ball - Movie  001 - Curse Of The Blood Rubies.mkv";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect spanish movie number as episode", () => {
+        const releaseName = "[A&C] One Piece Película 02 - Jango's Dance Carnival [BDrip] [Jap] [Multi-Subs] [149FE7EE].mkv";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect decimal movie number as episode", () => {
+        const releaseName = "[Baws] Evangelion 2.22 - You Can (Not) Advance (1080p BD HEVC FLAC) [56E7A5B8].mkv";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should not detect title number before season marker as episode", () => {
+        const releaseName = "[Salieri] Mob Psycho 100 - S2 - OVA (1080p) (HDR) [Dual Audio].mkv";
+        expect(parse(releaseName)).to.not.have.property("episodes");
+    });
+
+    it("should keep marked episode over title number before episode name", () => {
+        const releaseName = "[INVERTI] Cyborg 009 - The Cyborg Soldier EP22 (480p) [DUAL AUDIO].mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Cyborg 009 - The Cyborg Soldier", episode: 22 });
+    });
+
+    it("should keep trailing anime episode over title number", () => {
+        const releaseName = "[EMBER] Zom 100 - Zombie ni Naru made ni Shitai 100 no Koto - 04.mkv";
+        expect(parse(releaseName)).to.deep.include({ title: "Zom 100 - Zombie ni Naru made ni Shitai 100 no Koto", episode: 4 });
+    });
+
     it("should detect anime episode with hyphen number in title", () => {
         const releaseName = "[SubsPlease] Fairy Tail - 100 Years Quest - 05 (1080p) [1107F3A9].mkv";
         expect(parse(releaseName)).to.deep.include({ episode: 5 });
