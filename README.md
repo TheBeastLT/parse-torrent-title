@@ -3,9 +3,6 @@
 This package extracts information from a torrent or file name: title, year, season and episode numbers,
 resolution, source, codec, audio, HDR, languages, release group and more.
 
-It is a fork of [clement-escolano/parse-torrent-title](https://github.com/clement-escolano/parse-torrent-title),
-extended with many more handlers for anime, foreign language and pack releases.
-
 ## Installation
 
 Install it from this repository:
