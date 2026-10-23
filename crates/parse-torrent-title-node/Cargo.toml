@@ -1,0 +1,22 @@
+[package]
+name = "parse-torrent-title-node"
+description = "Node.js bindings exposing parse-torrent-title with the api of the js library"
+publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+napi = { version = "3.4.0", default-features = false, features = ["napi6", "serde-json"] }
+napi-derive = "3.3.0"
+parse-torrent-title.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[build-dependencies]
+napi-build = "2.2.4"

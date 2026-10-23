@@ -1,0 +1,69 @@
+name: Release
+
+# builds the native addon for each platform and publishes the npm packages, like the napi-rs package template
+on:
+  release:
+    types: [published]
+
+defaults:
+  run:
+    working-directory: crates/parse-torrent-title-node
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        settings:
+          - { host: macos-latest, target: aarch64-apple-darwin, build: npm run build -- --target aarch64-apple-darwin }
+          - { host: macos-latest, target: x86_64-apple-darwin, build: npm run build -- --target x86_64-apple-darwin }
+          - { host: windows-latest, target: x86_64-pc-windows-msvc, build: npm run build -- --target x86_64-pc-windows-msvc }
+          - { host: ubuntu-latest, target: x86_64-unknown-linux-gnu, build: npm run build -- --target x86_64-unknown-linux-gnu --use-napi-cross }
+          - { host: ubuntu-latest, target: aarch64-unknown-linux-gnu, build: npm run build -- --target aarch64-unknown-linux-gnu --use-napi-cross }
+          - { host: ubuntu-latest, target: x86_64-unknown-linux-musl, build: npm run build -- --target x86_64-unknown-linux-musl -x }
+          - { host: ubuntu-latest, target: aarch64-unknown-linux-musl, build: npm run build -- --target aarch64-unknown-linux-musl -x }
+    runs-on: ${{ matrix.settings.host }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.settings.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.settings.target }}
+      # `-x` builds musl targets with cargo-zigbuild, which it installs itself
+      - uses: mlugg/setup-zig@v2
+        if: contains(matrix.settings.target, 'musl')
+      - run: npm ci
+      - run: ${{ matrix.settings.build }}
+        shell: bash
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bindings-${{ matrix.settings.target }}
+          path: crates/parse-torrent-title-node/*.node
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org/
+      - uses: dtolnay/rust-toolchain@stable
+      - run: npm ci
+      # the loader of the platform packages, the same on every platform
+      - run: npm run build
+      - uses: actions/download-artifact@v4
+        with:
+          path: crates/parse-torrent-title-node/artifacts
+      - run: npx napi create-npm-dirs
+      - run: npx napi artifacts
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

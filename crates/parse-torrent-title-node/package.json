@@ -1,0 +1,43 @@
+{
+  "name": "@thebeastlt/parse-torrent-title",
+  "version": "2.0.0-alpha.0",
+  "description": "Parse torrent title to extract useful information",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": ["index.js", "index.d.ts", "native.js", "README.md"],
+  "keywords": ["parse", "torrent", "title", "name", "extract", "information"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/TheBeastLT/parse-torrent-title.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "napi": {
+    "binaryName": "parse-torrent-title",
+    "targets": [
+      "x86_64-apple-darwin",
+      "aarch64-apple-darwin",
+      "x86_64-unknown-linux-gnu",
+      "x86_64-unknown-linux-musl",
+      "aarch64-unknown-linux-gnu",
+      "aarch64-unknown-linux-musl",
+      "x86_64-pc-windows-msvc"
+    ]
+  },
+  "scripts": {
+    "build": "napi build --platform --release --js native.js --dts native.d.ts",
+    "build:debug": "napi build --platform --js native.js --dts native.d.ts",
+    "prepublishOnly": "napi pre-publish -t npm",
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^3.0.0",
+    "chai": "^4.2.0",
+    "mocha": "^7.1.2"
+  }
+}

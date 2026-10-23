@@ -1,0 +1,26 @@
+[package]
+name = "parse-torrent-title"
+description = "Parse torrent title to extract useful information"
+keywords = ["parse", "torrent", "title", "name", "extract"]
+categories = ["parser-implementations"]
+readme = "../../README.md"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+indexmap.workspace = true
+regress.workspace = true
+regex.workspace = true
+regex-syntax.workspace = true
+aho-corasick.workspace = true
+serde.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
+
+[[test]]
+name = "parse"
+path = "tests/parse/main.rs"

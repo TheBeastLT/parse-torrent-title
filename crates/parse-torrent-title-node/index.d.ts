@@ -159,7 +159,7 @@ declare namespace ParseTorrentTitle {
     }
 }
 
-declare module "parse-torrent-title" {
+declare module "@thebeastlt/parse-torrent-title" {
 
     export interface DefaultParserResult extends ParseTorrentTitle.DefaultParserResult { }
     export type ParserOptions = ParseTorrentTitle.ParserOptions;

@@ -1,2 +1,8 @@
-.idea
+/target
 node_modules
+# built by `npm run build` in crates/parse-torrent-title-node
+*.node
+crates/parse-torrent-title-node/native.js
+crates/parse-torrent-title-node/native.d.ts
+crates/parse-torrent-title-node/npm
+.idea
