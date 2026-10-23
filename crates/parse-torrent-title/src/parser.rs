@@ -575,9 +575,10 @@ impl Parser {
 
         for (position, handler) in self.handlers.iter().enumerate() {
             if !candidates[position] {
-                // skipping is only an optimization, so debug builds (the test suite) check it never skips a match
-                debug_assert!(
-                    handler.pattern().is_none_or(|regex| regex.find(&title).is_none()),
+                // skipping is only an optimization, so the `verify-regex` feature checks it never skips a match
+                assert!(
+                    !cfg!(feature = "verify-regex")
+                        || handler.pattern().is_none_or(|regex| regex.find(&title).is_none()),
                     "the literals of {handler:?} skip a match in {title:?}, see crate::literals"
                 );
                 continue;

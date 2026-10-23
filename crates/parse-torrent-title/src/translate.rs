@@ -5,11 +5,13 @@
 //! a pattern of the linear time `regex` crate:
 //!
 //! - When the pattern uses only what the `regex` crate supports, the translation is exact and replaces the
-//!   backtracking engine entirely, for the texts given by [`Translation::ascii_text_only`].
+//!   backtracking engine entirely, for the texts given by [`Translation::holds_for`].
 //! - Otherwise it matches a superset of the js pattern, a quick check that the pattern can match at all:
 //!   lookarounds are dropped (an assertion only narrows the matches) and backreferences match anything.
 //!
 //! Either way the rest keeps its exact js meaning, such as the ascii only `\w`, `\d` and `\b`.
+
+use regex_syntax::ast::{self, Ast, ClassSetItem};
 
 /// Characters matched by js `\s`.
 const JS_SPACES: &str =
@@ -23,11 +25,148 @@ pub(crate) struct Translation {
     pub pattern: String,
     /// Whether the pattern finds the same matches and capture groups as the js pattern.
     pub exact: bool,
-    /// Whether the exact pattern only agrees with the js pattern on ascii text.
+    /// Whether the `i` flag folds case by uppercasing, as js does without the `u` flag, unlike the simple case
+    /// folding of the `regex` crate: the translation then only holds on the texts given by [`Translation::holds_for`].
+    uppercase_folding: bool,
+    /// Whether the pattern holds `ſ` or the kelvin sign, which the `regex` crate folds into `s` and `k` unlike js.
+    folds_into_ascii: bool,
+    /// Whether the pattern only holds ascii chars, so it folds the ascii letters only.
+    ascii_pattern: bool,
+}
+
+/// The chars whose case folds differently in js without the `u` flag and in the `regex` crate, such as `ſ` which
+/// js does not fold into `s` because it uppercases into ascii, or the ohm sign which js does not fold into `ω`.
+///
+/// Sorted, and checked against both foldings by a test.
+const FOLDS_UNLIKE_JS: &[char] = &[
+    '\u{c5}',
+    '\u{df}',
+    '\u{e5}',
+    '\u{17f}',
+    '\u{390}',
+    '\u{398}',
+    '\u{3a9}',
+    '\u{3b0}',
+    '\u{3b8}',
+    '\u{3c9}',
+    '\u{3d1}',
+    '\u{3f4}',
+    '\u{1e9e}',
+    '\u{1f80}',
+    '\u{1f81}',
+    '\u{1f82}',
+    '\u{1f83}',
+    '\u{1f84}',
+    '\u{1f85}',
+    '\u{1f86}',
+    '\u{1f87}',
+    '\u{1f88}',
+    '\u{1f89}',
+    '\u{1f8a}',
+    '\u{1f8b}',
+    '\u{1f8c}',
+    '\u{1f8d}',
+    '\u{1f8e}',
+    '\u{1f8f}',
+    '\u{1f90}',
+    '\u{1f91}',
+    '\u{1f92}',
+    '\u{1f93}',
+    '\u{1f94}',
+    '\u{1f95}',
+    '\u{1f96}',
+    '\u{1f97}',
+    '\u{1f98}',
+    '\u{1f99}',
+    '\u{1f9a}',
+    '\u{1f9b}',
+    '\u{1f9c}',
+    '\u{1f9d}',
+    '\u{1f9e}',
+    '\u{1f9f}',
+    '\u{1fa0}',
+    '\u{1fa1}',
+    '\u{1fa2}',
+    '\u{1fa3}',
+    '\u{1fa4}',
+    '\u{1fa5}',
+    '\u{1fa6}',
+    '\u{1fa7}',
+    '\u{1fa8}',
+    '\u{1fa9}',
+    '\u{1faa}',
+    '\u{1fab}',
+    '\u{1fac}',
+    '\u{1fad}',
+    '\u{1fae}',
+    '\u{1faf}',
+    '\u{1fb3}',
+    '\u{1fbc}',
+    '\u{1fc3}',
+    '\u{1fcc}',
+    '\u{1fd3}',
+    '\u{1fe3}',
+    '\u{1ff3}',
+    '\u{1ffc}',
+    '\u{2126}',
+    '\u{212a}',
+    '\u{212b}',
+    '\u{a7cf}',
+    '\u{a7d3}',
+    '\u{a7d5}',
+    '\u{fb05}',
+    '\u{fb06}',
+    '\u{16ebb}',
+    '\u{16ebc}',
+    '\u{16ebd}',
+    '\u{16ebe}',
+    '\u{16ebf}',
+    '\u{16ec0}',
+    '\u{16ec1}',
+    '\u{16ec2}',
+    '\u{16ec3}',
+    '\u{16ec4}',
+    '\u{16ec5}',
+    '\u{16ec6}',
+    '\u{16ec7}',
+    '\u{16ec8}',
+    '\u{16ec9}',
+    '\u{16eca}',
+    '\u{16ecb}',
+    '\u{16ecc}',
+    '\u{16ecd}',
+    '\u{16ece}',
+    '\u{16ecf}',
+    '\u{16ed0}',
+    '\u{16ed1}',
+    '\u{16ed2}',
+    '\u{16ed3}',
+];
+
+impl Translation {
+    /// Whether the translation, exact or a superset, holds on `text`.
     ///
-    /// Without the `u` flag js folds case by uppercasing, unlike the case folding of the `regex` crate, and the
-    /// two only provably agree for an ascii pattern on ascii text.
-    pub ascii_text_only: bool,
+    /// Folding by uppercasing differs from the simple case folding only on [`FOLDS_UNLIKE_JS`], and on `s` and `k`
+    /// for a pattern holding `ſ` or the kelvin sign.
+    pub fn holds_for(&self, text: &str) -> bool {
+        if !self.uppercase_folding {
+            return true;
+        }
+        let ascii_holds = |byte: u8| !(self.folds_into_ascii && matches!(byte, b's' | b'S' | b'k' | b'K'));
+        if text.is_ascii() {
+            return !self.folds_into_ascii || text.bytes().all(ascii_holds);
+        }
+        text.chars().all(|c| match u8::try_from(c) {
+            Ok(byte) if c.is_ascii() => ascii_holds(byte),
+            _ => FOLDS_UNLIKE_JS.binary_search(&c).is_err(),
+        })
+    }
+
+    /// Whether the pattern folds case like the ascii case insensitive search of `aho-corasick`, i.e. it is an
+    /// ascii pattern folding by uppercasing, which only folds ascii letters into ascii letters.
+    pub fn folds_ascii_letters_only(&self) -> bool {
+        self.uppercase_folding && self.ascii_pattern
+    }
 }
 
 /// Translates a js pattern, `None` when it uses syntax this translation does not know.
@@ -41,13 +180,47 @@ pub(crate) fn translate(source: &str, flags: &str) -> Option<Translation> {
     let mut translator =
         Translator { unicode, ignore_case, dot_all: flags.contains('s'), multiline: flags.contains('m'), exact: true };
     let body = translator.body(&chars)?;
-    let ascii_text_only = ignore_case && !unicode;
-    let ascii_pattern = source.is_ascii() && !source.contains("\\u") && !source.contains("\\x");
+    let uppercase_folding = ignore_case && !unicode;
     Some(Translation {
+        folds_into_ascii: uppercase_folding && folds_into_ascii(&body),
         pattern: if ignore_case { format!("(?i){body}") } else { body },
-        exact: translator.exact && (!ascii_text_only || ascii_pattern),
-        ascii_text_only,
+        exact: translator.exact,
+        uppercase_folding,
+        ascii_pattern: source.is_ascii() && !source.contains("\\u") && !source.contains("\\x"),
     })
+}
+
+/// Whether a translated pattern holds `ſ` or the kelvin sign, as a char or in a range of a class, `true` when it
+/// can not be parsed.
+fn folds_into_ascii(pattern: &str) -> bool {
+    struct Visitor(bool);
+    impl Visitor {
+        fn check(&mut self, start: char, end: char) {
+            self.0 |= ['\u{17f}', '\u{212a}'].iter().any(|c| (start..=end).contains(c));
+        }
+    }
+    impl ast::Visitor for Visitor {
+        type Output = bool;
+        type Err = ();
+        fn finish(self) -> Result<bool, ()> {
+            Ok(self.0)
+        }
+        fn visit_pre(&mut self, ast: &Ast) -> Result<(), ()> {
+            if let Ast::Literal(literal) = ast {
+                self.check(literal.c, literal.c);
+            }
+            Ok(())
+        }
+        fn visit_class_set_item_pre(&mut self, item: &ClassSetItem) -> Result<(), ()> {
+            match item {
+                ClassSetItem::Literal(literal) => self.check(literal.c, literal.c),
+                ClassSetItem::Range(range) => self.check(range.start.c, range.end.c),
+                _ => {}
+            }
+            Ok(())
+        }
+    }
+    ast::parse::Parser::new().parse(pattern).map_or(true, |ast| ast::visit(&ast, Visitor(false)).unwrap_or(true))
 }
 
 struct Translator {
@@ -214,6 +387,8 @@ impl Translator {
                 let end = chars[i..].iter().position(|&c| c == '>')?;
                 return Some(("(?s:.*)".to_owned(), i + end + 1));
             }
+            // js folds the case of what `\P{..}` matches, while the `regex` crate negates the folded property
+            'P' if unicode && ignore_case => return None,
             'p' | 'P' if unicode => {
                 let end = chars[i..].iter().position(|&c| c == '}')?;
                 return Some((chars[i..=i + end].iter().collect(), i + end + 1));
@@ -333,6 +508,8 @@ fn skip_quantifier(chars: &[char], i: usize) -> usize {
 
 #[cfg(test)]
 mod tests {
+    use regex_syntax::hir::{ClassUnicode, ClassUnicodeRange};
+
     use super::*;
 
     fn pattern(source: &str, flags: &str) -> String {
@@ -371,9 +548,52 @@ mod tests {
         assert!(exact(r"\bx\b", "u"));
         // a group inside a repeated group keeps its last value in the `regex` crate, unlike in js
         assert!(!exact(r"(?:(a)|b)+", ""));
-        // an accented letter does not fold like js without the `u` flag
-        assert!(!exact(r"[a-zé]", "i"));
+        // the few chars that fold unlike js without the `u` flag are left to `Translation::holds_for`
+        assert!(exact(r"[a-zé]", "i"));
         assert!(exact(r"[a-zé]", ""));
+    }
+
+    /// The single char js `toUpperCase` of `c`, which js folds case by without the `u` flag.
+    fn js_canonical(c: char) -> char {
+        let mut upper = c.to_uppercase();
+        match (upper.next(), upper.next()) {
+            (Some(upper), None) if c.is_ascii() || !upper.is_ascii() => upper,
+            _ => c,
+        }
+    }
+
+    #[test]
+    fn lists_the_chars_that_fold_unlike_js() {
+        let folds_unlike_js = |c: char| {
+            let mut class = ClassUnicode::new([ClassUnicodeRange::new(c, c)]);
+            class.case_fold_simple();
+            let folded: Vec<char> = class.iter().flat_map(|range| range.start()..=range.end()).collect();
+            let canonical = js_canonical(c);
+            !folded.contains(&canonical) || folded.iter().any(|&other| js_canonical(other) != canonical)
+        };
+        let expected: Vec<char> =
+            (0..=0x10_ffff).filter_map(char::from_u32).filter(|c| !c.is_ascii() && folds_unlike_js(*c)).collect();
+        assert!(FOLDS_UNLIKE_JS.is_sorted());
+        assert_eq!(FOLDS_UNLIKE_JS, expected, "the unicode tables changed, update FOLDS_UNLIKE_JS");
+    }
+
+    #[test]
+    fn holds_where_both_foldings_agree() {
+        let holds = |source: &str, flags: &str, text: &str| translate(source, flags).unwrap().holds_for(text);
+        assert!(holds(r"\W", "i", "Seasons ¼ Жж"));
+        assert!(!holds(r"\W", "i", "ſeason"));
+        assert!(!holds(r"x", "i", "\u{2126}"));
+        assert!(holds(r"x", "iu", "\u{2126}"));
+        assert!(holds(r"[\u0100-\u024f]", "i", "movie"));
+        assert!(!holds(r"[\u0100-\u024f]", "i", "season"));
+        assert!(holds(r"[\u0100-\u024f]", "", "\u{2126}"));
+    }
+
+    #[test]
+    fn leaves_folded_negated_properties_to_js() {
+        assert!(translate(r"\P{Ll}", "iu").is_none());
+        assert!(translate(r"\P{Ll}", "u").is_some());
+        assert!(translate(r"\P", "i").is_some());
     }
 
     #[test]

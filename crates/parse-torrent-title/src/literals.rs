@@ -80,7 +80,7 @@ fn required_literals(regex: &Regex) -> Option<Vec<Vec<u8>>> {
     let translation = regex.translation()?;
     // the automaton matches ascii letters in any case, which is all js folds an ascii pattern into without the
     // `u` flag, so the costly unicode case folding of the extraction is only needed for other patterns
-    let ascii_folding = translation.ascii_text_only && regex.source().is_ascii();
+    let ascii_folding = translation.folds_ascii_letters_only();
     let pattern = translation.pattern.strip_prefix("(?i)").filter(|_| ascii_folding).unwrap_or(&translation.pattern);
     let hir = regex_syntax::ParserBuilder::new().build().parse(pattern).ok()?;
     // every match starts with one of the prefixes, and ends with one of the suffixes: keep the more selective

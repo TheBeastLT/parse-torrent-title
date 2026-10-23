@@ -415,4 +415,30 @@ mod review_fixes {
 
         assert_eq!(parser.parse("A 1.5 B").get("float"), Some(&Value::Json(serde_json::json!(1.5))));
     }
+
+    /// an episode list after an `s` does not trip over the folding of the backtracking regex engine
+    #[test]
+    fn parses_an_s_before_an_episode_list() {
+        assert_eq!(parse("Movie se1e2").title(), "Movie se1e2");
+    }
+
+    /// a file size is not a year
+    #[test]
+    fn does_not_read_a_file_size_as_a_year() {
+        let parsed = parse("Movie 2000 MB 1080p");
+        assert_eq!(parsed.year(), None);
+        assert_eq!(parsed.title(), "Movie 2000 MB");
+    }
+
+    /// `integer` reads the leading digits of an ordinal
+    #[test]
+    fn reads_the_number_of_an_ordinal() {
+        let mut parser = create_parser();
+        parser.add_handler(
+            Handler::regex("edition", regex(r"(\d+th) edition"))
+                .transform(parse_torrent_title::transformers::integer()),
+        );
+
+        assert_eq!(parser.parse("Movie 12th edition").get("edition"), Some(&Value::Int(12)));
+    }
 }

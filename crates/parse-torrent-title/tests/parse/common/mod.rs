@@ -75,11 +75,13 @@ pub fn assert_field_at(title: &str, name: &str, index: usize, expected: Value) {
     assert_eq!(value.get(index), Some(&expected), "field `{name}` of {title:?} is {value}");
 }
 
-/// `this.timeout(ms)` of a mocha test.
+/// `this.timeout(ms)` of a mocha test, timed in release builds only since the budgets are made for optimized code.
 #[track_caller]
 pub fn assert_parses_within(title: &str, millis: u64) {
     let start = Instant::now();
     std::hint::black_box(parse(title));
     let elapsed = start.elapsed();
-    assert!(elapsed < Duration::from_millis(millis), "parsing {title:?} took {elapsed:?}");
+    if !cfg!(debug_assertions) {
+        assert!(elapsed < Duration::from_millis(millis), "parsing {title:?} took {elapsed:?}");
+    }
 }

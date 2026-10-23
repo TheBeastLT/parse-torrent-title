@@ -13,11 +13,11 @@ use crate::translate::{Translation, translate};
 ///
 /// Matching runs on the linear time `regex` crate whenever the pattern translates to it exactly, and otherwise
 /// on a backtracking engine with js semantics (`regress`), which starts searching where the translated pattern,
-/// a superset, first matches. Debug builds check each of these shortcuts against `regress` for the library's own
-/// patterns.
+/// a superset, first matches. The `verify-regex` feature checks each of these shortcuts against `regress` for the
+/// library's own patterns.
 ///
 /// Known differences from V8:
-/// - Without the `u` flag `ſ` and the kelvin sign match `s` and `k` under `i`, so `ſeason 1` reads a season.
+/// - Without the `u` flag `ſ` matches `s` under `i`, so `ſeason 1` reads a season.
 /// - Without the `u` flag js matches the two halves of a character outside the basic multilingual plane, such as
 ///   an emoji, separately, so `.` and negated classes see one character here where js sees two.
 #[derive(Clone)]
@@ -25,7 +25,8 @@ pub struct Regex {
     source: Arc<str>,
     flags: Arc<str>,
     compiled: Arc<OnceLock<Compiled>>,
-    /// Whether debug builds check the shortcuts against `regress`, which is done for the library's own patterns.
+    /// Whether the `verify-regex` feature checks the shortcuts against `regress`, as done for the library's own
+    /// patterns.
     checked: bool,
 }
 
@@ -42,8 +43,8 @@ impl Compiled {
         let invalid = |message: String| Error::InvalidRegex { pattern: source.to_owned(), message };
         validate_flags(flags).map_err(invalid)?;
         let engine_flags: String = flags.chars().filter(|flag| !matches!(flag, 'g' | 'd')).collect();
-        let js =
-            regress::Regex::with_flags(source, engine_flags.as_str()).map_err(|error| invalid(error.to_string()))?;
+        let js = regress::Regex::with_flags(&regress_source(source, flags), engine_flags.as_str())
+            .map_err(|error| invalid(error.to_string()))?;
         let translation = translate(source, flags);
         let translated = translation
             .as_ref()
@@ -51,12 +52,49 @@ impl Compiled {
         Ok(Self { js, translation, translated })
     }
 
+    /// The translation, exact or a superset, when it holds on `text`.
+    fn translated_for(&self, text: &str) -> Option<&::regex::Regex> {
+        let translation = self.translation.as_ref()?;
+        self.translated.as_ref().filter(|_| translation.holds_for(text))
+    }
+
     /// The exact translation, when it agrees with js on `text`.
     fn exact_for(&self, text: &str) -> Option<&::regex::Regex> {
-        let translation = self.translation.as_ref()?;
-        let usable = translation.exact && (!translation.ascii_text_only || text.is_ascii());
-        self.translated.as_ref().filter(|_| usable)
+        self.translated_for(text).filter(|_| self.translation.as_ref().is_some_and(|translation| translation.exact))
     }
+}
+
+/// The non word chars of js, without `ſ` and the kelvin sign.
+const NON_WORD: &str = "\\0-/:-@\\[-^`{-\u{17e}\u{180}-\u{2129}\u{212b}-\u{10ffff}";
+
+/// `source` for `regress`, which folds the `ſ` and the kelvin sign of a `\W` inside a class into `s` and `k` under
+/// `i`, unlike js: `[\W\d]` would match `s`. Such a `\W` is spelled out without them, which only changes whether
+/// `ſ` and the kelvin sign themselves match.
+fn regress_source<'s>(source: &'s str, flags: &str) -> Cow<'s, str> {
+    if !flags.contains('i') || flags.contains('v') || !source.contains("\\W") {
+        return Cow::Borrowed(source);
+    }
+    let mut out = String::with_capacity(source.len() + NON_WORD.len());
+    let mut in_class = false;
+    let mut chars = source.chars();
+    while let Some(c) = chars.next() {
+        match c {
+            '\\' => match chars.next() {
+                Some('W') if in_class => out.push_str(NON_WORD),
+                escaped => out.extend(['\\'].into_iter().chain(escaped)),
+            },
+            '[' => {
+                in_class = true;
+                out.push(c);
+            }
+            ']' => {
+                in_class = false;
+                out.push(c);
+            }
+            c => out.push(c),
+        }
+    }
+    Cow::Owned(out)
 }
 
 /// Accepts the flags of a js regex, except `y` whose sticky matching is not supported.
@@ -140,9 +178,9 @@ impl Regex {
         self.compiled.get_or_init(|| Compiled::new(&self.source, &self.flags).unwrap_or_else(|error| panic!("{error}")))
     }
 
-    /// Whether debug builds should check a shortcut against `regress`.
+    /// Whether the `verify-regex` feature should check a shortcut against `regress`.
     fn check(&self) -> bool {
-        cfg!(debug_assertions) && self.checked
+        cfg!(feature = "verify-regex") && self.checked
     }
 
     /// The translation into the `regex` crate syntax, without compiling it.
@@ -180,7 +218,7 @@ impl Regex {
             return found;
         }
         // a match of the translated superset starts at or before any js match, so the js search starts there
-        let start = match &compiled.translated {
+        let start = match compiled.translated_for(text) {
             Some(translated) => translated.find(text).map(|m| m.start()),
             None => Some(0),
         };
@@ -198,7 +236,7 @@ impl Regex {
     /// Whether the translated pattern rules out any match in `text`.
     pub(crate) fn cannot_match(&self, text: &str) -> bool {
         let compiled = self.compiled();
-        let rejected = compiled.translated.as_ref().is_some_and(|translated| !translated.is_match(text));
+        let rejected = compiled.translated_for(text).is_some_and(|translated| !translated.is_match(text));
         if rejected && self.check() {
             assert!(
                 compiled.js.find(text).is_none(),
@@ -350,5 +388,16 @@ mod tests {
             assert!(matches!(Regex::new("a", flags), Err(Error::InvalidRegex { .. })), "{flags}");
         }
         assert!(Regex::new("a", "dgimsu").is_ok());
+    }
+
+    #[test]
+    fn folds_case_like_js() {
+        // `regress` folds the `ſ` of a `\W` in a class into `s`
+        assert_eq!(found(r"(?:[\W\d]|^)e(\d)(?<!x)", "i", "Movie se1e2"), Some(8..11));
+        assert_eq!(found(r"[^\W\d]", "i", "1s"), Some(1..2));
+        assert_eq!(found(r"a[\W]", "iu", "as a-"), Some(3..5));
+        // the `regex` crate folds the ohm sign into `ω`, and does not fold what `\P{..}` matches
+        assert_eq!(found(r"ω", "i", "\u{2126}"), None);
+        assert_eq!(found(r"\P{Lowercase_Letter}", "iu", "a"), Some(0..1));
     }
 }

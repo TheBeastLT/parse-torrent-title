@@ -1,5 +1,7 @@
 // The api of the js library on top of the rust parser of `native.js`, built by `npm run build`.
-// Values cross into rust as json; handlers and transformers written in js are wrapped to take and return json.
+// Values cross into rust as json; handlers and transformers written in js are wrapped to take and return json,
+// so they see copies of the values: a Date becomes its iso string, and an object is equal to but not the same as
+// the one a previous handler stored.
 const { NativeParser, applyTransformer } = require("./native");
 
 // built in transformers are described for rust to run them, and stay callable from js
@@ -44,7 +46,10 @@ const Transformers = {
     uniqConcat: chain => (chain.spec ? builtin({ kind: "uniqConcat", chain: chain.spec }) : (input, current) => {
         const values = current || [];
         const value = chain(input);
-        return values.includes(value) ? values : values.concat(value);
+        // values are json, copied on each call, so an equal value is the same value
+        const json = JSON.stringify(value);
+        const found = !Array.isArray(value) && values.some(existing => JSON.stringify(existing) === json);
+        return found ? values : values.concat(value);
     })
 };
 

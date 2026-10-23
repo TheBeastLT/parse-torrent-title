@@ -985,7 +985,7 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
         // the first `N.5` of the parsed episode, as js finds it with a pattern made for the episode
         let is_episode = |m: &Match| group(m, title, 1).and_then(|number| number.parse::<i64>().ok()) == Some(episode);
         let found = half_episode.find_iter(title).find(is_episode);
-        if cfg!(debug_assertions) {
+        if cfg!(feature = "verify-regex") {
             let made = Regex::new(&[r"(?<!\d\.?|imdb[ .]?|#)0*", &episode.to_string(), HALF_EPISODE_END].concat(), "i");
             let expected = made.ok().and_then(|made| made.find(title)).map(|m| m.start());
             assert_eq!(found.as_ref().map(Match::start), expected, "half episode {episode} of {title:?}");
@@ -1777,14 +1777,14 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
     let bracketed = Regex::known(r"^\[.+]$", "");
     p.function("group", move |c| {
         let group = c.matched.get("group");
-        if let Some((index, raw)) = group.and_then(|g| Some((g.match_index, g.raw_match.as_deref()?))) {
-            if bracketed.is_match(raw) {
-                let end_index = index + utf16_len(raw);
+        if let Some((index, raw)) = group.and_then(|g| Some((g.match_index, g.raw_match.as_deref()?)))
+            && bracketed.is_match(raw)
+        {
+            let end_index = index + utf16_len(raw);
 
-                // remove anime group match if some other parameter is contained in it, since it's a false positive.
-                if c.matched.values().any(|m| m.match_index != 0 && m.match_index < end_index) {
-                    c.result.remove("group");
-                }
+            // remove anime group match if some other parameter is contained in it, since it's a false positive.
+            if c.matched.values().any(|m| m.match_index != 0 && m.match_index < end_index) {
+                c.result.remove("group");
             }
         }
         Some(HandlerMatch::at(0))

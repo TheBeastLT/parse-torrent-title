@@ -7,7 +7,7 @@ version = "0.1.0"
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/TheBeastLT/parse-torrent-title"
-rust-version = "1.85"
+rust-version = "1.88"
 
 [workspace.dependencies]
 parse-torrent-title = { path = "crates/parse-torrent-title" }

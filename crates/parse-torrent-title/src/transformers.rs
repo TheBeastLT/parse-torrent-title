@@ -37,9 +37,15 @@ pub fn value(value: impl Into<Value>) -> Transformer {
 }
 
 /// The number written by the match, as an integer when it fits one.
+///
+/// Like js `parseInt`, a number followed by other text such as `12th` reads as its leading digits, but a whole
+/// decimal number such as `12.5` or `1e3` keeps its value instead of being cut at the `.` or `e`.
 #[must_use]
 pub fn integer() -> Transformer {
-    transformer(|input, _| number(input.trim()))
+    transformer(|input, _| {
+        let input = input.trim();
+        number(input).or_else(|| number(leading_integer(input)))
+    })
 }
 
 fn number(digits: &str) -> Option<Value> {
@@ -50,6 +56,13 @@ fn number(digits: &str) -> Option<Value> {
             Some(Value::Json(serde_json::Value::Number(number)))
         }
     }
+}
+
+/// The optionally signed leading digits of `text`.
+fn leading_integer(text: &str) -> &str {
+    let sign = usize::from(text.starts_with(['+', '-']));
+    let digits = text[sign..].bytes().take_while(u8::is_ascii_digit).count();
+    &text[..sign + digits]
 }
 
 const CJK_DIGITS: [char; 9] = ['一', '二', '三', '四', '五', '六', '七', '八', '九'];
@@ -175,8 +188,8 @@ pub fn array(chain: Transformer) -> Transformer {
     })
 }
 
-/// Appends the value of `chain` to the field's list unless it is already in it; a list value is appended
-/// item by item, like js `concat`.
+/// Appends the value of `chain` to the field's list unless an equal value is already in it; a list value is
+/// appended item by item, like js `concat`.
 #[must_use]
 pub fn uniq_concat(chain: Transformer) -> Transformer {
     transformer(move |input, current| {
@@ -185,8 +198,8 @@ pub fn uniq_concat(chain: Transformer) -> Transformer {
             Some(serde_json::Value::Array(values)) => values,
             _ => Vec::new(),
         };
-        // like js `includes`, a list is never found in another one
-        let found = !value.is_array() && !value.is_object() && values.contains(&value);
+        // a list is appended item by item like js `concat`, without checking whether its items are already there
+        let found = !value.is_array() && values.contains(&value);
         if !found {
             match value {
                 serde_json::Value::Array(items) => values.extend(items),
@@ -352,6 +365,10 @@ mod tests {
         assert_eq!(apply(integer(), "05"), Some(Value::Int(5)));
         assert_eq!(apply(integer(), "99999999999999999999"), Some(Value::Json(serde_json::json!(1e20))));
         assert_eq!(apply(integer(), "x"), None);
+        assert_eq!(apply(integer(), "12th"), Some(Value::Int(12)));
+        assert_eq!(apply(integer(), "-3rd"), Some(Value::Int(-3)));
+        assert_eq!(apply(integer(), "12.5"), Some(Value::Json(serde_json::json!(12.5))));
+        assert_eq!(apply(integer(), "inf"), None);
     }
 
     #[test]

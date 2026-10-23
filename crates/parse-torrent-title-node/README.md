@@ -194,6 +194,13 @@ console.log(information.isHarryPotterRelated); // true
 If the matched text should end the title, return `{ matchIndex }` from the handler.
 Return `{ rawMatch, matchIndex, remove: true }` to also remove the match from the name.
 
+#### Values
+
+The parser runs natively, so the values handlers and transformers store are passed to it as JSON. Store JSON values,
+such as booleans, numbers, strings, arrays and plain objects. A `Date` is stored as its ISO string, and each handler
+sees a copy of the result: an object stored by one handler is equal to, but not the same object as, the one the next
+handler receives. `uniqConcat` therefore compares values by equality rather than identity.
+
 ### Customizing handlers
 
 #### Positioning handlers

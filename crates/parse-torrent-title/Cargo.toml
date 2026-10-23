@@ -10,6 +10,11 @@ license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
 
+[features]
+# checks the shortcuts taken around the backtracking regex engine (translated patterns, literal filtering) against
+# it, panicking when one changes a match; meant for the test suite
+verify-regex = []
+
 [dependencies]
 indexmap.workspace = true
 regress.workspace = true

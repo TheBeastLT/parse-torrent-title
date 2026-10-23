@@ -1,11 +1,15 @@
 use indexmap::IndexMap;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
+use serde_json::Value as Json;
 
 /// A single parsed field value.
 ///
-/// Values (de)serialize untagged, so a [`ParsedTitle`] serializes to the same JSON as the js library's result.
+/// Values serialize untagged, so a [`ParsedTitle`] serializes to the same JSON as the js library's result.
 /// The default handlers only produce the typed variants; [`Value::Json`] holds anything else a custom handler sets.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+///
+/// An empty list deserializes as [`Value::Json`], since its items have no type, but [`ParsedTitle`] restores the
+/// type of the lists of the default handlers.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 #[serde(untagged)]
 #[non_exhaustive]
 pub enum Value {
@@ -27,25 +31,42 @@ impl Value {
             Value::Str(value) => !value.is_empty(),
             Value::Ints(_) | Value::Strs(_) => true,
             Value::Json(value) => match value {
-                serde_json::Value::Null => false,
-                serde_json::Value::Bool(value) => *value,
-                serde_json::Value::Number(number) => number.as_f64().is_some_and(|number| number != 0.0),
-                serde_json::Value::String(value) => !value.is_empty(),
-                serde_json::Value::Array(_) | serde_json::Value::Object(_) => true,
+                Json::Null => false,
+                Json::Bool(value) => *value,
+                Json::Number(number) => number.as_f64().is_some_and(|number| number != 0.0),
+                Json::String(value) => !value.is_empty(),
+                Json::Array(_) | Json::Object(_) => true,
             },
         }
     }
 
     /// The value as json.
     #[must_use]
-    pub fn to_json(&self) -> serde_json::Value {
+    pub fn to_json(&self) -> Json {
         serde_json::to_value(self).unwrap_or_default()
     }
 
     /// The value of a json value, typed when it fits one of the typed variants.
     #[must_use]
-    pub fn from_json(value: serde_json::Value) -> Self {
-        serde_json::from_value(value).unwrap_or_else(|_| unreachable!("every json value is a Value::Json"))
+    pub fn from_json(value: Json) -> Self {
+        match value {
+            Json::Bool(value) => Value::Bool(value),
+            Json::String(value) => Value::Str(value),
+            Json::Number(number) => match number.as_i64() {
+                Some(value) => Value::Int(value),
+                None => Value::Json(Json::Number(number)),
+            },
+            Json::Array(items) if !items.is_empty() => {
+                if let Some(values) = items.iter().map(Json::as_i64).collect() {
+                    Value::Ints(values)
+                } else if let Some(values) = items.iter().map(|item| item.as_str().map(str::to_owned)).collect() {
+                    Value::Strs(values)
+                } else {
+                    Value::Json(Json::Array(items))
+                }
+            }
+            other => Value::Json(other),
+        }
     }
 
     #[must_use]
@@ -89,6 +110,12 @@ impl Value {
     }
 }
 
+impl<'de> Deserialize<'de> for Value {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        Json::deserialize(deserializer).map(Value::from_json)
+    }
+}
+
 impl From<bool> for Value {
     fn from(value: bool) -> Self {
         Value::Bool(value)
@@ -119,8 +146,8 @@ impl From<Vec<i64>> for Value {
     }
 }
 
-impl From<serde_json::Value> for Value {
-    fn from(value: serde_json::Value) -> Self {
+impl From<Json> for Value {
+    fn from(value: Json) -> Self {
         Value::from_json(value)
     }
 }
@@ -146,9 +173,32 @@ macro_rules! accessors {
 ///
 /// Field names match the js library (`bitDepth`, `audioChannels`, ...), so custom handlers can add any field.
 /// Typed accessors cover the fields of the default handlers.
-#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
 #[serde(transparent)]
 pub struct ParsedTitle(IndexMap<String, Value>);
+
+impl<'de> Deserialize<'de> for ParsedTitle {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let fields = IndexMap::<String, Json>::deserialize(deserializer)?;
+        let typed = fields.into_iter().map(|(field, value)| {
+            let value = match value {
+                Json::Array(items) if items.is_empty() => empty_list(&field),
+                value => Value::from_json(value),
+            };
+            (field, value)
+        });
+        Ok(typed.collect())
+    }
+}
+
+/// The empty list of `field`, typed for the lists of the default handlers.
+fn empty_list(field: &str) -> Value {
+    match field {
+        "hdr" | "languages" => Value::Strs(Vec::new()),
+        "volumes" | "seasons" | "episodes" => Value::Ints(Vec::new()),
+        _ => Value::Json(Json::Array(Vec::new())),
+    }
+}
 
 impl ParsedTitle {
     pub fn get(&self, field: &str) -> Option<&Value> {
@@ -240,5 +290,30 @@ impl<'a> IntoIterator for &'a ParsedTitle {
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.iter()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn keeps_the_type_of_empty_lists() {
+        let mut parsed = ParsedTitle::default();
+        parsed.set("languages", Vec::<String>::new());
+        parsed.set("seasons", Vec::<i64>::new());
+        parsed.set("custom", Json::Array(Vec::new()));
+        let json = serde_json::to_string(&parsed).unwrap();
+        assert_eq!(serde_json::from_str::<ParsedTitle>(&json).unwrap(), parsed);
+        assert_eq!(serde_json::from_str::<ParsedTitle>(&json).unwrap().languages(), Some(&[][..]));
+    }
+
+    #[test]
+    fn types_json_values() {
+        assert_eq!(Value::from_json(serde_json::json!([1, 2])), Value::Ints(vec![1, 2]));
+        assert_eq!(Value::from_json(serde_json::json!(["a"])), Value::Strs(vec!["a".to_owned()]));
+        assert_eq!(Value::from_json(serde_json::json!(["a", 1])), Value::Json(serde_json::json!(["a", 1])));
+        assert_eq!(Value::from_json(serde_json::json!(1.5)), Value::Json(serde_json::json!(1.5)));
+        assert_eq!(serde_json::from_str::<Value>("[]").unwrap(), Value::Json(serde_json::json!([])));
     }
 }

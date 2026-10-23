@@ -250,5 +250,13 @@ describe("Parser customization", () => {
 
             expect(parse("Game.of.Thrones.S01E01.720p.HDTV.x264-CTU").title).to.equal("Game of Thrones");
         });
+
+        it("does not repeat an equal object with uniqConcat", () => {
+            const parser = createParser();
+            const tag = { name: "tag" };
+            parser.addHandler("tags", /\b(TAG)\b/i, Transformers.uniqConcat(() => tag), { skipIfAlreadyFound: false });
+            parser.addHandler("tags", /\b(TAG2)\b/i, Transformers.uniqConcat(() => tag), { skipIfAlreadyFound: false });
+            expect(parser.parse("Movie TAG TAG2 1080p").tags).to.deep.equal([tag]);
+        });
     });
 });
