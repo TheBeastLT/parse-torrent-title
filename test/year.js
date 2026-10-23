@@ -166,6 +166,11 @@ describe("Paring year", () => {
         expect(parse(releaseName)).to.deep.include({ title: "MotoGP", year: 2021 });
     });
 
+    it("should read a year numbered by a three digit session as the year", () => {
+        const releaseName = "Formula.1.2024x123.Round.24.AbuDhabiGP.Race.International.MULTi.720p.SS";
+        expect(parse(releaseName)).to.deep.include({ title: "Formula 1", year: 2024, resolution: "720p" });
+    });
+
     it("should not read a truncated resolution width as a year numbered by sessions", () => {
         const releaseName = "Conan II - O Destruidor 1984 (Audio EN-ES - Leg BR - Mkv 1920x81";
         expect(parse(releaseName)).to.deep.include({ year: 1984 });

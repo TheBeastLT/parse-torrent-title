@@ -34,7 +34,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("resolution", /[([]?3840x\d{4}[)\]]?/i, value("4k"), { remove: true });
     parser.addHandler("resolution", /[([]?1920x\d{3,4}[)\]]?/i, value("1080p"), { remove: true });
     parser.addHandler("resolution", /[([]?1280x\d{3}[)\]]?/i, value("720p"), { remove: true });
-    parser.addHandler("resolution", /[([]?\d{3,4}x(\d{3,4})[)\]]?/i, value("$1p"), { remove: true });
+    parser.addHandler("resolution", /[([]?(?<!\d)(?!(?:19[5-9]|20[012])\dx\d{3}(?!\d))\d{3,4}x(\d{3,4})[)\]]?/i, value("$1p"), { remove: true });
     parser.addHandler("resolution", /(480|720|1080)0[pi]/i, value("$1p"), { remove: true });
     parser.addHandler("resolution", /(?:BD|HD|M)(720|1080|2160)/, value("$1p"), { remove: true });
     parser.addHandler("resolution", /(480|576|720|1080|2160)[piр]/i, value("$1p"), { remove: true });
