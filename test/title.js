@@ -595,4 +595,22 @@ describe("Parsing title", () => {
 
         expect(parse(releaseName)).to.deep.include({ title: "Battle of the Field", year: 2004 });
     });
+
+    it("should keep a title number before a year numbered by sessions", () => {
+        const releaseName = "Formula.1.2021x21.Saudi.Arabia.Race.SkyF1HD.1080p";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Formula 1", year: 2021 });
+    });
+
+    it("should keep a spaced title number before a year numbered by sessions", () => {
+        const releaseName = "Formula 1 2026x16 R02 ChineseGP Sprint Qualifying F1TV 720p SS";
+
+        expect(parse(releaseName)).to.deep.include({ title: "Formula 1", year: 2026 });
+    });
+
+    it("should keep a glued title number before a year numbered by sessions", () => {
+        const releaseName = "GP2 2015x05 Great Britain Feature Race SkyF1HD 720p50";
+
+        expect(parse(releaseName)).to.deep.include({ title: "GP2", year: 2015 });
+    });
 });

@@ -160,4 +160,14 @@ describe("Paring year", () => {
         const releaseName = "Arrival 2016 1920 x 808 x264 Phun Psyz";
         expect(parse(releaseName)).to.deep.include({ title: "Arrival", year: 2016 });
     });
+
+    it("should read a year numbered by sessions as the year", () => {
+        const releaseName = "MotoGP.2021x08.Germany.Race.BTSportHD.1080p";
+        expect(parse(releaseName)).to.deep.include({ title: "MotoGP", year: 2021 });
+    });
+
+    it("should not read a truncated resolution width as a year numbered by sessions", () => {
+        const releaseName = "Conan II - O Destruidor 1984 (Audio EN-ES - Leg BR - Mkv 1920x81";
+        expect(parse(releaseName)).to.deep.include({ year: 1984 });
+    });
 });
