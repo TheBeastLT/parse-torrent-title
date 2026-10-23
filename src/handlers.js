@@ -60,8 +60,8 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("year", /(?<=[ .](?:19\d|20[012])\d(?:[ .]+\/[^/()[\]]+)*[ .]+)[([]((?:19\d|20[012])\d)[)\]]/, integer, { remove: true });
     parser.addHandler("year", /(?<!\b(?:complete|collection|duology|trilogy|quadr[oi]logy|tetralogy|pentalogy|hexalogy|anthology|saga|movies)\b.*|\band\b.*|&.*|\b\d[ .]?-[ .]?\d\b.*)(?<!(?:19\d|20[012])\d[ .](?:19\d|20[012])\d)(?<=[ .](?:19\d|20[012])\d)[ .]((?:19\d|20[012])\d)(?<!\2[ .](\d{4}))(?=[ .]|$)(?![ .](?:19\d|20[012])\d\b|[ .]?x[ .]?\d)/i, integer, { remove: true });
     parser.addHandler("year", /(?<!\d)(?!1920x)((?:19\d|20[012])\d)(?=x\d{1,3}(?!\d))/i, integer);
-    parser.addHandler("year", /[([*]?(?!^)(?<!\d|Cap[. ]?|\bep[. ]?|\bE|\bS(?=\d{4}E\d))((?:19\d|20[012])\d)(?!\d|kbps)[*)\]]?/i, integer, { remove: true });
-    parser.addHandler("year", /^[([]?((?:19\d|20[012])\d)(?!\d|kbps)[)\]]?(?![ ._]+(?:S\d{1,2}[ .]?E\d|E\d{1,3}\b))/i, integer, { remove: true });
+    parser.addHandler("year", /[([*]?(?!^)(?<!\d|Cap[. ]?|\bep[. ]?|\bE|\bS(?=\d{4}E\d))((?:19\d|20[012])\d)(?!\d|kbps|\s?[mg]i?b\b)[*)\]]?/i, integer, { remove: true });
+    parser.addHandler("year", /^[([]?((?:19\d|20[012])\d)(?!\d|kbps|\s?[mg]i?b\b)[)\]]?(?![ ._]+(?:S\d{1,2}[ .]?E\d|E\d{1,3}\b))/i, integer, { remove: true });
 
     // Extended
     parser.addHandler("extended", /EXTENDED/, boolean);

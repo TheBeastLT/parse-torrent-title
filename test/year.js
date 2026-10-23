@@ -46,6 +46,16 @@ describe("Paring year", () => {
         expect(parse(releaseName)).to.not.have.property("year");
     });
 
+    it("should not detect year from file size", () => {
+        const releaseName = "01. FP1 (2016mb 1920x1080 3961kbps x265 AAC deef).mkv";
+        expect(parse(releaseName)).to.not.have.property("year");
+    });
+
+    it("should not detect year from spaced file size", () => {
+        const releaseName = "02. Race (1936 MB 1920x1080 x265).mkv";
+        expect(parse(releaseName)).to.not.have.property("year");
+    });
+
     it("should not detect year spanish episode", () => {
         const releaseName = "Anatomia De Grey - Temporada 19 [HDTV][Cap.1905][Castellano][www.AtomoHD.nu].avi";
         expect(parse(releaseName)).to.not.have.property("year");
