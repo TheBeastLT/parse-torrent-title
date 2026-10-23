@@ -97,6 +97,18 @@ describe("Parsing resolution", () => {
         expect(parse(releaseName)).to.deep.include({ resolution: "1080p" });
     });
 
+    it("should not read a year numbered by a three digit session as a resolution", () => {
+        const releaseName = "Formula.1.2025x111.R21.BrazilianGP.Race.MULTi.SS";
+
+        expect(parse(releaseName)).to.not.have.property("resolution");
+    });
+
+    it("should still read a cropped width and height resolution", () => {
+        const releaseName = "[Arid] Mind Game [BDRip 1916x816 x264 FLAC]";
+
+        expect(parse(releaseName)).to.deep.include({ resolution: "816p" });
+    });
+
     it("should detect resolution with cyrillic p", () => {
         expect(parse("«Эрнест и Селестина» 1 сезон 05 серия 720р.mkv")).to.deep.include({ resolution: "720p" });
         expect(parse("Show 1 сезон 05 серия 1080р.mkv")).to.deep.include({ resolution: "1080p" });
