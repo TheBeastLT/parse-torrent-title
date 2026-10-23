@@ -141,7 +141,7 @@ returns a boolean, a number, a string or an array of numbers or strings:
 | `boolean`             | `true`                                                                                          |
 | `lowercase`           | the match in lower case                                                                         |
 | `uppercase`           | the match in upper case                                                                         |
-| `date(format)`        | a `YYYY-MM-DD` string, parsed with a [moment](https://momentjs.com/docs/#/parsing/string-format/) style format such as `"DD MM YYYY"` |
+| `date(format)`        | a `YYYY-MM-DD` string, parsed with a [moment](https://momentjs.com/docs/#/parsing/string-format/) style format made of the `YYYY`, `YY`, `MMMM`, `MMM`, `MM`, `M`, `Do`, `DD` and `D` tokens, such as `"DD MM YYYY"`. An invalid date does not match |
 | `range`               | an array of consecutive numbers: `"1-3"` gives `[1, 2, 3]`, `"S01 S02"` gives `[1, 2]`. Returns `null` for numbers that are not in ascending sequence |
 | `rangeUpTo`           | `[1..n]` from a single number                                                                   |
 | `list`                | a sorted array of the unique numbers in the match                                               |
@@ -284,6 +284,17 @@ const result = parser.parse("Watergate.2018.Part1.DOC.SUBFRENCH.1080p.HDTV.H264-
 console.log(result.year); // 2018
 console.log(result.part); // 1
 ```
+
+### Differences from earlier javascript versions
+
+The parser now runs on Rust, which changes a few edge cases:
+
+* An invalid date is left out of the result, instead of being `"Invalid date"`.
+* `Transformers.date` takes a single format, and rejects tokens other than the ones listed above.
+* The sticky `y` flag of regular expressions is not supported.
+* Characters outside the basic multilingual plane, such as emoji, count as one character in the default patterns,
+  where javascript counts the two halves of their utf-16 encoding.
+* Built-in transformers return strings for non-string input, e.g. `Transformers.none(5)` is `"5"`.
 
 ## Development
 

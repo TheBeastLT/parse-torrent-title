@@ -17,6 +17,8 @@ regex.workspace = true
 regex-syntax.workspace = true
 aho-corasick.workspace = true
 serde.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
 
 [dev-dependencies]
 serde_json.workspace = true

@@ -104,10 +104,12 @@ declare namespace ParseTorrentTitle {
         none: Transformer;
         value: (value: any) => Transformer;
         integer: Transformer;
+        cjkInteger: Transformer;
         boolean: Transformer;
         lowercase: Transformer;
         uppercase: Transformer;
-        date: (dateFormat: string | Array<string>) => Transformer;
+        /** A moment.js style format made of the YYYY, YY, MMMM, MMM, MM, M, Do, DD and D tokens */
+        date: (dateFormat: string) => Transformer;
         range: Transformer;
         list: Transformer;
         rangeUpTo: Transformer;

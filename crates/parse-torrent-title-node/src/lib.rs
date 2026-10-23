@@ -5,7 +5,9 @@
 //! taking and returning json, called back with the arguments the js library gives them.
 
 use std::cell::RefCell;
+use std::mem::ManuallyDrop;
 use std::sync::Arc;
+use std::thread::{self, ThreadId};
 
 use napi::bindgen_prelude::FunctionRef;
 use napi::{Env, Error, Result, Status, sys};
@@ -23,15 +25,27 @@ type JsonFn = FunctionRef<String, Option<String>>;
 
 /// A js function with the env it was given in, to call it back on the js thread while parsing.
 struct Callback {
-    function: JsonFn,
+    function: ManuallyDrop<JsonFn>,
     env: sys::napi_env,
+    /// The js thread of `env`, the only one the function may be called and released on.
+    thread: ThreadId,
 }
 
-// SAFETY: the parsers holding callbacks belong to js objects, so they are only ever used, and the callbacks
-// called and dropped, on the js thread of `env`.
+// SAFETY: the function and its env are only used on `thread`, the js thread they belong to: `call` and `drop`
+// check it, so a parser moved to another thread fails loudly instead of touching js from there.
 unsafe impl Send for Callback {}
 // SAFETY: as above.
 unsafe impl Sync for Callback {}
+
+impl Drop for Callback {
+    fn drop(&mut self) {
+        if thread::current().id() == self.thread {
+            // SAFETY: the function is not used after this, and is released on its own js thread.
+            unsafe { ManuallyDrop::drop(&mut self.function) };
+        }
+        // released anywhere else, the reference to the js function leaks rather than touching js off its thread
+    }
+}
 
 thread_local! {
     /// The first error thrown by a js callback during a parse, rethrown once the parse is over.
@@ -40,11 +54,12 @@ thread_local! {
 
 impl Callback {
     fn new(env: &Env, function: JsonFn) -> Self {
-        Self { function, env: env.raw() }
+        Self { function: ManuallyDrop::new(function), env: env.raw(), thread: thread::current().id() }
     }
 
     /// Calls the function, unless an earlier callback of the parse threw.
     fn call(&self, argument: String) -> Option<String> {
+        assert_eq!(thread::current().id(), self.thread, "a js handler can only run on its own js thread");
         if CALLBACK_ERROR.with_borrow(Option::is_some) {
             return None;
         }
@@ -70,16 +85,13 @@ fn transformer_from_spec(spec: &Json) -> Result<Transformer> {
     let chain = || transformer_from_spec(&spec["chain"]);
     Ok(match kind {
         "none" => transformers::none(),
-        "value" => transformers::value(
-            serde_json::from_value::<Value>(spec["value"].clone())
-                .map_err(|error| invalid(format!("unsupported transformer value: {error}")))?,
-        ),
+        "value" => transformers::value(Value::from_json(spec["value"].clone())),
         "integer" => transformers::integer(),
         "cjkInteger" => transformers::cjk_integer(),
         "boolean" => transformers::boolean(),
         "lowercase" => transformers::lowercase(),
         "uppercase" => transformers::uppercase(),
-        "date" => transformers::date(spec["format"].as_str().unwrap_or_default()),
+        "date" => transformers::date(spec["format"].as_str().unwrap_or_default()).map_err(invalid)?,
         "range" => transformers::range(),
         "list" => transformers::list(),
         "rangeUpTo" => transformers::range_up_to(),
@@ -98,29 +110,23 @@ fn custom_transformer(callback: Callback) -> Transformer {
     })
 }
 
-fn options_from_json(options: &Json) -> Result<Options> {
+fn options_from_json(options: &Json) -> Options {
     let flag = |key: &str, default: bool| options.get(key).and_then(Json::as_bool).unwrap_or(default);
-    let strings = |key: &str| -> Vec<String> {
-        let values = options.get(key).and_then(Json::as_array).into_iter().flatten();
-        values.filter_map(|value| value.as_str().map(str::to_owned)).collect()
+    let strings = |key: &str| -> Vec<&str> {
+        options.get(key).and_then(Json::as_array).into_iter().flatten().filter_map(Json::as_str).collect()
     };
-    let value = match options.get("value").filter(|value| !value.is_null()) {
-        Some(value) => Some(
-            serde_json::from_value(value.clone())
-                .map_err(|error| invalid(format!("unsupported option value: {error}")))?,
-        ),
-        None => None,
-    };
-    Ok(Options {
-        skip_if_already_found: flag("skipIfAlreadyFound", true),
-        skip_from_title: flag("skipFromTitle", false),
-        skip_if_first: flag("skipIfFirst", false),
-        skip_if_nothing_before: flag("skipIfNothingBefore", false),
-        skip_if_before: strings("skipIfBefore"),
-        skip_if_after: strings("skipIfAfter"),
-        remove: flag("remove", false),
-        value,
-    })
+    let parsed = Options::new()
+        .skip_if_already_found(flag("skipIfAlreadyFound", true))
+        .skip_from_title(flag("skipFromTitle", false))
+        .skip_if_first(flag("skipIfFirst", false))
+        .skip_if_nothing_before(flag("skipIfNothingBefore", false))
+        .skip_if_before(&strings("skipIfBefore"))
+        .skip_if_after(&strings("skipIfAfter"))
+        .remove(flag("remove", false));
+    match options.get("value").filter(|value| !value.is_null()) {
+        Some(value) => parsed.value(Value::from_json(value.clone())),
+        None => parsed,
+    }
 }
 
 fn options_to_json(options: &Options) -> Json {
@@ -140,17 +146,16 @@ fn options_to_json(options: &Options) -> Json {
 }
 
 fn target_from_json(target: &Json) -> Target {
-    match target {
-        Json::String(name) => Target { name: name.clone(), index: None },
-        _ => Target {
-            name: target["name"].as_str().unwrap_or_default().to_owned(),
-            index: target["index"].as_i64().map(|index| index as isize),
-        },
+    let name = target.as_str().or_else(|| target["name"].as_str()).unwrap_or_default();
+    match target["index"].as_i64().and_then(|index| isize::try_from(index).ok()) {
+        Some(index) => Target::new(name, index),
+        None => Target::from(name),
     }
 }
 
+/// A position from js, where a negative or fractional one counts as 0.
 fn index_from_json(value: &Json) -> usize {
-    value.as_f64().unwrap_or_default().max(0.0) as usize
+    value.as_u64().and_then(|index| usize::try_from(index).ok()).unwrap_or_default()
 }
 
 /// A handler written in js, called with `{ title, result, matched }` as json and returning
@@ -182,16 +187,19 @@ fn function_handler(name: String, callback: Callback) -> Handler {
             .flatten()
             .map(|(field, entry)| {
                 let raw_match = entry["rawMatch"].as_str().map(str::to_owned);
-                (field.clone(), MatchInfo { raw_match, match_index: index_from_json(&entry["matchIndex"]) })
+                (field.clone(), MatchInfo::new(index_from_json(&entry["matchIndex"]), raw_match))
             })
             .collect::<Matched>();
 
         let returned = &returned["returned"];
-        returned.is_object().then(|| HandlerMatch {
-            raw_match: returned["rawMatch"].as_str().map(str::to_owned),
-            match_index: index_from_json(&returned["matchIndex"]),
-            remove: returned["remove"].as_bool().unwrap_or_default(),
-            skip_from_title: returned["skipFromTitle"].as_bool().unwrap_or_default(),
+        returned.is_object().then(|| {
+            let found = HandlerMatch::at(index_from_json(&returned["matchIndex"]))
+                .remove(returned["remove"].as_bool().unwrap_or_default())
+                .skip_from_title(returned["skipFromTitle"].as_bool().unwrap_or_default());
+            match returned["rawMatch"].as_str() {
+                Some(raw_match) => found.raw_match(raw_match),
+                None => found,
+            }
         })
     })
 }
@@ -204,26 +212,26 @@ pub struct NativeParser {
 
 #[napi]
 impl NativeParser {
-    #[napi(constructor)]
+    #[napi(constructor, catch_unwind)]
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self { inner: Parser::new() }
     }
 
     /// A parser with the default handlers, sharing their compiled patterns with every other one.
-    #[napi(factory)]
+    #[napi(factory, catch_unwind)]
     pub fn with_defaults() -> Self {
         Self { inner: parse_torrent_title::create_parser() }
     }
 
-    #[napi]
+    #[napi(catch_unwind)]
     pub fn add_defaults(&mut self, exclude: Vec<String>) {
         let exclude: Vec<&str> = exclude.iter().map(String::as_str).collect();
         parse_torrent_title::add_defaults(&mut self.inner, &exclude);
     }
 
     /// Adds a regex handler whose transformer is either a json spec of a built in one, or a js function.
-    #[napi]
+    #[napi(catch_unwind)]
     #[allow(clippy::too_many_arguments)]
     pub fn add_regex_handler(
         &mut self,
@@ -242,11 +250,11 @@ impl NativeParser {
             (None, Some(spec)) => transformer_from_spec(&from_json(&spec)?)?,
             (None, None) => transformers::none(),
         };
-        let options = options_from_json(&from_json(&options)?)?;
-        self.insert(Handler::regex(name, regex).transform(transformer).options(options), &position)
+        let options = options_from_json(&from_json(&options)?);
+        self.insert(Handler::regex(name, regex).transform(transformer).options(options).into(), &position)
     }
 
-    #[napi]
+    #[napi(catch_unwind)]
     pub fn add_function_handler(
         &mut self,
         env: Env,
@@ -258,13 +266,16 @@ impl NativeParser {
     }
 
     /// Removes the handlers at the given positions, returning how many were removed.
-    #[napi]
+    #[napi(catch_unwind)]
     pub fn remove_at(&mut self, positions: Vec<u32>) -> u32 {
-        self.inner.remove_handlers_where(|handler| positions.contains(&(handler.position as u32))) as u32
+        let removed = self.inner.remove_handlers_where(|handler| {
+            u32::try_from(handler.position).is_ok_and(|position| positions.contains(&position))
+        });
+        u32::try_from(removed).unwrap_or(u32::MAX)
     }
 
     /// `[{ name, index, position, source?, flags?, options? }]` as json.
-    #[napi]
+    #[napi(catch_unwind)]
     pub fn get_handlers(&self) -> String {
         let handlers: Vec<Json> = self
             .inner
@@ -272,7 +283,7 @@ impl NativeParser {
             .iter()
             .map(|handler| {
                 let mut object = json!({ "name": handler.name, "index": handler.index, "position": handler.position });
-                if let (Some(regex), Some(options)) = (&handler.regex, &handler.options) {
+                if let (Some(regex), Some(options)) = (handler.regex(), handler.options()) {
                     object["source"] = json!(regex.source());
                     object["flags"] = json!(regex.flags());
                     object["options"] = options_to_json(options);
@@ -284,7 +295,7 @@ impl NativeParser {
     }
 
     /// The parsed title as json.
-    #[napi]
+    #[napi(catch_unwind)]
     pub fn parse(&self, title: String) -> Result<String> {
         let parsed = self.inner.parse(&title);
         if let Some(error) = CALLBACK_ERROR.take() {
@@ -293,7 +304,7 @@ impl NativeParser {
         serde_json::to_string(&parsed).map_err(|error| Error::from_reason(error.to_string()))
     }
 
-    #[napi(js_name = "clone")]
+    #[napi(js_name = "clone", catch_unwind)]
     pub fn clone_parser(&self) -> Self {
         Self { inner: self.inner.clone() }
     }
@@ -317,7 +328,7 @@ impl NativeParser {
 }
 
 /// Runs a built in transformer given by its json spec, with the current value as json.
-#[napi]
+#[napi(catch_unwind)]
 pub fn apply_transformer(spec: String, input: String, current: Option<String>) -> Result<Option<String>> {
     let transformer = transformer_from_spec(&from_json(&spec)?)?;
     let current: Option<Value> = current.and_then(|current| serde_json::from_str(&current).ok());

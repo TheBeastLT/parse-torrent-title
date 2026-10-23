@@ -16,7 +16,8 @@ napi = { version = "3.4.0", default-features = false, features = ["napi6", "serd
 napi-derive = "3.3.0"
 parse-torrent-title.workspace = true
 serde.workspace = true
-serde_json.workspace = true
+# the results of js handlers keep the order of their fields
+serde_json = { workspace = true, features = ["preserve_order"] }
 
 [build-dependencies]
 napi-build = "2.2.4"

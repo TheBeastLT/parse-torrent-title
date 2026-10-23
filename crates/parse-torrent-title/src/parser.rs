@@ -4,7 +4,7 @@ use std::sync::{Arc, LazyLock, OnceLock};
 use indexmap::IndexMap;
 
 use crate::literals::Literals;
-use crate::regex::{Regex, byte_index, group, is_js_space, js_trim, utf16_index, utf16_len};
+use crate::regex::{Regex, byte_index, group, utf16_index, utf16_len};
 use crate::transformers::{Transformer, none};
 use crate::{Error, ParsedTitle, Value};
 
@@ -74,16 +74,25 @@ static LATIN_BRACKET_SECTIONS: LazyLock<Regex> = LazyLock::new(|| Regex::known(r
 /// Positions count utf-16 code units like the js library does, since handlers combine positions found in
 /// different versions of the title; see [`utf16_index`](crate::utf16_index) and [`byte_index`](crate::byte_index).
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[non_exhaustive]
 pub struct MatchInfo {
     pub raw_match: Option<String>,
     /// Position, in utf-16 code units, in the title the handler was given.
     pub match_index: usize,
 }
 
+impl MatchInfo {
+    #[must_use]
+    pub fn new(match_index: usize, raw_match: Option<String>) -> Self {
+        Self { raw_match, match_index }
+    }
+}
+
 /// The first match of each field found so far.
 pub type Matched = IndexMap<String, MatchInfo>;
 
 /// What a handler gets to work with.
+#[non_exhaustive]
 pub struct Context<'a> {
     /// The name being parsed, without the matches removed by previous handlers.
     pub title: &'a str,
@@ -93,6 +102,7 @@ pub struct Context<'a> {
 
 /// A match reported by a handler.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
+#[non_exhaustive]
 pub struct HandlerMatch {
     pub raw_match: Option<String>,
     /// Position, in utf-16 code units, in the title the handler was given; the title ends before the earliest match.
@@ -104,16 +114,37 @@ pub struct HandlerMatch {
 }
 
 impl HandlerMatch {
-    /// A match which only marks a position, i.e. `{ matchIndex }` in js.
+    /// A match at `match_index`, in utf-16 code units, i.e. `{ matchIndex }` in js.
+    #[must_use]
     pub fn at(match_index: usize) -> Self {
         Self { match_index, ..Self::default() }
+    }
+
+    /// The matched text, which [`HandlerMatch::remove`] removes from the title.
+    #[must_use]
+    pub fn raw_match(mut self, raw_match: impl Into<String>) -> Self {
+        self.raw_match = Some(raw_match.into());
+        self
+    }
+
+    #[must_use]
+    pub fn remove(mut self, remove: bool) -> Self {
+        self.remove = remove;
+        self
+    }
+
+    #[must_use]
+    pub fn skip_from_title(mut self, skip: bool) -> Self {
+        self.skip_from_title = skip;
+        self
     }
 }
 
 pub type HandlerFn = Arc<dyn Fn(&mut Context<'_>) -> Option<HandlerMatch> + Send + Sync>;
 
-/// Options of a regex handler.
-#[derive(Clone, Debug, PartialEq)]
+/// Options of a regex handler, built from [`Options::new`].
+#[derive(Clone, Debug, PartialEq, Eq)]
+#[non_exhaustive]
 pub struct Options {
     /// Whether to skip the handler if its field was already found.
     pub skip_if_already_found: bool,
@@ -135,6 +166,14 @@ pub struct Options {
 
 impl Default for Options {
     fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Options {
+    /// The default options: only `skip_if_already_found` is set.
+    #[must_use]
+    pub const fn new() -> Self {
         Self {
             skip_if_already_found: true,
             skip_from_title: false,
@@ -146,44 +185,50 @@ impl Default for Options {
             value: None,
         }
     }
-}
 
-impl Options {
+    #[must_use]
     pub fn skip_if_already_found(mut self, skip: bool) -> Self {
         self.skip_if_already_found = skip;
         self
     }
 
-    pub fn skip_from_title(mut self) -> Self {
-        self.skip_from_title = true;
+    #[must_use]
+    pub fn skip_from_title(mut self, skip: bool) -> Self {
+        self.skip_from_title = skip;
         self
     }
 
-    pub fn skip_if_first(mut self) -> Self {
-        self.skip_if_first = true;
+    #[must_use]
+    pub fn skip_if_first(mut self, skip: bool) -> Self {
+        self.skip_if_first = skip;
         self
     }
 
-    pub fn skip_if_nothing_before(mut self) -> Self {
-        self.skip_if_nothing_before = true;
+    #[must_use]
+    pub fn skip_if_nothing_before(mut self, skip: bool) -> Self {
+        self.skip_if_nothing_before = skip;
         self
     }
 
+    #[must_use]
     pub fn skip_if_before(mut self, fields: &[&str]) -> Self {
         self.skip_if_before = fields.iter().map(|&field| field.to_owned()).collect();
         self
     }
 
+    #[must_use]
     pub fn skip_if_after(mut self, fields: &[&str]) -> Self {
         self.skip_if_after = fields.iter().map(|&field| field.to_owned()).collect();
         self
     }
 
-    pub fn remove(mut self) -> Self {
-        self.remove = true;
+    #[must_use]
+    pub fn remove(mut self, remove: bool) -> Self {
+        self.remove = remove;
         self
     }
 
+    #[must_use]
     pub fn value(mut self, value: impl Into<Value>) -> Self {
         self.value = Some(value.into());
         self
@@ -196,19 +241,50 @@ enum Kind {
     Function(HandlerFn),
 }
 
-/// A named step of the parser: a regex with a transformer, or a function.
+/// A named step of the parser: a [`RegexHandler`], or a function.
 #[derive(Clone)]
 pub struct Handler {
     name: String,
     kind: Kind,
 }
 
-impl Handler {
-    /// A regex handler setting the field `name` to the matched text, or to its first capture group.
-    pub fn regex(name: impl Into<String>, regex: Regex) -> Self {
-        Self { name: name.into(), kind: Kind::Regex { regex, transformer: none(), options: Options::default() } }
+/// A regex handler being built, see [`Handler::regex`].
+#[derive(Clone)]
+#[must_use]
+pub struct RegexHandler {
+    name: String,
+    regex: Regex,
+    transformer: Transformer,
+    options: Options,
+}
+
+impl RegexHandler {
+    /// Sets the transformer of the matched text, [`none`] by default.
+    pub fn transform(mut self, transformer: Transformer) -> Self {
+        self.transformer = transformer;
+        self
     }
 
+    pub fn options(mut self, options: Options) -> Self {
+        self.options = options;
+        self
+    }
+}
+
+impl From<RegexHandler> for Handler {
+    fn from(handler: RegexHandler) -> Self {
+        let RegexHandler { name, regex, transformer, options } = handler;
+        Self { name, kind: Kind::Regex { regex, transformer, options } }
+    }
+}
+
+impl Handler {
+    /// A regex handler setting the field `name` to the matched text, or to its first capture group.
+    pub fn regex(name: impl Into<String>, regex: Regex) -> RegexHandler {
+        RegexHandler { name: name.into(), regex, transformer: none(), options: Options::new() }
+    }
+
+    #[must_use]
     pub fn function(
         name: impl Into<String>,
         handler: impl Fn(&mut Context<'_>) -> Option<HandlerMatch> + Send + Sync + 'static,
@@ -217,26 +293,12 @@ impl Handler {
     }
 
     /// A function handler without a name, listed as `"unknown"`.
+    #[must_use]
     pub fn anonymous(handler: impl Fn(&mut Context<'_>) -> Option<HandlerMatch> + Send + Sync + 'static) -> Self {
         Self::function("unknown", handler)
     }
 
-    /// Sets the transformer of a regex handler.
-    pub fn transform(mut self, with: Transformer) -> Self {
-        if let Kind::Regex { transformer, .. } = &mut self.kind {
-            *transformer = with;
-        }
-        self
-    }
-
-    /// Sets the options of a regex handler.
-    pub fn options(mut self, with: Options) -> Self {
-        if let Kind::Regex { options, .. } = &mut self.kind {
-            *options = with;
-        }
-        self
-    }
-
+    #[must_use]
     pub fn name(&self) -> &str {
         &self.name
     }
@@ -307,10 +369,7 @@ fn run_regex(
         return None;
     }
 
-    context
-        .matched
-        .entry(name.to_owned())
-        .or_insert_with(|| MatchInfo { raw_match: Some(raw_match.to_owned()), match_index: index });
+    context.matched.entry(name.to_owned()).or_insert_with(|| MatchInfo::new(index, Some(raw_match.to_owned())));
     let value = options.value.clone().filter(Value::is_truthy).unwrap_or(transformed);
     context.result.set(name, value);
     Some(HandlerMatch {
@@ -323,26 +382,54 @@ fn run_regex(
 
 /// A handler as listed by [`Parser::handlers`].
 #[derive(Clone, Debug, PartialEq)]
+#[non_exhaustive]
 pub struct HandlerInfo {
     pub name: String,
     /// Index of the handler within its field.
     pub index: usize,
     /// Index of the handler within all handlers of the parser.
     pub position: usize,
-    /// Only present for regex handlers.
-    pub regex: Option<Regex>,
-    /// Only present for regex handlers.
-    pub options: Option<Options>,
+    pub kind: HandlerKind,
+}
+
+impl HandlerInfo {
+    /// The regex of a regex handler.
+    #[must_use]
+    pub fn regex(&self) -> Option<&Regex> {
+        match &self.kind {
+            HandlerKind::Regex { regex, .. } => Some(regex),
+            HandlerKind::Function => None,
+        }
+    }
+
+    /// The options of a regex handler.
+    #[must_use]
+    pub fn options(&self) -> Option<&Options> {
+        match &self.kind {
+            HandlerKind::Regex { options, .. } => Some(options),
+            HandlerKind::Function => None,
+        }
+    }
+}
+
+/// Whether a listed handler is a regex or a function.
+#[derive(Clone, Debug, PartialEq)]
+#[non_exhaustive]
+pub enum HandlerKind {
+    Regex { regex: Regex, options: Options },
+    Function,
 }
 
 /// A handler to insert relative to: a field's handlers, or one of them by index (negative counts from the end).
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[non_exhaustive]
 pub struct Target {
     pub name: String,
     pub index: Option<isize>,
 }
 
 impl Target {
+    #[must_use]
     pub fn new(name: impl Into<String>, index: isize) -> Self {
         Self { name: name.into(), index: Some(index) }
     }
@@ -364,10 +451,12 @@ pub enum Position {
 }
 
 impl Position {
+    #[must_use]
     pub fn before(target: impl Into<Target>) -> Self {
         Self::Before(target.into())
     }
 
+    #[must_use]
     pub fn after(target: impl Into<Target>) -> Self {
         Self::After(target.into())
     }
@@ -389,11 +478,13 @@ impl fmt::Debug for Parser {
 
 impl Parser {
     /// A parser without handlers; see [`Parser::with_defaults`].
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// A parser with all the default handlers.
+    #[must_use]
     pub fn with_defaults() -> Self {
         let mut parser = Self::new();
         crate::handlers::add_defaults(&mut parser, &[]);
@@ -401,13 +492,17 @@ impl Parser {
     }
 
     /// Appends a handler.
-    pub fn add_handler(&mut self, handler: Handler) {
-        self.handlers.push(handler);
+    pub fn add_handler(&mut self, handler: impl Into<Handler>) {
+        self.handlers.push(handler.into());
         self.literals = Arc::default();
     }
 
     /// Inserts a handler relative to another handler.
-    pub fn insert_handler(&mut self, position: Position, handler: Handler) -> Result<(), Error> {
+    ///
+    /// # Errors
+    ///
+    /// When no handler matches the target of `position`.
+    pub fn insert_handler(&mut self, position: Position, handler: impl Into<Handler>) -> Result<(), Error> {
         let (target, before) = match &position {
             Position::Before(target) => (target, true),
             Position::After(target) => (target, false),
@@ -420,7 +515,7 @@ impl Parser {
         let Some(found) = found else {
             return Err(Error::UnknownTarget { name: target.name.clone(), index: target.index });
         };
-        self.handlers.insert(if before { found } else { found + 1 }, handler);
+        self.handlers.insert(if before { found } else { found + 1 }, handler.into());
         self.literals = Arc::default();
         Ok(())
     }
@@ -441,6 +536,7 @@ impl Parser {
     }
 
     /// Lists the handlers in the order they run.
+    #[must_use]
     pub fn handlers(&self) -> Vec<HandlerInfo> {
         let mut counts: IndexMap<&str, usize> = IndexMap::new();
         self.handlers
@@ -449,15 +545,18 @@ impl Parser {
             .map(|(position, handler)| {
                 let count = counts.entry(&handler.name).or_default();
                 *count += 1;
-                let (regex, options) = match &handler.kind {
-                    Kind::Regex { regex, options, .. } => (Some(regex.clone()), Some(options.clone())),
-                    Kind::Function(_) => (None, None),
+                let kind = match &handler.kind {
+                    Kind::Regex { regex, options, .. } => {
+                        HandlerKind::Regex { regex: regex.clone(), options: options.clone() }
+                    }
+                    Kind::Function(_) => HandlerKind::Function,
                 };
-                HandlerInfo { name: handler.name.clone(), index: *count - 1, position, regex, options }
+                HandlerInfo { name: handler.name.clone(), index: *count - 1, position, kind }
             })
             .collect()
     }
 
+    #[must_use]
     pub fn parse(&self, title: &str) -> ParsedTitle {
         let title = UNDERSCORES.replace(title, " ");
         let title = UNCLOSED_LEADING_BRACKET.replace(&title, "[$1]");
@@ -490,7 +589,7 @@ impl Parser {
             let raw_match = found.raw_match.as_deref().unwrap_or_default();
             let index = found.match_index as isize;
             if found.skip_from_title {
-                tag_matches.push(js_trim(raw_match).to_owned());
+                tag_matches.push(raw_match.trim().to_owned());
             }
             if found.remove {
                 let start = byte_index(&title, found.match_index);
@@ -562,7 +661,7 @@ fn clean_title(raw_title: &str) -> String {
     let title = SUB_DUB_SUFFIX.replace(&title, "");
     let title = WHOLE_TEXT.replace_with(&title, remove_accented_alt_titles); // prefer alt titles without accented chars
     let title = WHITESPACE.replace(&title, " ");
-    js_trim(&title).to_owned()
+    title.trim().to_owned()
 }
 
 /// A name made only of bracketed sections ("[Show Name][2022][S3E06]") keeps its longest one as the title.
@@ -571,7 +670,7 @@ fn longest_bracket_text(text: &str, tags: &[String]) -> String {
     for tag in tags {
         remainder = remainder.replacen(tag.as_str(), "", 1);
     }
-    if remainder.chars().any(|c| !(is_js_space(c) || c == '+' || c == '-')) {
+    if remainder.chars().any(|c| !(c.is_whitespace() || c == '+' || c == '-')) {
         return String::new();
     }
     let mut sections: Vec<&str> =

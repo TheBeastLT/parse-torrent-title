@@ -141,14 +141,15 @@ The default parser used by `parse` can not be changed, so customizing a copy nev
 ### Regular expression handlers
 
 `Handler::regex(name, regex)` creates a handler from a `Regex`, which takes a pattern and flags with the syntax
-and the meaning of a javascript regular expression, such as `Regex::new(r"\b(4k)\b", "i")`.
+and the meaning of a javascript regular expression, such as `Regex::new(r"\b(4k)\b", "i")`. All flags but the
+sticky `y` are supported.
 If the regular expression has a capturing group, only the first group is passed to the transformer.
 Otherwise the whole match is used.
 
 #### Transformers
 
 A transformer converts the matched string into the stored value, set with `.transform(..)`. If it returns `None`,
-or a value of `0`, `""` or `false`, the match is ignored. The built-in transformers are in `transformers`:
+or a value of `0`, `""`, `false` or `null`, the match is ignored. The built-in transformers are in `transformers`:
 
 | Transformer              | Result                                                                                          |
 |--------------------------|-------------------------------------------------------------------------------------------------|
@@ -158,7 +159,7 @@ or a value of `0`, `""` or `false`, the match is ignored. The built-in transform
 | `boolean()`              | `true`                                                                                          |
 | `lowercase()`            | the match in lower case                                                                         |
 | `uppercase()`            | the match in upper case                                                                         |
-| `date(format)`           | a `YYYY-MM-DD` string, parsed with a [moment](https://momentjs.com/docs/#/parsing/string-format/) style format such as `"DD MM YYYY"` |
+| `date(format)?`          | a `YYYY-MM-DD` string, parsed with a [chrono format](https://docs.rs/chrono/latest/chrono/format/strftime/) such as `"%d %b %Y"`. Separators, ordinals (`1st`) and month names (`Sept`) are read loosely, and an invalid date does not match |
 | `range()`                | consecutive numbers: `"1-3"` gives `[1, 2, 3]`, `"S01 S02"` gives `[1, 2]`. `None` for numbers that are not in ascending sequence |
 | `range_up_to()`          | `[1..n]` from a single number                                                                   |
 | `list()`                 | a sorted list of the unique numbers in the match                                                |
@@ -171,16 +172,16 @@ value of the field.
 
 #### Options
 
-Options are set with `.options(..)`, built from `Options::default()`:
+Options are set with `.options(..)`, built from `Options::new()`:
 
 | Option                          | Default | Description                                                                                       |
 |---------------------------------|---------|---------------------------------------------------------------------------------------------------|
 | `skip_if_already_found(bool)`   | `true`  | Skip this handler if the field was already set by an earlier handler.                             |
-| `remove()`                      | off     | Remove the matched text from the name, so later handlers do not see it.                          |
-| `skip_from_title()`             | off     | Do not let this match end the title. Use it for markers that can appear before or inside the title. |
-| `skip_if_first()`               | off     | Skip the match if it comes before every other match found so far, i.e. it is probably part of the title. |
-| `skip_if_before(&[fields])`     | none    | Skip the match if it comes before a match of any of the listed fields.                            |
-| `skip_if_after(&[fields])`      | none    | Skip the match if it comes after a match of any of the listed fields.                             |
+| `remove(bool)`                  | `false` | Remove the matched text from the name, so later handlers do not see it.                          |
+| `skip_from_title(bool)`         | `false` | Do not let this match end the title. Use it for markers that can appear before or inside the title. |
+| `skip_if_first(bool)`           | `false` | Skip the match if it comes before every other match found so far, i.e. it is probably part of the title. |
+| `skip_if_before(&[fields])`     | `[]`    | Skip the match if it comes before a match of any of the listed fields.                            |
+| `skip_if_after(&[fields])`      | `[]`    | Skip the match if it comes after a match of any of the listed fields.                             |
 | `value(v)`                      |         | Store this value instead of the transformer result.                                              |
 
 ```rust
@@ -188,7 +189,7 @@ use parse_torrent_title::{Handler, Options, Regex, create_parser};
 
 let mut parser = create_parser();
 let network = Regex::new(r"\b(AMZN|NF|DSNP)\b", "")?;
-parser.add_handler(Handler::regex("network", network).options(Options::default().remove()));
+parser.add_handler(Handler::regex("network", network).options(Options::new().remove(true)));
 
 let information = parser.parse("Stranger.Things.S04E01.1080p.NF.WEB-DL.x264");
 assert_eq!(information.get("network").and_then(|network| network.as_str()), Some("NF"));
@@ -221,7 +222,7 @@ assert_eq!(information.get("isHarryPotterRelated").and_then(|value| value.as_boo
 ```
 
 If the matched text should end the title, return `Some(HandlerMatch::at(match_index))` from the handler.
-Return a `HandlerMatch` with `raw_match` and `remove: true` to also remove the match from the name.
+Return `Some(HandlerMatch::at(match_index).raw_match(text).remove(true))` to also remove the match from the name.
 Like in javascript, positions count utf-16 code units: `utf16_index` and `byte_index` convert them from and to
 byte positions of the title.
 
@@ -239,11 +240,11 @@ let mut parser = create_parser();
 
 // before the first resolution handler
 let eight_k = Handler::regex("resolution", Regex::new(r"\b(8k|4320p)\b", "i")?).transform(value("8k"));
-parser.insert_handler(Position::before("resolution"), eight_k.options(Options::default().remove()))?;
+parser.insert_handler(Position::before("resolution"), eight_k.options(Options::new().remove(true)))?;
 
 // after the last resolution handler
 let network = Handler::regex("network", Regex::new(r"\b(AMZN|NF|DSNP)\b", "")?);
-parser.insert_handler(Position::after("resolution"), network.options(Options::default().remove()))?;
+parser.insert_handler(Position::after("resolution"), network.options(Options::new().remove(true)))?;
 
 // after the handler with index 3 of the seasons category (0-based, negative counts from the end)
 parser.insert_handler(Position::after(Target::new("seasons", 3)), Handler::function("myStep", |_| None))?;
@@ -289,7 +290,7 @@ let parser = parse_torrent_title::create_parser();
 
 let resolution = parser.handlers().into_iter().filter(|handler| handler.name == "resolution").collect::<Vec<_>>();
 assert_eq!(resolution[1].index, 1);
-assert_eq!(resolution[1].regex.as_ref().map(|regex| regex.source()), Some(r"\b[([]?4k[)\]]?\b"));
+assert_eq!(resolution[1].regex().map(|regex| regex.source()), Some(r"\b[([]?4k[)\]]?\b"));
 ```
 
 `index` is the position within the category and `position` the position within all handlers.

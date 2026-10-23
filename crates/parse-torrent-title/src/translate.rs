@@ -32,9 +32,14 @@ pub(crate) struct Translation {
 
 /// Translates a js pattern, `None` when it uses syntax this translation does not know.
 pub(crate) fn translate(source: &str, flags: &str) -> Option<Translation> {
+    // the set notation of the `v` flag is not translated
+    if flags.contains('v') {
+        return None;
+    }
     let (unicode, ignore_case) = (flags.contains('u'), flags.contains('i'));
     let chars: Vec<char> = source.chars().collect();
-    let mut translator = Translator { unicode, ignore_case, exact: true };
+    let mut translator =
+        Translator { unicode, ignore_case, dot_all: flags.contains('s'), multiline: flags.contains('m'), exact: true };
     let body = translator.body(&chars)?;
     let ascii_text_only = ignore_case && !unicode;
     let ascii_pattern = source.is_ascii() && !source.contains("\\u") && !source.contains("\\x");
@@ -48,6 +53,10 @@ pub(crate) fn translate(source: &str, flags: &str) -> Option<Translation> {
 struct Translator {
     unicode: bool,
     ignore_case: bool,
+    /// The `s` flag: `.` also matches line terminators.
+    dot_all: bool,
+    /// The `m` flag: `^` and `$` also match at js line terminators, which are dropped as a superset.
+    multiline: bool,
     /// Cleared as soon as something is approximated.
     exact: bool,
 }
@@ -147,7 +156,11 @@ impl Translator {
                     i += 1;
                 }
                 '.' => {
-                    out.push_str(r"[^\n\r\x{2028}\x{2029}]");
+                    out.push_str(if self.dot_all { r"(?s:.)" } else { r"[^\n\r\x{2028}\x{2029}]" });
+                    i += 1;
+                }
+                '^' | '$' if self.multiline => {
+                    self.exact = false;
                     i += 1;
                 }
                 c => {
@@ -217,6 +230,8 @@ impl Translator {
             't' => literal(9),
             'f' => literal(12),
             'v' => literal(11),
+            // a legacy octal escape such as `\01` is not translated
+            '0' if chars.get(i + 2).is_some_and(char::is_ascii_digit) => return None,
             '0' => literal(0),
             'c' => return None,
             c if c.is_ascii_punctuation() => format!(r"\{c}"),
@@ -362,6 +377,16 @@ mod tests {
     }
 
     #[test]
+    fn follows_the_flags() {
+        assert_eq!(pattern(r"a.b", "s"), r"a(?s:.)b");
+        assert!(exact(r"a.b", "s"));
+        assert_eq!(pattern(r"^a$", "m"), "a");
+        assert!(!exact(r"^a$", "m"));
+        assert!(translate(r"[\w--\d]", "v").is_none());
+        assert!(translate(r"\01", "").is_none());
+    }
+
+    #[test]
     fn matches_a_superset() {
         let check = |source: &str, flags: &str, text: &str| {
             let js = regress::Regex::with_flags(source, flags).unwrap();
@@ -375,5 +400,8 @@ mod tests {
         check(r"\bS(\d{1,2})[ .]?E\1", "i", "S01E01");
         check(r"\s+[/|]\s+", "", "a \u{3000}/ b");
         check(r"[^[\]]*]", "", "abc]");
+        check(r"^b", "m", "a\nb");
+        check(r"a$", "m", "a\nb");
+        check(r"a.b", "s", "a\nb");
     }
 }

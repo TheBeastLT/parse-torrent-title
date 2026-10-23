@@ -4,27 +4,51 @@ use serde::{Deserialize, Serialize};
 /// A single parsed field value.
 ///
 /// Values (de)serialize untagged, so a [`ParsedTitle`] serializes to the same JSON as the js library's result.
+/// The default handlers only produce the typed variants; [`Value::Json`] holds anything else a custom handler sets.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(untagged)]
+#[non_exhaustive]
 pub enum Value {
     Bool(bool),
     Int(i64),
     Str(String),
     Ints(Vec<i64>),
     Strs(Vec<String>),
+    Json(serde_json::Value),
 }
 
 impl Value {
-    /// Mirrors js truthiness, which decides whether a handler counts as matched: `0`, `""` and `false` do not.
+    /// Whether the value counts as a match: `0`, `""`, `false` and `null` do not, as in the js library.
+    #[must_use]
     pub fn is_truthy(&self) -> bool {
         match self {
             Value::Bool(value) => *value,
             Value::Int(value) => *value != 0,
             Value::Str(value) => !value.is_empty(),
             Value::Ints(_) | Value::Strs(_) => true,
+            Value::Json(value) => match value {
+                serde_json::Value::Null => false,
+                serde_json::Value::Bool(value) => *value,
+                serde_json::Value::Number(number) => number.as_f64().is_some_and(|number| number != 0.0),
+                serde_json::Value::String(value) => !value.is_empty(),
+                serde_json::Value::Array(_) | serde_json::Value::Object(_) => true,
+            },
         }
     }
 
+    /// The value as json.
+    #[must_use]
+    pub fn to_json(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+
+    /// The value of a json value, typed when it fits one of the typed variants.
+    #[must_use]
+    pub fn from_json(value: serde_json::Value) -> Self {
+        serde_json::from_value(value).unwrap_or_else(|_| unreachable!("every json value is a Value::Json"))
+    }
+
+    #[must_use]
     pub fn as_bool(&self) -> Option<bool> {
         match self {
             Value::Bool(value) => Some(*value),
@@ -32,6 +56,7 @@ impl Value {
         }
     }
 
+    #[must_use]
     pub fn as_int(&self) -> Option<i64> {
         match self {
             Value::Int(value) => Some(*value),
@@ -39,6 +64,7 @@ impl Value {
         }
     }
 
+    #[must_use]
     pub fn as_str(&self) -> Option<&str> {
         match self {
             Value::Str(value) => Some(value),
@@ -46,6 +72,7 @@ impl Value {
         }
     }
 
+    #[must_use]
     pub fn as_ints(&self) -> Option<&[i64]> {
         match self {
             Value::Ints(values) => Some(values),
@@ -53,6 +80,7 @@ impl Value {
         }
     }
 
+    #[must_use]
     pub fn as_strs(&self) -> Option<&[String]> {
         match self {
             Value::Strs(values) => Some(values),
@@ -88,6 +116,12 @@ impl From<String> for Value {
 impl From<Vec<i64>> for Value {
     fn from(values: Vec<i64>) -> Self {
         Value::Ints(values)
+    }
+}
+
+impl From<serde_json::Value> for Value {
+    fn from(value: serde_json::Value) -> Self {
+        Value::from_json(value)
     }
 }
 

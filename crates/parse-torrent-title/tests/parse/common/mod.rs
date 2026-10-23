@@ -79,7 +79,7 @@ pub fn assert_field_at(title: &str, name: &str, index: usize, expected: Value) {
 #[track_caller]
 pub fn assert_parses_within(title: &str, millis: u64) {
     let start = Instant::now();
-    parse(title);
+    std::hint::black_box(parse(title));
     let elapsed = start.elapsed();
     assert!(elapsed < Duration::from_millis(millis), "parsing {title:?} took {elapsed:?}");
 }

@@ -8,8 +8,10 @@
 //! Parser customization
 
 use parse_torrent_title::transformers::{lowercase, uppercase, value};
+use std::sync::Arc;
+
 use parse_torrent_title::{
-    Error, Handler, Options, Parser, Position, Regex, Target, Value, add_defaults, create_parser, parse,
+    Error, Handler, HandlerKind, Options, Parser, Position, Regex, Target, Value, add_defaults, create_parser, parse,
 };
 
 fn regex(source: &str) -> Regex {
@@ -46,11 +48,11 @@ mod handlers {
 
         let listed: Vec<_> = handlers.iter().map(|h| (h.name.as_str(), h.index, h.position)).collect();
         assert_eq!(listed, [("resolution", 0, 0), ("resolution", 1, 1), ("codec", 0, 2), ("custom", 0, 3)]);
-        assert_eq!(handlers[1].regex.as_ref().map(Regex::source), Some(r"\b(1080)p\b"));
-        let options = handlers[1].options.as_ref().unwrap();
+        assert_eq!(handlers[1].regex().map(Regex::source), Some(r"\b(1080)p\b"));
+        let options = handlers[1].options().unwrap();
         assert!(options.skip_if_already_found);
         assert!(!options.remove);
-        assert!(handlers[3].regex.is_none());
+        assert!(handlers[3].regex().is_none());
     }
 
     /// names unnamed function handlers as unknown
@@ -68,10 +70,12 @@ mod handlers {
         let parser = simple_parser();
         let mut handlers = parser.handlers();
         handlers.pop();
-        handlers[0].options.as_mut().unwrap().remove = true;
+        if let HandlerKind::Regex { options, .. } = &mut handlers[0].kind {
+            options.remove = true;
+        }
 
         assert_eq!(names(&parser), ["resolution", "resolution", "codec"]);
-        assert!(!parser.handlers()[0].options.as_ref().unwrap().remove);
+        assert!(!parser.handlers()[0].options().unwrap().remove);
     }
 }
 
@@ -172,10 +176,10 @@ mod add_handler_positioning {
     #[test]
     fn does_not_pass_positioning_keys_to_the_handler_options() {
         let mut parser = simple_parser();
-        let network = Handler::regex("network", regex(r"\bNF\b")).options(Options::default().remove());
+        let network = Handler::regex("network", regex(r"\bNF\b")).options(Options::new().remove(true));
         parser.insert_handler(Position::after("codec"), network).unwrap();
 
-        assert_eq!(parser.handlers()[3].options, Some(Options::default().remove()));
+        assert_eq!(parser.handlers()[3].options(), Some(&Options::new().remove(true)));
     }
 
     /// runs inserted handlers in their position
@@ -246,7 +250,7 @@ mod remove_handlers {
 
         assert_eq!(parser.remove_handlers_where(|handler| handler.name == "resolution" && handler.index == 1), 1);
         let sources: Vec<String> =
-            parser.handlers().iter().filter_map(|h| h.regex.as_ref().map(|r| r.source().to_owned())).collect();
+            parser.handlers().iter().filter_map(|h| h.regex().map(|r| r.source().to_owned())).collect();
         assert_eq!(sources, [r"\b(720)p\b", r"\bx26[45]\b"]);
     }
 
@@ -339,7 +343,7 @@ mod bug_fixes {
         let mut parser = create_parser();
         let bar = Handler::regex("customBarTag", regex(r"\bBAR\b"))
             .transform(lowercase())
-            .options(Options::default().remove());
+            .options(Options::new().remove(true));
         parser.insert_handler(Position::before("site"), bar).unwrap();
 
         let parsed = parser.parse("BAR Movie 2010");
@@ -351,7 +355,7 @@ mod bug_fixes {
     #[test]
     fn applies_options_without_a_transformer() {
         let mut parser = create_parser();
-        let tag = Handler::regex("tag", regex(r"\bFOO\b")).options(Options::default().remove());
+        let tag = Handler::regex("tag", regex(r"\bFOO\b")).options(Options::new().remove(true));
         parser.insert_handler(Position::before("site"), tag).unwrap();
 
         let parsed = parser.parse("FOO Movie 2010");
@@ -381,12 +385,7 @@ mod function_handlers {
         let network = Handler::function("network", |context| {
             let index = parse_torrent_title::utf16_index(context.title, context.title.find("NF")?);
             context.result.set("network", "Netflix");
-            Some(HandlerMatch {
-                raw_match: Some("NF".to_owned()),
-                match_index: index,
-                remove: true,
-                skip_from_title: false,
-            })
+            Some(HandlerMatch::at(index).raw_match("NF").remove(true))
         });
         parser.insert_handler(Position::before("site"), network).unwrap();
 
@@ -394,5 +393,26 @@ mod function_handlers {
         assert_eq!(str_field(&parsed, "network"), Some("Netflix"));
         assert_eq!(parsed.title(), "Stranger Things");
         assert_eq!(parsed.episode(), Some(1));
+    }
+}
+
+/// fixes found reviewing the port
+mod review_fixes {
+    use super::*;
+
+    /// a huge season range does not allocate every season
+    #[test]
+    fn does_not_expand_a_huge_range() {
+        assert!(parse("Show s01-9999999999999 720p").seasons().is_none_or(|seasons| seasons.len() < 10_000));
+    }
+
+    /// custom values that are not one of the typed values are kept as json
+    #[test]
+    fn keeps_any_custom_value() {
+        let mut parser = create_parser();
+        let float = Arc::new(|input: &str, _: Option<&Value>| Some(Value::Json(input.parse::<f64>().ok()?.into())));
+        parser.add_handler(Handler::regex("float", regex(r"(\d+\.\d+)")).transform(float));
+
+        assert_eq!(parser.parse("A 1.5 B").get("float"), Some(&Value::Json(serde_json::json!(1.5))));
     }
 }

@@ -6,21 +6,28 @@
 use std::collections::BTreeSet;
 use std::sync::{Arc, LazyLock};
 
-use crate::Value;
-use crate::regex::{Regex, js_trim, parse_int};
+use chrono::NaiveDate;
+use chrono::format::StrftimeItems;
+
+use crate::{Error, Regex, Value};
 
 pub type Transformer = Arc<dyn Fn(&str, Option<&Value>) -> Option<Value> + Send + Sync>;
+
+/// The most numbers a range expands to, so a match like `s01-9999999999` does not allocate them all.
+const MAX_RANGE: i64 = 10_000;
 
 fn transformer(f: impl Fn(&str, Option<&Value>) -> Option<Value> + Send + Sync + 'static) -> Transformer {
     Arc::new(f)
 }
 
 /// The matched text as is.
+#[must_use]
 pub fn none() -> Transformer {
     transformer(|input, _| Some(Value::from(input)))
 }
 
 /// A fixed value; in a string value `$1` is replaced with the matched text.
+#[must_use]
 pub fn value(value: impl Into<Value>) -> Transformer {
     let value = value.into();
     transformer(move |input, _| match &value {
@@ -29,8 +36,20 @@ pub fn value(value: impl Into<Value>) -> Transformer {
     })
 }
 
+/// The number written by the match, as an integer when it fits one.
+#[must_use]
 pub fn integer() -> Transformer {
-    transformer(|input, _| parse_int(input).map(Value::Int))
+    transformer(|input, _| number(input.trim()))
+}
+
+fn number(digits: &str) -> Option<Value> {
+    match digits.parse::<i64>() {
+        Ok(number) => Some(Value::Int(number)),
+        Err(_) => {
+            let number = serde_json::Number::from_f64(digits.parse().ok()?)?;
+            Some(Value::Json(serde_json::Value::Number(number)))
+        }
+    }
 }
 
 const CJK_DIGITS: [char; 9] = ['一', '二', '三', '四', '五', '六', '七', '八', '九'];
@@ -41,21 +60,23 @@ fn cjk_digit(text: &str) -> Option<i64> {
     if chars.next().is_some() {
         return None;
     }
-    CJK_DIGITS.iter().position(|&c| c == digit).map(|index| index as i64 + 1)
+    let index = CJK_DIGITS.iter().position(|&c| c == digit)?;
+    i64::try_from(index + 1).ok()
 }
 
 /// Arabic, full width or chinese numerals, i.e. `4`, `４`, `四`, `十二`.
+#[must_use]
 pub fn cjk_integer() -> Transformer {
     transformer(|input, _| {
         let digits: String = input
             .chars()
             .map(|c| match c {
-                '０'..='９' => char::from_u32(c as u32 - 0xFEE0).unwrap_or(c),
+                '０'..='９' => char::from_u32(u32::from(c) - 0xFEE0).unwrap_or(c),
                 _ => c,
             })
             .collect();
         if !digits.is_empty() && digits.bytes().all(|b| b.is_ascii_digit()) {
-            return parse_int(&digits).map(Value::Int);
+            return number(&digits);
         }
         let number = match digits.split_once('十') {
             Some((tens, units)) => {
@@ -68,138 +89,112 @@ pub fn cjk_integer() -> Transformer {
     })
 }
 
+#[must_use]
 pub fn boolean() -> Transformer {
     transformer(|_, _| Some(Value::Bool(true)))
 }
 
+#[must_use]
 pub fn lowercase() -> Transformer {
     transformer(|input, _| Some(Value::from(input.to_lowercase())))
 }
 
+#[must_use]
 pub fn uppercase() -> Transformer {
     transformer(|input, _| Some(Value::from(input.to_uppercase())))
 }
 
-/// The ascii digit runs of `input`, i.e. `input.replace(/\D+/g, " ").trim().split(" ")`.
-fn numbers(input: &str) -> Vec<i64> {
-    input
-        .split(|c: char| !c.is_ascii_digit())
-        .filter(|part| !part.is_empty())
-        .filter_map(|part| part.parse().ok())
-        .collect()
+/// The ascii digit runs of `input`, `None` when one does not fit an integer.
+fn numbers(input: &str) -> Option<Vec<i64>> {
+    input.split(|c: char| !c.is_ascii_digit()).filter(|part| !part.is_empty()).map(|part| part.parse().ok()).collect()
 }
 
 static SEPARATED_PAIR: LazyLock<Regex> = LazyLock::new(|| Regex::known(r"^\d+[ .]*[,&+][ .]*\d+$", ""));
 
 /// A list of consecutive numbers, `1-3` being expanded to `[1, 2, 3]`; `None` when not consecutive.
+#[must_use]
 pub fn range() -> Transformer {
     transformer(|input, _| {
-        let mut array = numbers(input);
-        if array.is_empty() {
-            return None;
+        let mut array = numbers(input)?;
+        if let [start, end] = array[..]
+            && start < end
+            && !SEPARATED_PAIR.is_match(input.trim())
+        {
+            if end - start > MAX_RANGE {
+                return None;
+            }
+            array = (start..=end).collect();
         }
-        if array.len() == 2 && array[0] < array[1] && !SEPARATED_PAIR.is_match(js_trim(input)) {
-            array = (array[0]..=array[1]).collect();
-        }
-        if !array.windows(2).all(|pair| pair[0] + 1 == pair[1]) {
-            return None; // array is not in sequence and ascending order
-        }
-        Some(Value::Ints(array))
+        let consecutive = array.windows(2).all(|pair| pair[0].checked_add(1) == Some(pair[1]));
+        // an empty list or numbers out of sequence are not a range
+        (consecutive && !array.is_empty()).then_some(Value::Ints(array))
     })
 }
 
 /// Every number of the match, deduplicated and sorted.
+#[must_use]
 pub fn list() -> Transformer {
     transformer(|input, _| {
-        let numbers: BTreeSet<i64> = numbers(input).into_iter().collect();
+        let numbers: BTreeSet<i64> = numbers(input)?.into_iter().collect();
         Some(Value::Ints(numbers.into_iter().collect()))
     })
 }
 
 /// `1..=n` for the matched number `n`.
+#[must_use]
 pub fn range_up_to() -> Transformer {
-    transformer(|input, _| match parse_int(input) {
-        Some(end) if end > 0 => Some(Value::Ints((1..=end).collect())),
+    transformer(|input, _| match input.trim().parse::<i64>() {
+        Ok(end @ 1..=MAX_RANGE) => Some(Value::Ints((1..=end).collect())),
         _ => None,
     })
 }
 
 /// A year, or a `"start-end"` year range; a two digit end inherits the century of the start.
+#[must_use]
 pub fn year_range() -> Transformer {
     transformer(|input, _| {
-        let parts: Vec<&str> = input.split(|c: char| !c.is_ascii_digit()).collect();
-        let parts = collapse_separators(&parts);
-        let start = parts.first().filter(|part| !part.is_empty()).and_then(|part| parse_int(part));
-        let end = if parts.len() > 1 { parts.last().and_then(|part| parse_int(part)) } else { None };
-
-        let Some(mut end) = end.filter(|&end| end != 0) else {
-            return start.map(Value::Int);
+        let mut parts = input.split(|c: char| !c.is_ascii_digit()).filter(|part| !part.is_empty());
+        let start: i64 = parts.next()?.parse().ok()?;
+        let Some(mut end) = parts.next_back().and_then(|end| end.parse::<i64>().ok()).filter(|&end| end != 0) else {
+            return Some(Value::Int(start));
         };
-        let start = start?;
         if end < 100 {
-            end = end + start - start % 100;
+            end = end.checked_add(start - start % 100)?;
         }
-        if end <= start {
-            return None; // not a year range, try another year handler
-        }
-        Some(Value::Str(format!("{start}-{end}")))
+        // an end before the start is not a year range, so another year handler gets a chance
+        (end > start).then(|| Value::Str(format!("{start}-{end}")))
     })
-}
-
-/// `split(/\D+/)` keeps one part per run of separators, while `str::split` yields one per separator.
-fn collapse_separators<'a>(parts: &[&'a str]) -> Vec<&'a str> {
-    let mut collapsed = Vec::new();
-    for (index, part) in parts.iter().enumerate() {
-        let is_edge = index == 0 || index == parts.len() - 1;
-        if !part.is_empty() || is_edge {
-            collapsed.push(*part);
-        }
-    }
-    collapsed
 }
 
 /// The value of `chain` wrapped in a list; `array(none())` wraps the matched text.
+#[must_use]
 pub fn array(chain: Transformer) -> Transformer {
-    transformer(move |input, current| match chain(input, current)? {
-        Value::Int(number) => Some(Value::Ints(vec![number])),
-        Value::Str(text) => Some(Value::Strs(vec![text])),
-        other => Some(other),
+    transformer(move |input, _| {
+        let value = chain(input, None)?;
+        Some(Value::from_json(serde_json::Value::Array(vec![value.to_json()])))
     })
 }
 
-/// Appends the value of `chain` to the field's list, unless it is already in it.
+/// Appends the value of `chain` to the field's list unless it is already in it; a list value is appended
+/// item by item, like js `concat`.
+#[must_use]
 pub fn uniq_concat(chain: Transformer) -> Transformer {
     transformer(move |input, current| {
-        let value = chain(input, current)?;
-        match (current, value) {
-            (Some(Value::Strs(values)), Value::Str(value)) => {
-                let mut values = values.clone();
-                if !values.contains(&value) {
-                    values.push(value);
-                }
-                Some(Value::Strs(values))
+        let value = chain(input, None)?.to_json();
+        let mut values = match current.map(Value::to_json) {
+            Some(serde_json::Value::Array(values)) => values,
+            _ => Vec::new(),
+        };
+        // like js `includes`, a list is never found in another one
+        let found = !value.is_array() && !value.is_object() && values.contains(&value);
+        if !found {
+            match value {
+                serde_json::Value::Array(items) => values.extend(items),
+                item => values.push(item),
             }
-            (Some(Value::Ints(values)), Value::Int(value)) => {
-                let mut values = values.clone();
-                if !values.contains(&value) {
-                    values.push(value);
-                }
-                Some(Value::Ints(values))
-            }
-            (_, Value::Str(value)) => Some(Value::Strs(vec![value])),
-            (_, Value::Int(value)) => Some(Value::Ints(vec![value])),
-            (_, value) => Some(value),
         }
+        Some(Value::from_json(serde_json::Value::Array(values)))
     })
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-enum DateToken {
-    FullYear,
-    ShortYear,
-    Month,
-    MonthName,
-    Day,
 }
 
 const MONTHS: [&str; 12] = [
@@ -217,100 +212,74 @@ const MONTHS: [&str; 12] = [
     "december",
 ];
 
-/// A `YYYY-MM-DD` date read with a moment.js style format such as `"DD MMM YYYY"` or `"YYYYMMDD"`.
+/// A `YYYY-MM-DD` date read with a [`chrono` format](chrono::format::strftime) such as `"%d %b %Y"`.
 ///
-/// Like moment's forgiving parsing each token takes the next run of text it can read, and an impossible
-/// date such as February 31st reads as `"Invalid date"`.
-pub fn date(format: &str) -> Transformer {
-    let tokens = date_tokens(format);
-    transformer(move |input, _| {
-        let sanitized: String = input
-            .split(|c: char| !(c.is_ascii_alphanumeric() || c == '_'))
-            .filter(|part| !part.is_empty())
-            .collect::<Vec<_>>()
-            .join(" ");
-        Some(Value::Str(read_date(&tokens, &sanitized).unwrap_or_else(|| "Invalid date".to_owned())))
-    })
-}
-
-fn date_tokens(format: &str) -> Vec<DateToken> {
-    let mut tokens = Vec::new();
-    let mut rest = format;
-    while !rest.is_empty() {
-        let (token, length) = [
-            ("YYYY", DateToken::FullYear),
-            ("YY", DateToken::ShortYear),
-            ("MMM", DateToken::MonthName),
-            ("MM", DateToken::Month),
-            ("DD", DateToken::Day),
-        ]
-        .into_iter()
-        .find(|(pattern, _)| rest.starts_with(pattern))
-        .map(|(pattern, token)| (Some(token), pattern.len()))
-        .unwrap_or((None, rest.chars().next().map_or(1, char::len_utf8)));
-        tokens.extend(token);
-        rest = &rest[length..];
+/// The match is first reduced to its words separated by single spaces, ordinal suffixes are dropped (`1st`) and
+/// month names are shortened to what `%b` reads (`Sept`, `March`), so `"[1st.March.2019]"` reads with `"%d %b %Y"`.
+/// The separators of the format are read the same way, so `"%Y-%m-%d"` is the same format as `"%Y %m %d"`.
+/// A match which is not a valid date does not count.
+///
+/// # Errors
+///
+/// When `format` is not a valid `chrono` format.
+pub fn date(format: &str) -> Result<Transformer, Error> {
+    if StrftimeItems::new(format).parse().is_err() {
+        return Err(Error::InvalidDateFormat { format: format.to_owned() });
     }
-    tokens
-}
-
-/// Reads up to `max` digits from the first digit run of `text`, returning the number and the rest.
-fn take_number(text: &str, max: usize) -> Option<(i64, &str)> {
-    let start = text.find(|c: char| c.is_ascii_digit())?;
-    let digits = text[start..].bytes().take(max).take_while(u8::is_ascii_digit).count();
-    let end = start + digits;
-    Some((text[start..end].parse().ok()?, &text[end..]))
-}
-
-/// Reads the first month name (full or abbreviated) of `text`, returning the month and the rest.
-fn take_month_name(text: &str) -> Option<(i64, &str)> {
-    let lower = text.to_ascii_lowercase();
-    (0..lower.len()).filter(|&start| lower.is_char_boundary(start)).find_map(|start| {
-        let candidate = &lower[start..];
-        MONTHS.iter().enumerate().find_map(|(index, month)| {
-            let length = if candidate.starts_with(month) {
-                month.len()
-            } else if candidate.starts_with(&month[..3]) {
-                3
-            } else {
-                0
-            };
-            (length > 0).then(|| (index as i64 + 1, &text[start + length..]))
-        })
-    })
-}
-
-fn read_date(tokens: &[DateToken], input: &str) -> Option<String> {
-    let (mut year, mut month, mut day) = (None, None, None);
-    let mut rest = input;
-    for token in tokens {
-        let (number, remaining) = match token {
-            DateToken::FullYear => take_number(rest, 4)?,
-            DateToken::ShortYear => {
-                let (short, remaining) = take_number(rest, 2)?;
-                (short + if short > 68 { 1900 } else { 2000 }, remaining)
+    let format = date_words_format(format);
+    Ok(transformer(move |input, _| {
+        let words: Vec<&str> = input.split(|c: char| !c.is_alphanumeric()).filter(|word| !word.is_empty()).collect();
+        let mut normalized = Vec::with_capacity(words.len());
+        for (index, word) in words.iter().enumerate() {
+            let follows_number = index > 0 && words[index - 1].bytes().all(|b| b.is_ascii_digit());
+            if follows_number && is_ordinal_suffix(word) {
+                continue;
             }
-            DateToken::Month | DateToken::Day => take_number(rest, 2)?,
-            DateToken::MonthName => take_month_name(rest)?,
-        };
-        match token {
-            DateToken::FullYear | DateToken::ShortYear => year = Some(number),
-            DateToken::Month | DateToken::MonthName => month = Some(number),
-            DateToken::Day => day = Some(number),
+            normalized.push(normalize_date_word(word));
         }
-        rest = remaining;
-    }
+        let date = NaiveDate::parse_from_str(&normalized.join(" "), &format).ok()?;
+        Some(Value::Str(date.format("%Y-%m-%d").to_string()))
+    }))
+}
 
-    let (year, month, day) = (year?, month.unwrap_or(1), day.unwrap_or(1));
-    let leap = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
-    let days = match month {
-        2 if leap => 29,
-        2 => 28,
-        4 | 6 | 9 | 11 => 30,
-        1..=12 => 31,
-        _ => return None,
-    };
-    (1..=days).contains(&day).then(|| format!("{year:04}-{month:02}-{day:02}"))
+/// `format` with its separators as single spaces, like the words of the matched text.
+fn date_words_format(format: &str) -> String {
+    let mut words = vec![String::new()];
+    let mut chars = format.chars();
+    while let Some(c) = chars.next() {
+        let word = words.last_mut().expect("there is always a word");
+        if c == '%' {
+            // a specifier, with its padding flag if it has one, is part of the word
+            word.push(c);
+            word.extend(chars.next());
+            if word.ends_with(['-', '_', '0']) {
+                word.extend(chars.next());
+            }
+        } else if c.is_alphanumeric() {
+            word.push(c);
+        } else if !word.is_empty() {
+            words.push(String::new());
+        }
+    }
+    words.retain(|word| !word.is_empty());
+    words.join(" ")
+}
+
+fn is_ordinal_suffix(word: &str) -> bool {
+    ["st", "nd", "rd", "th"].iter().any(|suffix| word.eq_ignore_ascii_case(suffix))
+}
+
+/// `1st` as `1`, and a month name or its abbreviation (`sept`) as the three letters `%b` reads.
+fn normalize_date_word(word: &str) -> String {
+    let digits = word.bytes().take_while(u8::is_ascii_digit).count();
+    if digits > 0 && is_ordinal_suffix(&word[digits..]) {
+        return word[..digits].to_owned();
+    }
+    let lower = word.to_ascii_lowercase();
+    match MONTHS.iter().find(|month| lower.len() >= 3 && month.starts_with(&lower)) {
+        Some(month) => month[..3].to_owned(),
+        None => word.to_owned(),
+    }
 }
 
 #[cfg(test)]
@@ -321,14 +290,22 @@ mod tests {
         transformer(input, None)
     }
 
+    fn date(format: &str) -> Transformer {
+        super::date(format).unwrap()
+    }
+
     #[test]
-    fn reads_dates_like_moment() {
-        assert_eq!(apply(date("YYYY MM DD"), "[2019.03.12]"), Some("2019-03-12".into()));
-        assert_eq!(apply(date("YYYYMMDD"), "20190312"), Some("2019-03-12".into()));
-        assert_eq!(apply(date("DD MMM YYYY"), "1st March 2019"), Some("2019-03-01".into()));
-        assert_eq!(apply(date("DD MMM YY"), "12 Sept 19"), Some("2019-09-12".into()));
-        assert_eq!(apply(date("MM DD YY"), "04.25.75"), Some("1975-04-25".into()));
-        assert_eq!(apply(date("YYYY MM DD"), "2019 02 31"), Some("Invalid date".into()));
+    fn reads_dates() {
+        assert_eq!(apply(date("%Y %m %d"), "[2019.03.12]"), Some("2019-03-12".into()));
+        assert_eq!(apply(date("%Y%m%d"), "20190312"), Some("2019-03-12".into()));
+        assert_eq!(apply(date("%d %b %Y"), "1st March 2019"), Some("2019-03-01".into()));
+        assert_eq!(apply(date("%d %b %Y"), "6 th August 2020"), Some("2020-08-06".into()));
+        assert_eq!(apply(date("%d %b %y"), "12 Sept 19"), Some("2019-09-12".into()));
+        assert_eq!(apply(date("%m %d %y"), "04.25.75"), Some("1975-04-25".into()));
+        assert_eq!(apply(date("%Y %m %d"), "2019 02 31"), None);
+        assert_eq!(apply(date("%Y-%m-%d"), "2019.03.12"), Some("2019-03-12".into()));
+        assert_eq!(apply(date("%-d/%m/%Y"), "5/03/2019"), Some("2019-03-05".into()));
+        assert!(super::date("%Q").is_err());
     }
 
     #[test]
@@ -346,6 +323,35 @@ mod tests {
         assert_eq!(apply(range(), "1 3"), Some(vec![1, 2, 3].into()));
         assert_eq!(apply(range(), "1, 3"), None);
         assert_eq!(apply(list(), "3e1e3"), Some(vec![1, 3].into()));
+    }
+
+    #[test]
+    fn does_not_expand_huge_ranges() {
+        assert_eq!(apply(range(), "s01-9999999999999"), None);
+        assert_eq!(apply(range(), "1-99999999999999999999"), None);
+        assert_eq!(
+            apply(range(), "9223372036854775806 9223372036854775807"),
+            Some(vec![i64::MAX - 1, i64::MAX].into())
+        );
+        assert_eq!(apply(range_up_to(), "9999999999"), None);
+    }
+
+    #[test]
+    fn composes_like_js() {
+        let current = Value::Ints(vec![1]);
+        assert_eq!(apply(array(boolean()), "x"), Some(Value::Json(serde_json::json!([true]))));
+        assert_eq!(apply(array(range()), "1-3"), Some(Value::Json(serde_json::json!([[1, 2, 3]]))));
+        assert_eq!(uniq_concat(range())("2-3", Some(&current)), Some(vec![1, 2, 3].into()));
+        assert_eq!(uniq_concat(integer())("1", Some(&current)), Some(vec![1].into()));
+        let strings = Value::Strs(vec!["a".into()]);
+        assert_eq!(uniq_concat(integer())("5", Some(&strings)), Some(Value::Json(serde_json::json!(["a", 5]))));
+    }
+
+    #[test]
+    fn reads_integers() {
+        assert_eq!(apply(integer(), "05"), Some(Value::Int(5)));
+        assert_eq!(apply(integer(), "99999999999999999999"), Some(Value::Json(serde_json::json!(1e20))));
+        assert_eq!(apply(integer(), "x"), None);
     }
 
     #[test]

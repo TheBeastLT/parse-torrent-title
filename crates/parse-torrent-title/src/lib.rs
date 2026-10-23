@@ -38,7 +38,8 @@ use std::sync::LazyLock;
 
 pub use handlers::add_defaults;
 pub use parser::{
-    Context, Handler, HandlerFn, HandlerInfo, HandlerMatch, MatchInfo, Matched, Options, Parser, Position, Target,
+    Context, Handler, HandlerFn, HandlerInfo, HandlerKind, HandlerMatch, MatchInfo, Matched, Options, Parser, Position,
+    RegexHandler, Target,
 };
 pub use regex::{Match, Regex, byte_index, utf16_index, utf16_len};
 pub use value::{ParsedTitle, Value};
@@ -51,11 +52,13 @@ struct ReadmeExamples;
 static DEFAULT_PARSER: LazyLock<Parser> = LazyLock::new(Parser::with_defaults);
 
 /// Parses `title` with the default handlers.
+#[must_use]
 pub fn parse(title: &str) -> ParsedTitle {
     DEFAULT_PARSER.parse(title)
 }
 
 /// A copy of the default parser, to add or remove handlers without affecting [`parse`].
+#[must_use]
 pub fn create_parser() -> Parser {
     DEFAULT_PARSER.clone()
 }
@@ -64,7 +67,9 @@ pub fn create_parser() -> Parser {
 #[non_exhaustive]
 pub enum Error {
     /// The regex could not be compiled.
-    InvalidRegex { source: String, message: String },
+    InvalidRegex { pattern: String, message: String },
+    /// The format of [`transformers::date`] is not a valid `chrono` format.
+    InvalidDateFormat { format: String },
     /// No handler matches the target of [`Parser::insert_handler`].
     UnknownTarget { name: String, index: Option<isize> },
 }
@@ -72,7 +77,8 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Error::InvalidRegex { source, message } => write!(f, "invalid regex /{source}/: {message}"),
+            Error::InvalidRegex { pattern, message } => write!(f, "invalid regex /{pattern}/: {message}"),
+            Error::InvalidDateFormat { format } => write!(f, "invalid date format {format:?}"),
             Error::UnknownTarget { name, index: None } => write!(f, "no handler found for {name:?}"),
             Error::UnknownTarget { name, index: Some(index) } => {
                 write!(f, "no handler found for {name:?} at index {index}")

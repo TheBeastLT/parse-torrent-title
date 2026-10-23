@@ -5,11 +5,26 @@ const { NativeParser, applyTransformer } = require("./native");
 // built in transformers are described for rust to run them, and stay callable from js
 function builtin(spec) {
     const transformer = (input, current) => {
-        const result = applyTransformer(JSON.stringify(spec), input, current === undefined ? null : JSON.stringify(current));
-        return result === null ? undefined : JSON.parse(result);
+        const json = current === undefined ? null : JSON.stringify(current);
+        const result = applyTransformer(JSON.stringify(spec), String(input), json);
+        return result === null ? null : JSON.parse(result);
     };
     transformer.spec = spec;
     return transformer;
+}
+
+// the moment.js tokens of a date format as the chrono specifiers the rust transformer reads
+const MOMENT_TOKENS = { YYYY: "%Y", YY: "%y", MMMM: "%b", MMM: "%b", MM: "%m", M: "%m", Do: "%d", DD: "%d", D: "%d" };
+
+function chronoFormat(format) {
+    if (typeof format !== "string") {
+        throw new Error("Transformers.date takes a single moment.js format");
+    }
+    const converted = format.replace(/YYYY|YY|MMMM|MMM|MM|Do|DD|M|D/g, token => MOMENT_TOKENS[token]);
+    if (/[a-z]/i.test(converted.replace(/%[a-z]/gi, ""))) {
+        throw new Error(`Unsupported token in date format ${JSON.stringify(format)}, use YYYY, YY, MMMM, MMM, MM, M, Do, DD or D`);
+    }
+    return converted;
 }
 
 const Transformers = {
@@ -20,12 +35,12 @@ const Transformers = {
     boolean: builtin({ kind: "boolean" }),
     lowercase: builtin({ kind: "lowercase" }),
     uppercase: builtin({ kind: "uppercase" }),
-    date: format => builtin({ kind: "date", format }),
+    date: format => builtin({ kind: "date", format: chronoFormat(format) }),
     range: builtin({ kind: "range" }),
     list: builtin({ kind: "list" }),
     rangeUpTo: builtin({ kind: "rangeUpTo" }),
     yearRange: builtin({ kind: "yearRange" }),
-    array: chain => (!chain || chain.spec ? builtin({ kind: "array", chain: chain && chain.spec }) : (input, current) => [chain(input, current)]),
+    array: chain => (!chain || chain.spec ? builtin({ kind: "array", chain: chain && chain.spec }) : input => [chain(input)]),
     uniqConcat: chain => (chain.spec ? builtin({ kind: "uniqConcat", chain: chain.spec }) : (input, current) => {
         const values = current || [];
         const value = chain(input);
