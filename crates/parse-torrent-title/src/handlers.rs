@@ -231,14 +231,14 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
     p.regex("year", r"(?<!\d)(?!1920x)((?:19\d|20[012])\d)(?=x\d{1,3}(?!\d))", "i", integer(), Options::new());
     p.regex(
         "year",
-        r"[([*]?(?!^)(?<!\d|Cap[. ]?|\bep[. ]?|\bE|\bS(?=\d{4}E\d))((?:19\d|20[012])\d)(?!\d|kbps)[*)\]]?",
+        r"[([*]?(?!^)(?<!\d|Cap[. ]?|\bep[. ]?|\bE|\bS(?=\d{4}E\d))((?:19\d|20[012])\d)(?!\d|kbps|\s?[mg]i?b\b)[*)\]]?",
         "i",
         integer(),
         Options::new().remove(true),
     );
     p.regex(
         "year",
-        r"^[([]?((?:19\d|20[012])\d)(?!\d|kbps)[)\]]?(?![ ._]+(?:S\d{1,2}[ .]?E\d|E\d{1,3}\b))",
+        r"^[([]?((?:19\d|20[012])\d)(?!\d|kbps|\s?[mg]i?b\b)[)\]]?(?![ ._]+(?:S\d{1,2}[ .]?E\d|E\d{1,3}\b))",
         "i",
         integer(),
         Options::new().remove(true),

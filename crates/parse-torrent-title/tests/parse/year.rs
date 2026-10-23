@@ -55,6 +55,18 @@ fn should_not_detect_year_from_bitrate() {
     assert_missing("04. Practice Two (1324mb 1916x1080 50fps 1970kbps x265 deef).mkv", &["year"]);
 }
 
+/// should not detect year from file size
+#[test]
+fn should_not_detect_year_from_file_size() {
+    assert_missing("01. FP1 (2016mb 1920x1080 3961kbps x265 AAC deef).mkv", &["year"]);
+}
+
+/// should not detect year from spaced file size
+#[test]
+fn should_not_detect_year_from_spaced_file_size() {
+    assert_missing("02. Race (1936 MB 1920x1080 x265).mkv", &["year"]);
+}
+
 /// should not detect year spanish episode
 #[test]
 fn should_not_detect_year_spanish_episode() {
