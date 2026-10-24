@@ -9,7 +9,7 @@ It is written in Rust, and is also published to npm as `@thebeastlt/parse-torren
 ## Installation
 
 ```bash
-cargo add parse-torrent-title --git https://github.com/TheBeastLT/parse-torrent-title
+cargo add parse-torrent-title
 ```
 
 ## Usage
@@ -325,3 +325,6 @@ cargo run --release --example bench < names.txt # measures parsing speed
 cd crates/parse-torrent-title-node
 npm ci && npm run build && npm test             # builds the native addon and runs the javascript test suite
 ```
+
+To release, publish a GitHub release with a `v<version>` tag such as `v2.1.0`. The release sets the version, so the
+versions in the repository stay `0.0.0`, and publishes the crate and the npm packages.

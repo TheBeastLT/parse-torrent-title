@@ -205,7 +205,7 @@ dependencies = [
 
 [[package]]
 name = "parse-torrent-title"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "aho-corasick",
  "chrono",
@@ -219,7 +219,7 @@ dependencies = [
 
 [[package]]
 name = "parse-torrent-title-node"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "napi",
  "napi-build",

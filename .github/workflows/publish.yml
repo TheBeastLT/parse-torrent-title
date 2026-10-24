@@ -1,16 +1,59 @@
-name: Publish package
+name: Publish
 
-# builds the native addon for each platform and publishes the npm packages, like the napi-rs package template
+# publishes the crate and the npm packages for a release tagged `v<version>`, which sets their version: the versions
+# in the repository are placeholders. Both registries trust this workflow (trusted publishing), so no tokens are stored.
 on:
   release:
     types: [published]
+
+permissions:
+  contents: read
 
 defaults:
   run:
     working-directory: crates/parse-torrent-title-node
 
 jobs:
+  version:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    outputs:
+      version: ${{ steps.tag.outputs.version }}
+    steps:
+      - id: tag
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          version="${TAG#v}"
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::release tag $TAG is not v<semver>"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  crate:
+    needs: version
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - run: sed -i 's/^version = ".*"/version = "${{ needs.version.outputs.version }}"/' Cargo.toml
+      - uses: rust-lang/crates-io-auth-action@v1
+        id: auth
+      # the version set above leaves the checkout dirty
+      - run: cargo publish -p parse-torrent-title --allow-dirty
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+
   build:
+    needs: version
     strategy:
       fail-fast: false
       matrix:
@@ -46,24 +89,27 @@ jobs:
           path: crates/parse-torrent-title-node/*.node
           if-no-files-found: error
 
-  publish:
-    needs: build
+  npm:
+    needs: [version, build]
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v5
+      # trusted publishing needs npm 11.5.1 or later
       - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org/
       - uses: dtolnay/rust-toolchain@stable
       - run: npm ci
-      # the loader of the platform packages, the same on every platform
+      - run: npm version ${{ needs.version.outputs.version }} --no-git-tag-version --allow-same-version
+      # the loader of the platform packages, the same on every platform, which checks their version
       - run: npm run build
       - uses: actions/download-artifact@v4
         with:
           path: crates/parse-torrent-title-node/artifacts
       - run: npx napi create-npm-dirs
       - run: npx napi artifacts
+      # publishes the platform packages first, see the prepublishOnly script
       - run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
