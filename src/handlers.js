@@ -173,7 +173,7 @@ exports.addDefaults = /** @type Parser */ (parser, { exclude } = {}) => {
     parser.addHandler("audio", /\bDD5[. ]?1\b/i, value("dd5.1"), { remove: true });
     parser.addHandler("audio", /\bQ?AAC(?:[. ]?2[. ]0|x2)?\b/, value("aac"), { remove: true });
     parser.addHandler("audioChannels", /\[[257][.-][01]]/, lowercase, { remove: true });
-    parser.addHandler("audioChannels", /(?:\b(?:DTS(?:-?HD)?(?:[ .-]?MA)?|E?AC-?3|AAC|TrueHD|FLAC|Opus|L?PCM)[ .-]?|[[(])([257]\.[01])(?:ch)?(?=[\]) .,_-]|$)/i, none, { remove: true });
+    parser.addHandler("audioChannels", /(?:\b(?:DTS(?:-?HD)?(?:[ .-]?MA)?|E?AC-?3|AAC|TrueHD|FLAC|Opus|L?PCM|Atmos)[ .-]?|[[(])([257]\.[01])(?:ch)?(?=[\]) .,_-]|$)/i, none, { remove: true });
 
 
     // Container
