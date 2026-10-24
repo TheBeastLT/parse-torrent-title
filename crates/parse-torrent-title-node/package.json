@@ -4,8 +4,20 @@
   "description": "Parse torrent title to extract useful information",
   "main": "index.js",
   "types": "index.d.ts",
-  "files": ["index.js", "index.d.ts", "native.js", "README.md"],
-  "keywords": ["parse", "torrent", "title", "name", "extract", "information"],
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "native.js",
+    "README.md"
+  ],
+  "keywords": [
+    "parse",
+    "torrent",
+    "title",
+    "name",
+    "extract",
+    "information"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -39,5 +51,14 @@
     "@napi-rs/cli": "^3.0.0",
     "chai": "^4.2.0",
     "mocha": "^7.1.2"
+  },
+  "optionalDependencies": {
+    "@thebeastlt/parse-torrent-title-darwin-x64": "2.0.0",
+    "@thebeastlt/parse-torrent-title-darwin-arm64": "2.0.0",
+    "@thebeastlt/parse-torrent-title-linux-x64-gnu": "2.0.0",
+    "@thebeastlt/parse-torrent-title-linux-x64-musl": "2.0.0",
+    "@thebeastlt/parse-torrent-title-linux-arm64-gnu": "2.0.0",
+    "@thebeastlt/parse-torrent-title-linux-arm64-musl": "2.0.0",
+    "@thebeastlt/parse-torrent-title-win32-x64-msvc": "2.0.0"
   }
 }
