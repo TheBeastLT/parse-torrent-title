@@ -1,6 +1,6 @@
 {
   "name": "@thebeastlt/parse-torrent-title",
-  "version": "2.0.0-alpha.0",
+  "version": "2.0.0",
   "description": "Parse torrent title to extract useful information",
   "main": "index.js",
   "types": "index.d.ts",
