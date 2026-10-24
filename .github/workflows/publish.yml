@@ -83,7 +83,7 @@ jobs:
       - run: npm ci
       - run: ${{ matrix.settings.build }}
         shell: bash
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: bindings-${{ matrix.settings.target }}
           path: crates/parse-torrent-title-node/*.node
@@ -106,7 +106,7 @@ jobs:
       - run: npm version ${{ needs.version.outputs.version }} --no-git-tag-version --allow-same-version
       # the loader of the platform packages, the same on every platform, which checks their version
       - run: npm run build
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           path: crates/parse-torrent-title-node/artifacts
       - run: npx napi create-npm-dirs
