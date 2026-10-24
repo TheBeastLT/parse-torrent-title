@@ -9,7 +9,7 @@ jobs:
   rust:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
@@ -23,7 +23,7 @@ jobs:
   msrv:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       # the rust-version of Cargo.toml
       - uses: dtolnay/rust-toolchain@1.88
       - uses: Swatinem/rust-cache@v2
@@ -32,18 +32,23 @@ jobs:
   node:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         node-version: [18, 20, 22]
     defaults:
       run:
         working-directory: crates/parse-torrent-title-node
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - uses: actions/setup-node@v4
+      # the napi cli needs node 20.17 or later, while the addon it builds runs on older versions too
+      - uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22
       - run: npm ci
       - run: npm run build
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
       - run: npm test
