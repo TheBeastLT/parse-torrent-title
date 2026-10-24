@@ -3,8 +3,8 @@
 This package extracts information from a torrent or file name: title, year, season and episode numbers,
 resolution, source, codec, audio, HDR, languages, release group and more.
 
-It runs the Rust implementation of [parse-torrent-title](https://github.com/TheBeastLT/parse-torrent-title)
-as a native addon, with prebuilt binaries for Linux (glibc and musl), macOS and Windows on x64 and arm64.
+It is written in [Rust](https://github.com/TheBeastLT/parse-torrent-title) and runs as a native addon, with prebuilt
+binaries for Linux (glibc and musl) and macOS on x64 and arm64, and for Windows on x64.
 
 ## Installation
 

@@ -1,10 +1,10 @@
 # parse-torrent-title
 
-This crate extracts information from a torrent or file name: title, year, season and episode numbers,
+This library extracts information from a torrent or file name: title, year, season and episode numbers,
 resolution, source, codec, audio, HDR, languages, release group and more.
 
-It is the Rust implementation of [parse-torrent-title](https://github.com/TheBeastLT/parse-torrent-title), and
-parses names exactly like it. The npm package is built from it too, see [Usage from Node.js](#usage-from-nodejs).
+It is written in Rust, and is also published to npm as `@thebeastlt/parse-torrent-title`, see
+[Usage from Node.js](#usage-from-nodejs).
 
 ## Installation
 
