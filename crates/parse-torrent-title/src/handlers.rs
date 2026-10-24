@@ -573,13 +573,7 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
     p.regex("seasons", r"\bs\.(\d{1,2})[ .]ep\.\d{1,4}", "i", array(integer()), Options::new());
     p.regex("seasons", r"[[(](\d{1,2})\.(?!5[)\]])\d{1,3}[)\]]", "", array(integer()), Options::new());
     p.regex("seasons", r"-\s?(\d{1,2})\.\d{2,3}\s?-", "", array(integer()), Options::new());
-    p.regex(
-        "seasons",
-        r"^(\d{1,2})\.\d{2,3} - ",
-        "",
-        array(integer()),
-        Options::new().skip_if_before(&["year, source", "resolution"]),
-    );
+    p.regex("seasons", r"^(\d{1,2})\.\d{2,3} - ", "", array(integer()), Options::new().skip_if_before(&["resolution"]));
     p.regex(
         "seasons",
         r"^(\d{1,2})\.\d{2,3}[. ]+(?=[^\W\d]|[\u00c0-\u024f\u0400-\u04ff])",
@@ -812,7 +806,7 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
         r"^\d{1,2}\.(\d{2,3}) - ",
         "",
         array(integer()),
-        Options::new().skip_if_before(&["year, source", "resolution"]),
+        Options::new().skip_if_before(&["resolution"]),
     );
     p.regex(
         "episodes",
