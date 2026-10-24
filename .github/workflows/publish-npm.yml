@@ -1,4 +1,4 @@
-name: Release
+name: Publish package
 
 # builds the native addon for each platform and publishes the npm packages, like the napi-rs package template
 on:
