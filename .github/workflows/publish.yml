@@ -33,8 +33,9 @@ jobs:
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
+  # waits for the builds too, so neither registry gets a release that fails to build on a platform
   crate:
-    needs: version
+    needs: [version, build]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
