@@ -1232,3 +1232,21 @@ fn should_not_detect_a_bracketed_release_group_of_s10_after_an_audio_tag_as_seas
 fn should_not_detect_a_release_group_of_s20_before_the_extension_as_season() {
     assert_missing("Movie 2024 1080p WEB-DL x264-S20.mkv", &["seasons"]);
 }
+
+/// should not detect atmos audio channels as season
+#[test]
+fn should_not_detect_atmos_audio_channels_as_season() {
+    assert_missing(
+        "The.Mandalorian.and.Grogu.2026.UHD.2160p.Bluray.IMAX.DoVi.TrueHD.Atmos7.1.HDR.HEVC.X265-FZHD",
+        &["seasons"],
+    );
+}
+
+/// should not detect dotted atmos audio channels as season
+#[test]
+fn should_not_detect_dotted_atmos_audio_channels_as_season() {
+    assert_missing(
+        "Spider-Man.No.Way.Home.2021.MULTi.REMUX.2160p.UHD.Blu-ray.DV.HDR.HEVC.ATMOS7.1-DENDA",
+        &["seasons"],
+    );
+}

@@ -442,7 +442,7 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
     p.regex("audio", r"\bDD5[. ]?1\b", "i", value("dd5.1"), Options::new().remove(true));
     p.regex("audio", r"\bQ?AAC(?:[. ]?2[. ]0|x2)?\b", "", value("aac"), Options::new().remove(true));
     p.regex("audioChannels", r"\[[257][.-][01]]", "", lowercase(), Options::new().remove(true));
-    p.regex("audioChannels", r"(?:\b(?:DTS(?:-?HD)?(?:[ .-]?MA)?|E?AC-?3|AAC|TrueHD|FLAC|Opus|L?PCM)[ .-]?|[[(])([257]\.[01])(?:ch)?(?=[\]) .,_-]|$)", "i", none(), Options::new().remove(true));
+    p.regex("audioChannels", r"(?:\b(?:DTS(?:-?HD)?(?:[ .-]?MA)?|E?AC-?3|AAC|TrueHD|FLAC|Opus|L?PCM|Atmos)[ .-]?|[[(])([257]\.[01])(?:ch)?(?=[\]) .,_-]|$)", "i", none(), Options::new().remove(true));
 
     // Container
     p.regex(

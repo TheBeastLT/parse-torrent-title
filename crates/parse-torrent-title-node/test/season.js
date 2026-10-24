@@ -896,4 +896,14 @@ describe("Parsing season", () => {
         const releaseName = "Movie 2024 1080p WEB-DL x264-S20.mkv";
         expect(parse(releaseName)).to.not.have.property("seasons");
     });
+
+    it("should not detect atmos audio channels as season", () => {
+        const releaseName = "The.Mandalorian.and.Grogu.2026.UHD.2160p.Bluray.IMAX.DoVi.TrueHD.Atmos7.1.HDR.HEVC.X265-FZHD";
+        expect(parse(releaseName)).to.not.have.property("seasons");
+    });
+
+    it("should not detect dotted atmos audio channels as season", () => {
+        const releaseName = "Spider-Man.No.Way.Home.2021.MULTi.REMUX.2160p.UHD.Blu-ray.DV.HDR.HEVC.ATMOS7.1-DENDA";
+        expect(parse(releaseName)).to.not.have.property("seasons");
+    });
 });
