@@ -1250,3 +1250,21 @@ fn should_not_detect_dotted_atmos_audio_channels_as_season() {
         &["seasons"],
     );
 }
+
+/// should detect a season glued to a name with a hyphen
+#[test]
+fn should_detect_a_season_glued_to_a_name_with_a_hyphen() {
+    assert_includes("spiritpact-s1", json!({ "title": "spiritpact", "seasons": [1] }));
+}
+
+/// should detect a season glued to a spaced name with a hyphen
+#[test]
+fn should_detect_a_season_glued_to_a_spaced_name_with_a_hyphen() {
+    assert_includes("House of the Dragon-S03", json!({ "title": "House of the Dragon", "seasons": [3] }));
+}
+
+/// should not detect a season from a release group after the release tags
+#[test]
+fn should_not_detect_a_season_from_a_release_group_after_the_release_tags() {
+    assert_missing("Flashdance.1983.MULTi.720p.NF.WEB-DL.DDP5.1.H264-S78", &["seasons"]);
+}

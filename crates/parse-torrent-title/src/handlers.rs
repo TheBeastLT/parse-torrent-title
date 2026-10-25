@@ -523,6 +523,13 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
     p.regex("seasons", r"(?:[^\w-]|^)s(\d{1,2})$", "i", array(integer()), Options::new());
     p.regex(
         "seasons",
+        r"-s(\d{1,2})$",
+        "i",
+        array(integer()),
+        Options::new().skip_if_after(&["year", "resolution", "source", "codec", "audio"]),
+    );
+    p.regex(
+        "seasons",
         r"(?:\W|^)s-(\d{1,2})(?=[. -]*e[. -]?\d{1,3}\b|[. ]+(?:d(?:isc)?[. -]?\d|dvd)\b|[. ]*$)",
         "i",
         array(integer()),
