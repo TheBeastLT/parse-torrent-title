@@ -44,7 +44,7 @@
   "scripts": {
     "build": "napi build --platform --release --js native.js --dts native.d.ts",
     "build:debug": "napi build --platform --js native.js --dts native.d.ts",
-    "prepublishOnly": "napi pre-publish -t npm",
+    "prepublishOnly": "napi pre-publish -t npm --no-gh-release",
     "test": "mocha"
   },
   "devDependencies": {
