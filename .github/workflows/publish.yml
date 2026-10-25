@@ -2,7 +2,7 @@ name: Publish
 
 # publishes the crate and the npm packages for a release tagged `v<version>`, which sets their version: the versions
 # in the repository are placeholders. Both registries trust this workflow (trusted publishing), so no tokens are
-# stored. fastjs-regex has its own version and is published separately, before a release that needs a new one.
+# stored. fastjs-regex has its own version, published with the first release that finds it missing.
 on:
   release:
     types: [published]
@@ -48,6 +48,18 @@ jobs:
       - run: sed -i 's/^version = ".*"/version = "${{ needs.version.outputs.version }}"/' Cargo.toml
       - uses: rust-lang/crates-io-auth-action@v1
         id: auth
+      # fastjs-regex has its own version: published when this one is not on crates.io yet, before the crate needs it
+      - name: Publish fastjs-regex
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+        run: |
+          version=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name == "fastjs-regex") | .version')
+          status=$(curl -s -o /dev/null -w '%{http_code}' -A 'publish-workflow' "https://crates.io/api/v1/crates/fastjs-regex/$version")
+          if [ "$status" = 200 ]; then
+            echo "fastjs-regex $version is already published"
+          else
+            cargo publish -p fastjs-regex --allow-dirty
+          fi
       # the version set above leaves the checkout dirty
       - run: cargo publish -p parse-torrent-title --allow-dirty
         env:
