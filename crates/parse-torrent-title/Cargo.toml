@@ -13,12 +13,11 @@ rust-version.workspace = true
 [features]
 # checks the shortcuts taken around the backtracking regex engine (translated patterns, literal filtering) against
 # it, panicking when one changes a match; meant for the test suite
-verify-regex = []
+verify-regex = ["fastjs-regex/verify"]
 
 [dependencies]
+fastjs-regex = { path = "../fastjs-regex", version = "0.0.0" }
 indexmap.workspace = true
-regress.workspace = true
-regex.workspace = true
 regex-syntax.workspace = true
 aho-corasick.workspace = true
 serde.workspace = true

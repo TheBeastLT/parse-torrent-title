@@ -1,7 +1,7 @@
 //! Translation of ECMAScript patterns into patterns of the `regex` crate.
 //!
 //! The backtracking engine giving js semantics is slow, especially at finding out that a pattern does not match,
-//! which is the common case: most handlers do not match a given title. So each pattern is also translated into
+//! which is the common case when many patterns run over each text. So each pattern is also translated into
 //! a pattern of the linear time `regex` crate:
 //!
 //! - When the pattern uses only what the `regex` crate supports, the translation is exact and replaces the
@@ -18,13 +18,13 @@ const JS_SPACES: &str =
     r"\t\n\x0B\x0C\r \x{a0}\x{1680}\x{2000}-\x{200a}\x{2028}\x{2029}\x{202f}\x{205f}\x{3000}\x{feff}";
 const WORD: &str = "0-9A-Za-z_";
 
-/// A js pattern translated into the syntax of the `regex` crate.
+/// A js pattern translated into the syntax of the `regex` crate, see [`crate::Regex::translation`].
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) struct Translation {
+pub struct Translation {
     /// Matches a superset of the js pattern, or exactly what it matches when `exact`.
-    pub pattern: String,
+    pub(crate) pattern: String,
     /// Whether the pattern finds the same matches and capture groups as the js pattern.
-    pub exact: bool,
+    pub(crate) exact: bool,
     /// Whether the `i` flag folds case by uppercasing, as js does without the `u` flag, unlike the simple case
     /// folding of the `regex` crate: the translation then only holds on the texts given by [`Translation::holds_for`].
     uppercase_folding: bool,
@@ -144,10 +144,24 @@ const FOLDS_UNLIKE_JS: &[char] = &[
 ];
 
 impl Translation {
+    /// The pattern in the syntax of the `regex` crate, matching a superset of the js pattern, or exactly what it
+    /// matches when [`Translation::is_exact`], on the texts given by [`Translation::holds_for`].
+    #[must_use]
+    pub fn pattern(&self) -> &str {
+        &self.pattern
+    }
+
+    /// Whether the pattern finds the same matches and capture groups as the js pattern.
+    #[must_use]
+    pub fn is_exact(&self) -> bool {
+        self.exact
+    }
+
     /// Whether the translation, exact or a superset, holds on `text`.
     ///
-    /// Folding by uppercasing differs from the simple case folding only on [`FOLDS_UNLIKE_JS`], and on `s` and `k`
-    /// for a pattern holding `ſ` or the kelvin sign.
+    /// Folding by uppercasing differs from the simple case folding only on `FOLDS_UNLIKE_JS`, about a hundred
+    /// characters such as `ß` or the ohm sign, and on `s` and `k` for a pattern holding `ſ` or the kelvin sign.
+    #[must_use]
     pub fn holds_for(&self, text: &str) -> bool {
         if !self.uppercase_folding {
             return true;
@@ -164,6 +178,7 @@ impl Translation {
 
     /// Whether the pattern folds case like the ascii case insensitive search of `aho-corasick`, i.e. it is an
     /// ascii pattern folding by uppercasing, which only folds ascii letters into ascii letters.
+    #[must_use]
     pub fn folds_ascii_letters_only(&self) -> bool {
         self.uppercase_folding && self.ascii_pattern
     }
@@ -243,6 +258,7 @@ impl Translator {
     fn body(&mut self, chars: &[char]) -> Option<String> {
         let mut out = String::with_capacity(chars.len() + 16);
         let mut depth = 0usize;
+        let mut capturing_groups = Vec::new();
         let mut alternative_start = true;
         let mut i = 0;
         while i < chars.len() {
@@ -285,11 +301,15 @@ impl Translator {
                         }
                         i = after;
                     } else {
+                        if rest.starts_with("(?") && matches!(chars.get(i + 2), Some('i' | 'm' | 's' | '-')) {
+                            return None;
+                        }
                         // js clears the groups of a repeated group on each repetition, unlike the `regex` crate
                         let capturing = !rest.starts_with("(?") || rest.starts_with("(?<");
                         if capturing && depth > 0 {
                             self.exact = false;
                         }
+                        capturing_groups.push((capturing, out.len()));
                         depth += 1;
                         if rest.starts_with("(?<") {
                             out.push_str("(?P<");
@@ -301,6 +321,14 @@ impl Translator {
                     }
                 }
                 ')' => {
+                    let group = capturing_groups.pop();
+                    if skip_quantifier(chars, i + 1) != i + 1
+                        && group.is_some_and(|(capturing, start)| {
+                            capturing || can_match_empty(&format!("{})", &out[start..]))
+                        })
+                    {
+                        self.exact = false;
+                    }
                     depth = depth.saturating_sub(1);
                     out.push(')');
                     i += 1;
@@ -496,7 +524,7 @@ fn quantifier_end(chars: &[char], i: usize) -> Option<usize> {
     valid.then_some(close + 1)
 }
 
-/// The index after the quantifier (if any) of a dropped lookaround ending at `i`.
+/// The index after the quantifier (if any) at `i`, such as the one of a dropped lookaround ending there.
 fn skip_quantifier(chars: &[char], i: usize) -> usize {
     let end = match chars.get(i) {
         Some('*' | '+' | '?') => i + 1,
@@ -504,6 +532,10 @@ fn skip_quantifier(chars: &[char], i: usize) -> usize {
         _ => return i,
     };
     if chars.get(end) == Some(&'?') { end + 1 } else { end }
+}
+
+fn can_match_empty(group_body: &str) -> bool {
+    regex_syntax::parse(group_body).map_or(true, |hir| hir.properties().minimum_len() == Some(0))
 }
 
 #[cfg(test)]
@@ -548,6 +580,11 @@ mod tests {
         assert!(exact(r"\bx\b", "u"));
         // a group inside a repeated group keeps its last value in the `regex` crate, unlike in js
         assert!(!exact(r"(?:(a)|b)+", ""));
+        assert!(!exact(r"(a*)*b", ""));
+        assert!(!exact(r"(a|)+b", ""));
+        assert!(!exact(r"(?:a|)+b", ""));
+        assert!(!exact(r"(?:|a)+", ""));
+        assert!(exact(r"(?:a|b)+", ""));
         // the few chars that fold unlike js without the `u` flag are left to `Translation::holds_for`
         assert!(exact(r"[a-zé]", "i"));
         assert!(exact(r"[a-zé]", ""));
@@ -587,6 +624,13 @@ mod tests {
         assert!(holds(r"[\u0100-\u024f]", "i", "movie"));
         assert!(!holds(r"[\u0100-\u024f]", "i", "season"));
         assert!(holds(r"[\u0100-\u024f]", "", "\u{2126}"));
+    }
+
+    #[test]
+    fn leaves_modifiers_to_js() {
+        assert!(translate(r"(?i:a)b", "").is_none());
+        assert!(translate(r"(?-i:a)b", "i").is_none());
+        assert!(translate(r"(?:a)b", "i").is_some());
     }
 
     #[test]

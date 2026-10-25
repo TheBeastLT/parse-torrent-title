@@ -2,8 +2,9 @@
 //!
 //! Checking each of the ~450 handler patterns against a title one by one costs more than all the actual
 //! matching, since few of them match. Most patterns can only match where one of a few literals appears, like
-//! `720p` or `x26`: `regex-syntax` extracts these from the translated patterns (see [`crate::translate`]), and
-//! one Aho-Corasick automaton over all of them finds the candidate handlers in a single pass.
+//! `720p` or `x26`: `regex-syntax` extracts these from the translated patterns (see
+//! [`fastjs_regex::Translation`]), and one Aho-Corasick automaton over all of them finds the candidate handlers in a
+//! single pass.
 //!
 //! Removing a match from the title can only create a new literal occurrence across the cut, so after a removal
 //! only the text around it is scanned again. Earlier candidates stay candidates, which only costs a check.
@@ -81,7 +82,7 @@ fn required_literals(regex: &Regex) -> Option<Vec<Vec<u8>>> {
     // the automaton matches ascii letters in any case, which is all js folds an ascii pattern into without the
     // `u` flag, so the costly unicode case folding of the extraction is only needed for other patterns
     let ascii_folding = translation.folds_ascii_letters_only();
-    let pattern = translation.pattern.strip_prefix("(?i)").filter(|_| ascii_folding).unwrap_or(&translation.pattern);
+    let pattern = translation.pattern().strip_prefix("(?i)").filter(|_| ascii_folding).unwrap_or(translation.pattern());
     let hir = regex_syntax::ParserBuilder::new().build().parse(pattern).ok()?;
     // every match starts with one of the prefixes, and ends with one of the suffixes: keep the more selective
     let prefixes = literals(Extractor::new().kind(ExtractKind::Prefix).extract(&hir), ExtractKind::Prefix);

@@ -141,8 +141,9 @@ The default parser used by `parse` can not be changed, so customizing a copy nev
 ### Regular expression handlers
 
 `Handler::regex(name, regex)` creates a handler from a `Regex`, which takes a pattern and flags with the syntax
-and the meaning of a javascript regular expression, such as `Regex::new(r"\b(4k)\b", "i")`. All flags but the
-sticky `y` are supported.
+and the meaning of a javascript regular expression, such as `Regex::new(r"\b(4k)\b", "i")`. All flags are
+supported: the matching is done by [`fastjs-regex`](https://crates.io/crates/fastjs-regex), ECMAScript regex
+semantics with a linear-time fast path.
 If the regular expression has a capturing group, only the first group is passed to the transformer.
 Otherwise the whole match is used.
 

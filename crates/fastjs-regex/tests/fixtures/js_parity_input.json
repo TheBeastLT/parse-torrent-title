@@ -1,0 +1,3631 @@
+{
+ "crafted": 65,
+ "strings": [
+  "",
+  " ",
+  "a",
+  "foo",
+  "Foo bar FOO",
+  "foobar",
+  "x foo-bar y",
+  "12px 3px",
+  "$100 and 200",
+  "price: $12.50",
+  "a\nb",
+  "a\r\nb c",
+  "line1\nline2\nline3",
+  "\t tab nbsp　ideo",
+  "aaa",
+  "abab",
+  "aabbcc",
+  "abcd",
+  "abc",
+  "ab",
+  "b",
+  "xxxyyy",
+  "ooxoox",
+  "2023-12-25",
+  "1999-01-02 and 2024-11-30",
+  "S01E02 show s1e100",
+  "season 2 part 3",
+  "café",
+  "CAFÉ",
+  "éte",
+  "Ünïcödé façade",
+  "straße STRASSE",
+  "ǅemal ǆ",
+  "Привет мир",
+  "ПРИВЕТ",
+  "Ελληνικά ΣΣ σς",
+  "日本語のタイトル",
+  "進撃の巨人 2",
+  "한국어",
+  "مرحبا",
+  "😀",
+  "a😀b",
+  "😀😀",
+  "x😀 o",
+  "𝒜𝒷𝒸",
+  "𠮷野家",
+  "👨‍👩‍👧 family",
+  "1️⃣ keycap",
+  "ﬁle ﬂow",
+  "ＡＢＣ１２３",
+  "Ⅻ roman",
+  "the The THE",
+  "a,b;c , d",
+  "a, b ,c,,d",
+  "1234567890123",
+  "(paren) [bracket] {brace}",
+  ".*+?^${}()|[]\\",
+  "\u0000nul",
+  "under_score-dash",
+  "o",
+  "ooo xo",
+  "abcbcd",
+  "aaab",
+  "foo foo foo",
+  "éÉ mixed",
+  "durarara!!x2 - part 3 - ketsu + ova",
+  "pokemon movie 08 mew to hadou no yuusha lucario 2005",
+  "attack on titan season 4 part 4 attack on titan season 4 final edition part 2 attack on titan the final season final edition part 2",
+  "ushio to tora (tv) 2nd season",
+  "welcome to the outcast's restaurant!",
+  "2026",
+  "48x61 (rintaro x katsuhiro otomo) s48",
+  "special",
+  "otaku ni koi wa muzukashii - oad 2",
+  "peerless battle spirit sr 01 - 2024",
+  "patlabor 2 the movie",
+  "love live! nijigasaki gakuen school idol doukoukai - kanketsu-hen - chapter 1",
+  "lupin iii part iv",
+  "one piece - sp 01",
+  "code geass akito the exiled oav 02",
+  "    at Object.<anonymous> (/Users/paulius/projects/stremio/kitsu-anime/lib/title_query.js:18:41)",
+  "ovas",
+  "",
+  "genshiken second season specials",
+  "× 04",
+  "peter grill to kenja no jikan - super extra",
+  "genshiken nidaime - special 03",
+  "evangelion 3 0 plus 1 01 thrice upon a time 2021",
+  "attack on titan - season the final chapters special 2",
+  "kimi no na wa aka your name 2016",
+  "vanitas no karte 2nd cour",
+  "hibike euphonium 2 summary",
+  "special 7 special crime investigation unit - one year earlier kujaku nijo's melancholy",
+  "lupin iii walther p 38",
+  "magic knight rayearth extras",
+  "princess principal picture drama",
+  "lord of mysteries - special 01 (ca)",
+  "kono subarashii sekai ni shukufuku wo 3 - ova 01",
+  "kono subarashii sekai ni shukufuku wo 3 - ova 02",
+  "golden kamuy oads",
+  "touhou gensou mangekyou ova 20",
+  "lupin the 3rd - the castle of cagliostro - special edition",
+  "detective conan ova 07 - a challenge from agasa! agasa vs conan and the detective boys",
+  "genshiken nidaime - special 04",
+  "hetalia world stars - ova 3 end",
+  "otaku ni koi wa muzukashii - oad 3",
+  "touhou gensou mangekyou ova 19",
+  "Honey & Clover",
+  "Csillagközi fejvadászok",
+  "Cowboy Bebop The Movie - Knockin’ on Heaven’s Door",
+  "shinseiki evangelion gekijoban shi to shinsei",
+  "Ace wo Nerae! (1979)",
+  "bonus",
+  "inuyasha the movie 2 the castle beyond the looking glass 2002",
+  "as a reincarnated aristocrat ill use my appraisal skill to rise in the world s3",
+  "mk",
+  "al mohackek conan",
+  "yuugiou",
+  "hataraku saibou!!",
+  "otagal",
+  "otome game no hametsu flag shika nai akuyaku reijou ni tensei shiteshimatta x 01",
+  "code geass bokoku no akito dai 1 sho yokuryu wa maiorita",
+  "high score girl ii",
+  "kyoukai no rinne s3",
+  "yo and me",
+  "juuni taisen",
+  "yume iro patissiere",
+  "mushoku no eiyuu betsu ni skill nanka iranakatta n da ga",
+  "my hime anime legends",
+  "    at Object.<anonymous> (/Users/paulius/projects/stremio/kitsu-anime/lib/title_query.js:31:17)",
+  "gankutsuo",
+  "5 tobun no hanayome",
+  "hachimitsutoclover",
+  "dagashi kashi",
+  "ascendance of a bookworm (honzuki no gekokujou) - ova",
+  "i m your father ova",
+  "adventure time 2010 S9",
+  "makenki!",
+  "girls' frontline healing chapter",
+  "mobile fighter g gundam",
+  "tate no yuusha no nariagar S4",
+  "merc storia - mukiryoku shounen to bin no naka no shoujo",
+  "Trigun TV",
+  "aa! megami-sama!  ",
+  "owari no seraph   owaranai seraph",
+  "1978",
+  "toaru",
+  "theprinceoftennis",
+  "mirai shounen conan",
+  "seikon no qwaser",
+  "masamune-kun's revenge s2",
+  "nisekoi ova",
+  "chaos dragon sekiryuu seneki",
+  "Castle in the Sky",
+  "magilumiere magical girls inc s2",
+  "suzume's locking up",
+  "dog days S3",
+  "5-toubun no hanayome s2",
+  "usagi no mofy (tv)",
+  "nier-automata ver1 1a 2024",
+  "gintama S4",
+  "ataque a los titanes S4",
+  "レールカ",
+  "made in abyss movie 3 - dawn of the deep soul 2020",
+  "labyrinth labyrinthos",
+  "cazadora de brujas robin",
+  "detective conan movie 13 - the raven chaser",
+  "natsume s book of friends s3",
+  "shiteater-n'chasubs dr slump and arale-chan",
+  "goblin slayer goblin's crown-movie 2020",
+  "aggressive retsuko 2019",
+  "pocket monsters bw movie 1 - victini and the light hero - reshiram",
+  "pokemon best wishes",
+  "azure legacy s3",
+  "hana kimi S2",
+  "star vs the forces of evil s2",
+  "demon slayer kimetsu no yaiba mugen train arc",
+  "digimon 3rd season",
+  "rwby S6",
+  "senki zesshou symphogear axz",
+  "tsukikage",
+  "puella magi madoka magica film 2 une histoire infinie 2012",
+  "lord of mysteries - special 02 (ca)",
+  "koala boy kokki",
+  "tenbatsu angel rabbie",
+  "o maidens in your savage season mini anime",
+  "beyond time s gaze S2",
+  "koujo denka no kateikyoushi - recap",
+  "Witch Hunter Robin",
+  "l'attacco dei giganti S4",
+  "the dragon prince 2019 s3",
+  "guimi zhi zhu tebie pian liewu lord of mysteries special prey 2026",
+  "ano natsu de matteru - ova",
+  "honzuki no gekokujou shisho ni naru tame ni wa shud",
+  "ace wo nerae! (1979)",
+  "tenchi muyo ryooki 2nd season",
+  "hells paradise jigokuraku",
+  "boku no hero academia the movie world heroes mission",
+  "sword art online progressive scherzo of deep night",
+  "sailor moon cosmos 2023",
+  "re zero kara hajimeru isekai seikatsu",
+  "eternity",
+  "mushoku tensei isekai ittara honki dasu 2026 S3",
+  "one piece movie 11 straw hat chase",
+  "taishou otome otogibanashi"
+ ],
+ "patterns": [
+  {
+   "source": "\\bfoo\\b",
+   "flags": "i",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<=\\d)px",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<!\\$)\\b\\d+",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<=^|\\s)(\\w+)(?=\\s|$)",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<=\\p{L}{2,}\\s+)\\d+",
+   "flags": "u",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<=(\\d+)(\\d+))$",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<=(o)\\1)x",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<=\\1(.))x",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<=\\s|^)ab(?!c)",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\w+",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\W+",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\d+",
+   "flags": "u",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\D+",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\s+",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\S+",
+   "flags": "u",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "[\\w-]+",
+   "flags": "i",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\p{L}+",
+   "flags": "u",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\p{Lu}\\p{Ll}+",
+   "flags": "u",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\P{L}+",
+   "flags": "u",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "[\\p{L}\\p{N}]+",
+   "flags": "u",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\p{Script=Cyrillic}+",
+   "flags": "iu",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\p{Script=Han}",
+   "flags": "u",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\p{Emoji_Presentation}",
+   "flags": "u",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<!\\p{L})\\p{Lu}",
+   "flags": "u",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": ".",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": ".",
+   "flags": "u",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^.$",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^.$",
+   "flags": "u",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "a.b",
+   "flags": "s",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "a.b",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^\\w+$",
+   "flags": "m",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^",
+   "flags": "m",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "$",
+   "flags": "gm",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(a)|(b)",
+   "flags": "g",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(\\d+)-(\\d+)?",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<year>\\d{4})-(?<month>\\d{2})",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<word>\\w)\\k<word>",
+   "flags": "i",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<a>.)(?<b>.)?",
+   "flags": "g",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(\\w)\\1",
+   "flags": "i",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "x*",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?:)",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\B",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?=a)",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "a+?",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\d{2,3}?",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "[^aeiou\\s]+",
+   "flags": "i",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "é",
+   "flags": "i",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "É+",
+   "flags": "i",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "[à-ÿ]+",
+   "flags": "i",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "straße",
+   "flags": "i",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "ǅ",
+   "flags": "iu",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "[а-я]+",
+   "flags": "i",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\u{1F600}",
+   "flags": "u",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "[\\u{1F600}-\\u{1F64F}]",
+   "flags": "u",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\uD83D",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\x41",
+   "flags": "i",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "é",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\cJ",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "[\\b]",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\0",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "foo",
+   "flags": "y",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\d",
+   "flags": "y",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\w+\\s?",
+   "flags": "gy",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?:)",
+   "flags": "y",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "o",
+   "flags": "gy",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "[\\p{L}--[a-z]]",
+   "flags": "v",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "[\\p{L}&&\\p{Script=Greek}]+",
+   "flags": "v",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "[.*+?^${}()|[\\]\\\\]",
+   "flags": "g",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bthe\\b",
+   "flags": "gi",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(\\s*)([,;])(\\s*)",
+   "flags": "g",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": ",",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\s*,\\s*",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(,)",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?:ab)+",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(a|ab)(c|bcd)(d*)",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(a*)*b",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?:(a)|b)+",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^(?:\\s*)$",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "[^]",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "[]",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\$\\d+(?:\\.\\d\\d)?",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bS(\\d{1,2})E(\\d{1,3})\\b",
+   "flags": "i",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "k",
+   "flags": "i",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\w",
+   "flags": "iu",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<!\\d)(\\d)(?!\\d)",
+   "flags": "gd",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?i:a)b",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?i:é)x",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?-i:a)b",
+   "flags": "i",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?m:^b)",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?s:a.b)",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?i:ǅ)",
+   "flags": "u",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<y>\\d{4})-(?:x|y)|(?:x|y)-(?<y>\\d{4})",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<名>a+)",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\k<x>(?<x>a)",
+   "flags": "",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<first>\\w)(?<rest>\\w*)",
+   "flags": "g",
+   "origin": "core",
+   "methods": [
+    "all"
+   ],
+   "replacements": [
+    "[$$|$&|$`|$'|$1|$2|$10|$01|$0|$99|$<year>|$<nope>|$<|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^tt\\d+$",
+   "flags": "i",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\n+(?:[([].+[)\\]\\n]|Source:.*)?(?:\\n+Note(.|\\n)+)?$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "Episode \\d+",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\.json$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(?:the )?(?:movie|film|gekijouban|gekijoban)s? ?(\\d{1,3})\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match",
+    "source-reused"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(?:recaps?|recapitulation|soshu ?hen|digest|summary|highlights?|compilations?|tokubetsu ?hen)\\b",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "other"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "\\b(?:gekijo ?ban|theatrical)\\b",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace",
+    "search"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "\\b(19[5-9]\\d|20[0-3]\\d)\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match",
+    "source-reused"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "[̀-ͯ]",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    ""
+   ],
+   "replacementsAll": [
+    ""
+   ]
+  },
+  {
+   "source": "×",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    " x "
+   ],
+   "replacementsAll": [
+    " x "
+   ]
+  },
+  {
+   "source": "&",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    " and "
+   ],
+   "replacementsAll": [
+    " and "
+   ]
+  },
+  {
+   "source": "(\\w)'s\\b",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "$1s"
+   ],
+   "replacementsAll": [
+    "$1s"
+   ]
+  },
+  {
+   "source": "[^\\p{L}\\p{N}]+",
+   "flags": "gu",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "(\\p{L})(\\d)",
+   "flags": "gu",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "$1 $2"
+   ],
+   "replacementsAll": [
+    "$1 $2"
+   ]
+  },
+  {
+   "source": "(\\d)(?!(?:st|nd|rd|th|d)\\b)(\\p{L})",
+   "flags": "gu",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "$1 $2"
+   ],
+   "replacementsAll": [
+    "$1 $2"
+   ]
+  },
+  {
+   "source": "(^| )x(?= \\D| ?$)",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "ou",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "o"
+   ],
+   "replacementsAll": [
+    "o"
+   ]
+  },
+  {
+   "source": "uu",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "u"
+   ],
+   "replacementsAll": [
+    "u"
+   ]
+  },
+  {
+   "source": "\\s+",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "[＋]",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "+"
+   ],
+   "replacementsAll": [
+    "+"
+   ]
+  },
+  {
+   "source": "[’′]",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "'"
+   ],
+   "replacementsAll": [
+    "'"
+   ]
+  },
+  {
+   "source": "'(?=[a-z0-9])",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    ""
+   ],
+   "replacementsAll": [
+    ""
+   ]
+  },
+  {
+   "source": "[^a-z0-9!+◎☆★']",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    ""
+   ],
+   "replacementsAll": [
+    ""
+   ]
+  },
+  {
+   "source": " ",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    ""
+   ],
+   "replacementsAll": [
+    ""
+   ]
+  },
+  {
+   "source": "^\\d{1,4}$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^(ova|oad|oav)",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^(special|sp$|extra|omake|bonus)",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(\\d{1,2}) the movie\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bchapter (\\d{1,2})\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<!\\bthe )\\b(\\d{1,2})(?:st|nd|rd|th)\\b(?! (?:part|cou?r))",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bs ?\\d{1,2}\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(?:s|season|seasn)\\s?(\\d{1,2})\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(\\d{1,2})(?:st|nd|rd|th) season\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(\\d{1,2}) (?:part|parte|cou?r) \\d\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(?:part|parte|cou?r)\\s?(\\d{1,2})\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(\\d{1,2})(?:st|nd|rd|th) (?:part|cou?r)\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bx ?(\\d)\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bfinal (?:season|part|chapter)\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<!\\b\\d{1,4}) (\\d)$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b\\d{1,2} the movie\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "\\bchapter \\d{1,2}\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "other"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "$^",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "other"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": " \\d$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    ""
+   ],
+   "replacementsAll": [
+    ""
+   ]
+  },
+  {
+   "source": "\\btv\\b",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "\\b(?:the )?(?:movie|film)\\b",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "\\b(?:19|20)\\d\\d\\b",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "[:\\-]",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "split"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(the )?(movie|film|gekijouban|gekijoban)\\b",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "(?:^|[\\s(])(\\d{1,4}) ?- ?\\d{1,4}(?=[\\s+)]|$)",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^(19|20)\\d\\d$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<!\\bs) (\\d{2,4})(?: v \\d)?$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(\\d{1,4})v\\d\\b",
+   "flags": "gi",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "$1"
+   ],
+   "replacementsAll": [
+    "$1"
+   ]
+  },
+  {
+   "source": "\\+\\s*(ovas?|oads?|movies?|films?|specials?|sp)\\b",
+   "flags": "gi",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "\\s-\\s\\d{1,4}(?:v\\d)?(?=\\s|$)",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "\\b(19[5-9]\\d|20[0-3]\\d)(?: (?:19|20)\\d\\d)?\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bp ?\\d{1,2}\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "\\bv \\d{1,2}(?: \\d)?\\b",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "\\b(\\d{1,2}) (?:part|parte|cou?r) (\\d)\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(?:part|parte|cou?r) ?(\\d)\\b|\\b(\\d)(?:st|nd|rd|th) (?:part|cou?r)\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b\\d{1,3} \\d{1,3}\\b",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "\\b(?:s ?\\d{1,2}|season ?\\d{1,2})\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(?:movie|film)\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(movie|film|pilot)\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\s+(?:\\/|\\||aka|a\\.k\\.a\\.)\\s+",
+   "flags": "i",
+   "origin": "kitsu-literal",
+   "methods": [
+    "split"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^(.*?)\\s*\\(([^()]+)\\)\\s*(.*)$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\p{L}{4}",
+   "flags": "u",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^(?:tv|ova|oad|movie|special|uncut|dub|sub)$",
+   "flags": "i",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\s{2,}",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "split"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^[a-z]",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "[A-Za-z0-9]",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^\\p{Ll}",
+   "flags": "u",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "[^A-Za-z0-9]",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^[\\d\\s.,&+-]+(?:and[\\d\\s.,-]+)?$",
+   "flags": "i",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(?:episode|ep|recap|movie|film|pelicula|filme|part|vol|volume) \\d",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^[a-z0-9 ]+$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^\\d+$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\(\\d{4}\\)$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\s+\\S*$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(\\s+)",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "split"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(?:\\d{1,2}(?:st|nd|rd|th) season|season \\d{1,2})\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "final",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(?:season \\d|\\d(?:st|nd|rd|th) season)\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b\\d{1,2}(?:st|nd|rd|th) season\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "[!+◎☆★']+$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    ""
+   ],
+   "replacementsAll": [
+    ""
+   ]
+  },
+  {
+   "source": "^[!+◎☆★']*$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(?:\\p{L}\\.){2,}(?:\\p{L}\\b)?",
+   "flags": "gu",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\.",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\([^)]*\\)",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "[!+◎☆★']$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(?:part|cou?r) (\\d)\\b",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^tt\\d+$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^(['\"])(.*)\\1$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^tt\\d+",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "[^a-z0-9]+",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "kitsu:(\\d+)$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "anime\\/(\\d+)",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\[\\s+((?:-?\\d+|null)(?:,\\s+(?:-?\\d+|null))*)\\s+\\]",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": ":| - | ~",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "split"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^- \\[[xX]\\] <!-- (\\S+) -->",
+   "flags": "gm",
+   "origin": "kitsu-literal",
+   "methods": [
+    "matchAll"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\|",
+   "flags": "g",
+   "origin": "kitsu-literal",
+   "methods": [
+    "replace"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "kitsu\\.(?:app|io)\\/anime\\/(\\d+)",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?:https?|stremio):\\/\\/",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^No kitsu id found for:",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "test"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^(?:kitsu|mal|anilist|anidb):\\d+$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^(?:kitsu|mal|anilist|anidb):\\d+(?::\\d+)?$",
+   "flags": "",
+   "origin": "kitsu-literal",
+   "methods": [
+    "match"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "(?<!\\b(?:part|parte|season|cou?r|vol|volume|episode|ep|movie|film|ova|special|sp))\\s(\\d{1,2})\\s*(\\([^()]*\\p{L}{4}[^()]*\\))\\s*$",
+   "flags": "iu",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    " $2 $1"
+   ],
+   "replacementsAll": [
+    " $2 $1"
+   ]
+  },
+  {
+   "source": "\\b(?:the )?(?:movie|film|gekijouban|gekijoban)s? ?(\\d{1,3})\\b",
+   "flags": "g",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "\\b(?:s ?\\d{1,2}|(?:season|part|cou?r) ?\\d{1,2}|\\d{1,2}(?:st|nd|rd|th) (?:season|part|cou?r)|(?:first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|thirteenth|fourteenth|fifteenth|sixteenth|seventeenth|eighteenth|nineteenth|twentieth) (?:season|part)|final season|season)\\b",
+   "flags": "g",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "\\b(?:\\+? ?(?:ovas?|oads?|movies?|films?|specials?|sp|extras?)|complete|batch|collection|bd|dvd|english|dubbed|dual audio|high quality|tv|series|dublado|legendado|latino|classico|(?:serie|temporada) completa|capitulos|episodios)\\b",
+   "flags": "g",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "(?:\\+|&|\\band\\b|\\bwith\\b|\\bincl\\w*|\\bplus\\b|,)\\s*(?:the\\s+|all\\s+)?(?:\\d+\\s+)?(?:(?:ovas?|oads?|oavs?|specials?|sp|extras?|recaps?|picture dramas?|omake|bonus)|movies?|films?)\\b|\\bcomplete\\b.*\\b(?:ovas?|oads?|oavs?|specials?|sp|extras?|recaps?|picture dramas?|omake|bonus)\\b",
+   "flags": "i",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b((?:ovas?|oads?|oavs?|specials?|sp|extras?|recaps?|picture dramas?|omake|bonus))\\b(?: ?(\\d{1,2})\\b)?",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b((?:ovas?|oads?|oavs?|specials?|sp|extras?|recaps?|picture dramas?|omake|bonus))(?: \\d{1,2})?$",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(?:ovas?|oads?|oavs?|specials?|sp|extras?|recaps?|picture dramas?|omake|bonus)\\b",
+   "flags": "g",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "\\s((?:ovas?|oads?|oavs?|specials?|sp|extras?|recaps?|picture dramas?|omake|bonus)(?:\\s\\d{1,2})?)\\s*$",
+   "flags": "i",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(?:directors? cut|final cut|(?:shin )?henshu ?ban|re ?edit(?:ed|ion)?|special edition|kanzenban|(?:\\d+(?:st|nd|rd|th) anniversary )?remaster(?:ed)?(?: edition)?|\\d+(?:st|nd|rd|th) anniversary edition)\\b",
+   "flags": "g",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "\\b(19[5-9]\\d|20[0-3]\\d)\\b",
+   "flags": "g",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    " "
+   ],
+   "replacementsAll": [
+    " "
+   ]
+  },
+  {
+   "source": "\\b(first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|thirteenth|fourteenth|fifteenth|sixteenth|seventeenth|eighteenth|nineteenth|twentieth) (?:season|part)\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\b(?:part|season) (xviii|viii|xiii|xvii|iii|vii|xii|xiv|xvi|xix|ii|iv|vi|ix|xi|xv|xx|i|v|x)\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "^\\S+ \\S+.* (xviii|viii|xiii|xvii|iii|vii|xii|xiv|xvi|xix|ii|iv|vi|ix|xi|xv|xx)$",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bova(?: \\d{1,2})?$",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\boad(?: \\d{1,2})?$",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\boad 0?2\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bspecial(?: \\d{1,2})?$",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bovas(?: \\d{1,2})?$",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bsp(?: \\d{1,2})?$",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bextra(?: \\d{1,2})?$",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bspecial 0?3\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bspecial 0?2\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bspecials(?: \\d{1,2})?$",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bspecial 0?7\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bextras(?: \\d{1,2})?$",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\boav(?: \\d{1,2})?$",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bsp 0?3\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bpicture drama(?: \\d{1,2})?$",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bspecial 0?1\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bova 0?1\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bova 0?2\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bsp 0?1\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\boads(?: \\d{1,2})?$",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bova 0?20\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bova 0?7\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bspecial 0?4\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bbonus(?: \\d{1,2})?$",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bova 0?3\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\boad 0?3\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\bova 0?19\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  },
+  {
+   "source": "\\boav 0?2\\b",
+   "flags": "",
+   "origin": "kitsu-dynamic",
+   "methods": [
+    "dynamic"
+   ],
+   "replacements": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ],
+   "replacementsAll": [
+    "[$&|$1|$2|$11|$<a>|$]"
+   ]
+  }
+ ]
+}

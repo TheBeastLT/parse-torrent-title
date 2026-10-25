@@ -30,7 +30,6 @@ mod literals;
 mod parser;
 mod regex;
 pub mod transformers;
-mod translate;
 mod value;
 
 use std::fmt;
@@ -67,7 +66,7 @@ pub fn create_parser() -> Parser {
 #[non_exhaustive]
 pub enum Error {
     /// The regex could not be compiled.
-    InvalidRegex { pattern: String, message: String },
+    Regex(fastjs_regex::Error),
     /// The format of [`transformers::date`] is not a valid `chrono` format.
     InvalidDateFormat { format: String },
     /// No handler matches the target of [`Parser::insert_handler`].
@@ -77,7 +76,7 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Error::InvalidRegex { pattern, message } => write!(f, "invalid regex /{pattern}/: {message}"),
+            Error::Regex(error) => error.fmt(f),
             Error::InvalidDateFormat { format } => write!(f, "invalid date format {format:?}"),
             Error::UnknownTarget { name, index: None } => write!(f, "no handler found for {name:?}"),
             Error::UnknownTarget { name, index: Some(index) } => {
@@ -88,3 +87,9 @@ impl fmt::Display for Error {
 }
 
 impl std::error::Error for Error {}
+
+impl From<fastjs_regex::Error> for Error {
+    fn from(error: fastjs_regex::Error) -> Self {
+        Error::Regex(error)
+    }
+}

@@ -50,7 +50,7 @@ struct Defaults<'a>(&'a mut Parser);
 
 impl Defaults<'_> {
     fn regex(&mut self, name: &str, source: &str, flags: &str, transformer: Transformer, options: Options) {
-        self.0.add_handler(Handler::regex(name, Regex::known(source, flags)).transform(transformer).options(options));
+        self.0.add_handler(Handler::regex(name, Regex::lazy(source, flags)).transform(transformer).options(options));
     }
 
     /// A regex which only matches when not surrounded by letters of any alphabet.
@@ -461,7 +461,7 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
         range(),
         Options::new().remove(true),
     );
-    let volume = Regex::known(r"\bvol(?:ume)?[. -]*(\d{1,2})", "i");
+    let volume = Regex::lazy(r"\bvol(?:ume)?[. -]*(\d{1,2})", "i");
     p.function("volumes", move |c| {
         let start = c.matched.get("year").map_or(0, |year| year.match_index);
         let title = slice_from(c.title, start);
@@ -876,11 +876,11 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
     p.regex("episodes", &bare_half_episode(), "i", array(integer()), Options::new().skip_if_before(&["year"]));
 
     // can be both absolute episode and season+episode in format 101
-    let separated_episode = Regex::known(
+    let separated_episode = Regex::lazy(
         r"(?<!movie\W*|film\W*|^)(?:[ .]+-[ .]+\d{1,4}(?:a|b|v\d)?[ .]*[([][ .]*(?!\d+-[a-z]+\))|[ .]+-[ .]+|[([][ .]*(?!\d+-[a-z]+\)))(\d{1,4})(?![. _]?(?:-?й)?[. _]?(?:[Сс]езон|sez(?:on)?\b)(?![. _]?finali))(?:a|b|v\d|\.\d)?(?:\W|$)(?!movie|film|фильм|\d+)",
         "gi",
     );
-    let leading_episode = Regex::known(
+    let leading_episode = Regex::lazy(
         r"^(?:[([-][ .]?)?(\d{1,4})(?![. _]?(?:-?й)?[. _]?(?:[Сс]езон|sez(?:on)?\b)(?![. _]?finali))(?:a|b|v\d)?(?!\Wmovie|\Wfilm|\Wфильм|-\d)(?:\W|$)",
         "i",
     );
@@ -927,7 +927,7 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
         Options::new().skip_if_before(&["year"]),
     );
 
-    let season_dot_episode = Regex::known(r"(?<=[^\d\s][.-]|\s\.)(\d{1,2})\.(\d{2,3})(?=\.\w{2,4}$)", "");
+    let season_dot_episode = Regex::lazy(r"(?<=[^\d\s][.-]|\s\.)(\d{1,2})\.(\d{2,3})(?=\.\w{2,4}$)", "");
     p.function("episodes", move |c| {
         if has(c.result, "episodes") || has(c.result, "seasons") || has(c.result, "year") {
             return None;
@@ -941,11 +941,11 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
         Some(HandlerMatch::at(utf16_index(c.title, m.start())))
     });
 
-    let episode_after_year = Regex::known(
+    let episode_after_year = Regex::lazy(
         r"^(?:[ .]| - ?|\. (?=\d{1,3} ?(?:\[|$)))(?!(?:480|576|720)\b)(\d{1,3})(?:v\d)?-?(?=[ .([-]|$)(?![ .,-]*\d|[ .]*(?:cd|dvd|dis[ck]|bits?|films?|movies?|[mg]b)\b)",
         "i",
     );
-    let episode_after_resolution = Regex::known(r"^ (\d{3,4}) (?=[^\W\d])", "");
+    let episode_after_resolution = Regex::lazy(r"^ (\d{3,4}) (?=[^\W\d])", "");
     p.function("episodes", move |c| {
         if has(c.result, "episodes") || has(c.result, "date") {
             return None;
@@ -966,7 +966,7 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
     p.regex("episodes", r"\bphase[ .](\d{2,3})\b", "i", array(integer()), Options::new());
 
     // the parsed episode written as `12.5`: an episode inserted after 12, i.e. a recap or special
-    let half_episode = Regex::known(&[r"(?<!\d\.?|imdb[ .]?|#)0*(\d+)", HALF_EPISODE_END].concat(), "i");
+    let half_episode = Regex::lazy(&[r"(?<!\d\.?|imdb[ .]?|#)0*(\d+)", HALF_EPISODE_END].concat(), "i");
     p.function("halfEpisode", move |c| {
         let Some(&[episode]) = c.result.episodes() else {
             return None;
@@ -1127,7 +1127,7 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
     );
 
     // Trash for removal
-    let trash = Regex::known(r"[[(](?:movie|anime|series?(?:[ .](?:anime|de[ .]tv|tv|dibujos))?)[)\]]", "i");
+    let trash = Regex::lazy(r"[[(](?:movie|anime|series?(?:[ .](?:anime|de[ .]tv|tv|dibujos))?)[)\]]", "i");
     p.function("trash", move |c| {
         let m = trash.find(c.title)?;
         Some(HandlerMatch {
@@ -1738,8 +1738,8 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
     p.language_name("persian|persa", "persian", Options::new().skip_from_title(true));
 
     // infer pt language based on season/episode naming
-    let capitulo = Regex::known("capitulo|ao", "i");
-    let dublado = Regex::known("dublado", "i");
+    let capitulo = Regex::lazy("capitulo|ao", "i");
+    let dublado = Regex::lazy("dublado", "i");
     p.function("languages", move |c| {
         let languages = c.result.languages().map(<[String]>::to_vec);
         let has_iberian = languages.as_ref().is_some_and(|l| l.iter().any(|l| l == "portuguese" || l == "spanish"));
@@ -1768,7 +1768,7 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
     p.regex("group", r"- ?(?!\d+$|S\d+|\d+x|ep?\d+|[^[]+]$|(?:OVA|OAV|OAD|ONA|SP|Specials?)\d*(?:\.\w{2,4})?$|第\d+[話话集])([^\-. []+[^\-. [)\]\d][^\-. [)\]]*)(?:\[[\w.-]+])?(?=\.\w{2,4}$|$)", "i", none(), Options::new().skip_if_nothing_before(true));
     p.regex("group", r"^\[([^[\]]+)]", "", none(), Options::new());
     p.regex("group", r"\(([\w-]+)\)(?:$|\.\w{2,4}$)", "", none(), Options::new());
-    let bracketed = Regex::known(r"^\[.+]$", "");
+    let bracketed = Regex::lazy(r"^\[.+]$", "");
     p.function("group", move |c| {
         let group = c.matched.get("group");
         if let Some((index, raw)) = group.and_then(|g| Some((g.match_index, g.raw_match.as_deref()?)))

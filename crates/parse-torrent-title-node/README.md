@@ -298,7 +298,8 @@ The parser now runs on Rust, which changes a few edge cases:
 
 * An invalid date is left out of the result, instead of being `"Invalid date"`.
 * `Transformers.date` takes a single format, and rejects tokens other than the ones listed above.
-* The sticky `y` flag of regular expressions is not supported.
+* A regular expression with the sticky `y` flag only matches at the start of the title: no `lastIndex` is kept
+  between titles.
 * Characters outside the basic multilingual plane, such as emoji, count as one character in the default patterns,
   where javascript counts the two halves of their utf-16 encoding.
 * Built-in transformers return strings for non-string input, e.g. `Transformers.none(5)` is `"5"`.

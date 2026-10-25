@@ -217,7 +217,7 @@ mod add_handler_positioning {
     /// throws for an invalid regex
     #[test]
     fn throws_for_an_invalid_regex() {
-        assert!(matches!(Regex::new("(unclosed", ""), Err(Error::InvalidRegex { .. })));
+        assert!(matches!(Regex::new("(unclosed", ""), Err(fastjs_regex::Error::InvalidRegex { .. })));
     }
 }
 

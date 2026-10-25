@@ -20,54 +20,54 @@ fn non_english_chars() -> String {
 }
 
 static RUSSIAN_CAST: LazyLock<Regex> =
-    LazyLock::new(|| Regex::known(r"(?:\([^)]*[Ѐ-ӿ][^)]*\)|(?<=\/.*)\(.*\))(?=\s*(?:\[[^\]]*)?$)", ""));
+    LazyLock::new(|| Regex::lazy(r"(?:\([^)]*[Ѐ-ӿ][^)]*\)|(?<=\/.*)\(.*\))(?=\s*(?:\[[^\]]*)?$)", ""));
 static ALT_TITLES: LazyLock<Regex> = LazyLock::new(|| {
     let n = non_english_chars();
-    Regex::known(&format!("[^/|(]*[{n}][^/|]*[/|]|[/|][^/|(]*[{n}][^/|]*"), "g")
+    Regex::lazy(&format!("[^/|(]*[{n}][^/|]*[/|]|[/|][^/|(]*[{n}][^/|]*"), "g")
 });
-static ACCENTED_LATIN: LazyLock<Regex> = LazyLock::new(|| Regex::known(&format!("[{ACCENTED_LATIN_CHARS}]"), ""));
+static ACCENTED_LATIN: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(&format!("[{ACCENTED_LATIN_CHARS}]"), ""));
 static NOT_ONLY_NON_ENGLISH: LazyLock<Regex> = LazyLock::new(|| {
     let n = non_english_chars();
-    Regex::known(&format!("(?<=[a-zA-Z][^{n}]+)[{n}].*[{n}]|[{n}].*[{n}](?=[^{n}]+[a-zA-Z])"), "g")
+    Regex::lazy(&format!("(?<=[a-zA-Z][^{n}]+)[{n}].*[{n}]|[{n}].*[{n}](?=[^{n}]+[a-zA-Z])"), "g")
 });
 static NOT_ALLOWED_SYMBOLS_AT_START_AND_END: LazyLock<Regex> = LazyLock::new(|| {
     let n = non_english_chars();
-    Regex::known(&format!(r"^[^\w{ACCENTED_LATIN_CHARS}{n}#[【★]+|[ \-:,/\\[|{{(#$&^]+$"), "g")
+    Regex::lazy(&format!(r"^[^\w{ACCENTED_LATIN_CHARS}{n}#[【★]+|[ \-:,/\\[|{{(#$&^]+$"), "g")
 });
 static REMAINING_NOT_ALLOWED_SYMBOLS_AT_START_AND_END: LazyLock<Regex> = LazyLock::new(|| {
     let n = non_english_chars();
-    Regex::known(&format!(r"^[^\w{ACCENTED_LATIN_CHARS}{n}#]+|[[\]({{}} ]+$"), "g")
+    Regex::lazy(&format!(r"^[^\w{ACCENTED_LATIN_CHARS}{n}#]+|[[\]({{}} ]+$"), "g")
 });
 static BEFORE_TITLE: LazyLock<Regex> = LazyLock::new(|| {
     let n = non_english_chars();
-    Regex::known(
+    Regex::lazy(
         &format!(r"^(?:\[[^[\]]*]\s*)+(?=[^\s[(.…（【])|^\[[^[\]]+]|^(?:(?=[^/[]*[{n}])[^/[]*/)+(?=\s*[a-zA-Z])"),
         "",
     )
 });
 static CYRILLIC_E_IN_EPISODE_CODE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::known(r"(?<=\b[Ss]\d{1,3})[Ее](?=\d)", "g"));
+    LazyLock::new(|| Regex::lazy(r"(?<=\b[Ss]\d{1,3})[Ее](?=\d)", "g"));
 static TRAILING_QUOTED_SECTION: LazyLock<Regex> =
-    LazyLock::new(|| Regex::known(r"^(?!movie[\s-]*[「『])(.+?)[\s-]*[「『][^「『」』]*[」』]$", "i"));
+    LazyLock::new(|| Regex::lazy(r"^(?!movie[\s-]*[「『])(.+?)[\s-]*[「『][^「『」』]*[」』]$", "i"));
 static YEAR_SUFFIX_AFTER_NON_ENGLISH: LazyLock<Regex> =
-    LazyLock::new(|| Regex::known(&format!(r"(?<=[{CJK_CHARS}])['’]\d{{2}}$"), ""));
-static CHANNEL_PREFIX: LazyLock<Regex> = LazyLock::new(|| Regex::known(r"^ch[45][ .]+(?=\S)", "i"));
+    LazyLock::new(|| Regex::lazy(&format!(r"(?<=[{CJK_CHARS}])['’]\d{{2}}$"), ""));
+static CHANNEL_PREFIX: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"^ch[45][ .]+(?=\S)", "i"));
 static LEADING_MARKING_SECTIONS: LazyLock<Regex> =
-    LazyLock::new(|| Regex::known(&format!("^(?:{MARKING_SECTION}[ .]?)+(.+)"), ""));
+    LazyLock::new(|| Regex::lazy(&format!("^(?:{MARKING_SECTION}[ .]?)+(.+)"), ""));
 static TRAILING_MARKING_SECTIONS: LazyLock<Regex> =
-    LazyLock::new(|| Regex::known(&format!("(.+?)(?:[ .]?{MARKING_SECTION})+$"), ""));
-static UNCLOSED_BRACKET_AT_END: LazyLock<Regex> = LazyLock::new(|| Regex::known(r"\s*[([{][^)\]}]*$", ""));
-static UNOPENED_BRACKET: LazyLock<Regex> = LazyLock::new(|| Regex::known(r"^([^([{]*)[)\]}]", ""));
-static MOVIE_FLAG: LazyLock<Regex> = LazyLock::new(|| Regex::known(r"[[(]movie[)\]]", "i"));
-static DOT_SEPARATED: LazyLock<Regex> = LazyLock::new(|| Regex::known(r"^[^\s.]*\.\S*$", ""));
-static SUB_DUB_SUFFIX: LazyLock<Regex> = LazyLock::new(|| Regex::known(r"\s+-+\s*(?:sub|dub)s?$", "i"));
-static WHOLE_TEXT: LazyLock<Regex> = LazyLock::new(|| Regex::known(".*", ""));
-static WHITESPACE: LazyLock<Regex> = LazyLock::new(|| Regex::known(r"\s+", "g"));
-static ALT_TITLE_SEPARATOR: LazyLock<Regex> = LazyLock::new(|| Regex::known(r"\s+[/|]\s+", ""));
-static UNDERSCORES: LazyLock<Regex> = LazyLock::new(|| Regex::known("_+", "g"));
-static UNCLOSED_LEADING_BRACKET: LazyLock<Regex> = LazyLock::new(|| Regex::known(r"^\[([^[\]]+)\[(?=\s)", ""));
-static BRACKET_SECTIONS: LazyLock<Regex> = LazyLock::new(|| Regex::known(r"\[[^[\]]*]|[（【][^（）【】]*[）】]", "g"));
-static LATIN_BRACKET_SECTIONS: LazyLock<Regex> = LazyLock::new(|| Regex::known(r"\[[^[\]]*[a-zA-Z][^[\]]*]", "g"));
+    LazyLock::new(|| Regex::lazy(&format!("(.+?)(?:[ .]?{MARKING_SECTION})+$"), ""));
+static UNCLOSED_BRACKET_AT_END: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"\s*[([{][^)\]}]*$", ""));
+static UNOPENED_BRACKET: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"^([^([{]*)[)\]}]", ""));
+static MOVIE_FLAG: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"[[(]movie[)\]]", "i"));
+static DOT_SEPARATED: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"^[^\s.]*\.\S*$", ""));
+static SUB_DUB_SUFFIX: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"\s+-+\s*(?:sub|dub)s?$", "i"));
+static WHOLE_TEXT: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(".*", ""));
+static WHITESPACE: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"\s+", "g"));
+static ALT_TITLE_SEPARATOR: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"\s+[/|]\s+", ""));
+static UNDERSCORES: LazyLock<Regex> = LazyLock::new(|| Regex::lazy("_+", "g"));
+static UNCLOSED_LEADING_BRACKET: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"^\[([^[\]]+)\[(?=\s)", ""));
+static BRACKET_SECTIONS: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"\[[^[\]]*]|[（【][^（）【】]*[）】]", "g"));
+static LATIN_BRACKET_SECTIONS: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"\[[^[\]]*[a-zA-Z][^[\]]*]", "g"));
 
 /// Where a handler matched, keyed by its field name in [`Matched`].
 ///
@@ -561,7 +561,7 @@ impl Parser {
         let title = UNDERSCORES.replace(title, " ");
         let title = UNCLOSED_LEADING_BRACKET.replace(&title, "[$1]");
         let mut title = CYRILLIC_E_IN_EPISODE_CODE
-            .replace_with(&title, |letter| if letter == "\u{0415}" { "E".into() } else { "e".into() })
+            .replace_with(&title, |m| if &title[m.range()] == "\u{0415}" { "E".into() } else { "e".into() })
             .into_owned();
         let mut result = ParsedTitle::default();
         let mut matched = Matched::new();
@@ -630,7 +630,8 @@ impl Parser {
 /// Prefers the alternative titles without accented chars.
 fn remove_accented_alt_titles(title: &str) -> String {
     let titles = ALT_TITLE_SEPARATOR.split(title);
-    let plain_titles: Vec<&str> = titles.iter().copied().filter(|alias| !ACCENTED_LATIN.is_match(alias)).collect();
+    let plain_titles: Vec<&str> =
+        titles.iter().copied().flatten().filter(|alias| !ACCENTED_LATIN.is_match(alias)).collect();
     if !plain_titles.is_empty() && plain_titles.len() < titles.len() {
         plain_titles.join(" / ")
     } else {
@@ -656,11 +657,11 @@ fn clean_title(raw_title: &str) -> String {
     let title = ALT_TITLES.replace(&title, ""); // remove alt language titles
     let title = NOT_ONLY_NON_ENGLISH.replace(&title, ""); // remove non english chars if they are not the only ones left
     let title = REMAINING_NOT_ALLOWED_SYMBOLS_AT_START_AND_END.replace(&title, "");
-    let title = DOT_SEPARATED.replace_with(&title, |title| title.replace('.', " ")); // replace dots with spaces if title is dot separated
+    let title = DOT_SEPARATED.replace_with(&title, |m| title[m.range()].replace('.', " ")); // replace dots with spaces if title is dot separated
     let title = UNCLOSED_BRACKET_AT_END.replace(&title, ""); // remove unclosed bracket section at the end
     let title = UNOPENED_BRACKET.replace(&title, "$1"); // remove closing bracket without an opening one
     let title = SUB_DUB_SUFFIX.replace(&title, "");
-    let title = WHOLE_TEXT.replace_with(&title, remove_accented_alt_titles); // prefer alt titles without accented chars
+    let title = WHOLE_TEXT.replace_with(&title, |m| remove_accented_alt_titles(&title[m.range()])); // prefer alt titles without accented chars
     let title = WHITESPACE.replace(&title, " ");
     title.trim().to_owned()
 }

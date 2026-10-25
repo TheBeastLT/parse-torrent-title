@@ -1,0 +1,27 @@
+[package]
+name = "fastjs-regex"
+description = "ECMAScript regex semantics with a linear-time fast path"
+keywords = ["regex", "ecmascript", "javascript", "lookbehind"]
+categories = ["text-processing", "parser-implementations"]
+readme = "README.md"
+publish = false
+include = ["src/**", "README.md", "LICENSE"]
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[features]
+# checks every shortcut taken around the backtracking engine (the translated patterns) against it, panicking when
+# one changes a match; meant for test suites
+verify = []
+
+[dependencies]
+regress.workspace = true
+regex.workspace = true
+regex-syntax.workspace = true
+
+[dev-dependencies]
+serde.workspace = true
+serde_json.workspace = true

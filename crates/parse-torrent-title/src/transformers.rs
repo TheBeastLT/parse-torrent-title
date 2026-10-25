@@ -122,7 +122,7 @@ fn numbers(input: &str) -> Option<Vec<i64>> {
     input.split(|c: char| !c.is_ascii_digit()).filter(|part| !part.is_empty()).map(|part| part.parse().ok()).collect()
 }
 
-static SEPARATED_PAIR: LazyLock<Regex> = LazyLock::new(|| Regex::known(r"^\d+[ .]*[,&+][ .]*\d+$", ""));
+static SEPARATED_PAIR: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"^\d+[ .]*[,&+][ .]*\d+$", ""));
 
 /// A list of consecutive numbers, `1-3` being expanded to `[1, 2, 3]`; `None` when not consecutive.
 #[must_use]
