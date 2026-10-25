@@ -4,7 +4,6 @@ description = "ECMAScript regex semantics with a linear-time fast path"
 keywords = ["regex", "ecmascript", "javascript", "lookbehind"]
 categories = ["text-processing", "parser-implementations"]
 readme = "README.md"
-publish = false
 include = ["src/**", "README.md", "LICENSE"]
 version.workspace = true
 edition.workspace = true
