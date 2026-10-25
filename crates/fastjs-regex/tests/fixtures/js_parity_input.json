@@ -205,7 +205,37 @@
   "eternity",
   "mushoku tensei isekai ittara honki dasu 2026 S3",
   "one piece movie 11 straw hat chase",
-  "taishou otome otogibanashi"
+  "taishou otome otogibanashi",
+  "a࢏1 2࢏࢏",
+  "a౜1 2౜౜",
+  "a೜1 2೜೜",
+  "a꟎1 2꟎꟎",
+  "a꟒1 2꟒꟒",
+  "a꟔1 2꟔꟔",
+  "a꟱1 2꟱꟱",
+  "a𐥀1 2𐥀𐥀",
+  "a𐻅1 2𐻅𐻅",
+  "a𑶰1 2𑶰𑶰",
+  "a𖺠1 2𖺠𖺠",
+  "a𖺻1 2𖺻𖺻",
+  "a𖿲1 2𖿲𖿲",
+  "a𘟸1 2𘟸𘟸",
+  "a𘴉1 2𘴉𘴉",
+  "a𘶀1 2𘶀𘶀",
+  "a𞛀1 2𞛀𞛀",
+  "a𞛠1 2𞛠𞛠",
+  "a𞛤1 2𞛤𞛤",
+  "a𞛧1 2𞛧𞛧",
+  "a𞛰1 2𞛰𞛰",
+  "a𞛾1 2𞛾𞛾",
+  "a𫜺1 2𫜺𫜺",
+  "a𬺢1 2𬺢𬺢",
+  "a𲎰1 2𲎰𲎰",
+  "a𑷠1 2𑷠𑷠",
+  "a𖿴1 2𖿴𖿴",
+  "aʕ1 2ʕʕ",
+  "aꟓ1 2ꟓꟓ",
+  "a̠1 2̠̠"
  ],
  "patterns": [
   {
@@ -3626,6 +3656,146 @@
    "replacementsAll": [
     "[$&|$1|$2|$11|$<a>|$]"
    ]
+  },
+  {
+   "source": "\\p{L}+",
+   "flags": "u",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
+  },
+  {
+   "source": "\\P{L}+",
+   "flags": "u",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
+  },
+  {
+   "source": "\\p{N}+",
+   "flags": "u",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
+  },
+  {
+   "source": "\\P{N}+",
+   "flags": "u",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
+  },
+  {
+   "source": "[\\p{L}\\p{N}]+",
+   "flags": "u",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
+  },
+  {
+   "source": "[^\\p{L}]+",
+   "flags": "u",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
+  },
+  {
+   "source": "\\p{Letter}\\p{Number}",
+   "flags": "u",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
+  },
+  {
+   "source": "\\p{gc=Number}",
+   "flags": "u",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
+  },
+  {
+   "source": "\\p{L}+",
+   "flags": "iu",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
+  },
+  {
+   "source": "\\p{Lo}",
+   "flags": "u",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
+  },
+  {
+   "source": "\\p{Ll}",
+   "flags": "u",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
+  },
+  {
+   "source": "\\p{Script_Extensions=Latin}+",
+   "flags": "u",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
+  },
+  {
+   "source": "\\u{a7d2}",
+   "flags": "iu",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
+  },
+  {
+   "source": "[\\p{L}--[a-z]]+",
+   "flags": "v",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
   }
  ]
 }

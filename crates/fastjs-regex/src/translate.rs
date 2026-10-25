@@ -32,6 +32,9 @@ pub struct Translation {
     folds_into_ascii: bool,
     /// Whether the pattern only holds ascii chars, so it folds the ascii letters only.
     ascii_pattern: bool,
+    /// Whether the pattern relies on the Unicode tables, through a property escape or case folding with the `u`
+    /// flag: the translation then only holds on texts without the chars of `UNICODE_UNLIKE_JS`.
+    unicode_tables: bool,
 }
 
 /// The chars whose case folds differently in js without the `u` flag and in the `regex` crate, such as `ſ` which
@@ -143,6 +146,71 @@ const FOLDS_UNLIKE_JS: &[char] = &[
     '\u{16ed3}',
 ];
 
+/// The chars whose Unicode data differs between the tables of the `regex` crate (Unicode 16) and those of `regress`
+/// (Unicode 17, like V8): the chars assigned since, `ʕ` which became a `Lo`, and a few whose case folding or script
+/// extensions changed.
+///
+/// Sorted, and checked against both crates by a test.
+const UNICODE_UNLIKE_JS: &[(char, char)] = &[
+    ('\u{295}', '\u{295}'),
+    ('\u{306}', '\u{306}'),
+    ('\u{308}', '\u{308}'),
+    ('\u{320}', '\u{320}'),
+    ('\u{323}', '\u{323}'),
+    ('\u{331}', '\u{331}'),
+    ('\u{88f}', '\u{88f}'),
+    ('\u{951}', '\u{952}'),
+    ('\u{c5c}', '\u{c5c}'),
+    ('\u{cdc}', '\u{cdc}'),
+    ('\u{1acf}', '\u{1add}'),
+    ('\u{1ae0}', '\u{1aeb}'),
+    ('\u{1cd5}', '\u{1cd8}'),
+    ('\u{1ce2}', '\u{1ce2}'),
+    ('\u{1ce9}', '\u{1ceb}'),
+    ('\u{1ced}', '\u{1ced}'),
+    ('\u{20c1}', '\u{20c1}'),
+    ('\u{2b96}', '\u{2b96}'),
+    ('\u{a7ce}', '\u{a7cf}'),
+    ('\u{a7d2}', '\u{a7d5}'),
+    ('\u{a7f1}', '\u{a7f1}'),
+    ('\u{fbc3}', '\u{fbd2}'),
+    ('\u{fd90}', '\u{fd91}'),
+    ('\u{fdc8}', '\u{fdce}'),
+    ('\u{10940}', '\u{10959}'),
+    ('\u{10ec5}', '\u{10ec7}'),
+    ('\u{10ed0}', '\u{10ed8}'),
+    ('\u{10efa}', '\u{10efb}'),
+    ('\u{11b60}', '\u{11b67}'),
+    ('\u{11db0}', '\u{11ddb}'),
+    ('\u{11de0}', '\u{11de9}'),
+    ('\u{16ea0}', '\u{16eb8}'),
+    ('\u{16ebb}', '\u{16ed3}'),
+    ('\u{16ff2}', '\u{16ff6}'),
+    ('\u{187f8}', '\u{187ff}'),
+    ('\u{18d09}', '\u{18d1e}'),
+    ('\u{18d80}', '\u{18df2}'),
+    ('\u{1ccfa}', '\u{1ccfc}'),
+    ('\u{1ceba}', '\u{1ced0}'),
+    ('\u{1cee0}', '\u{1cef0}'),
+    ('\u{1e6c0}', '\u{1e6de}'),
+    ('\u{1e6e0}', '\u{1e6f5}'),
+    ('\u{1e6fe}', '\u{1e6ff}'),
+    ('\u{1f6d8}', '\u{1f6d8}'),
+    ('\u{1f777}', '\u{1f77a}'),
+    ('\u{1f8d0}', '\u{1f8d8}'),
+    ('\u{1fa54}', '\u{1fa57}'),
+    ('\u{1fa8a}', '\u{1fa8a}'),
+    ('\u{1fa8e}', '\u{1fa8e}'),
+    ('\u{1fac8}', '\u{1fac8}'),
+    ('\u{1facd}', '\u{1facd}'),
+    ('\u{1faea}', '\u{1faea}'),
+    ('\u{1faef}', '\u{1faef}'),
+    ('\u{1fbfa}', '\u{1fbfa}'),
+    ('\u{2b73a}', '\u{2b73f}'),
+    ('\u{2cea2}', '\u{2cead}'),
+    ('\u{323b0}', '\u{33479}'),
+];
+
 impl Translation {
     /// The pattern in the syntax of the `regex` crate, matching a superset of the js pattern, or exactly what it
     /// matches when [`Translation::is_exact`], on the texts given by [`Translation::holds_for`].
@@ -160,9 +228,13 @@ impl Translation {
     /// Whether the translation, exact or a superset, holds on `text`.
     ///
     /// Folding by uppercasing differs from the simple case folding only on `FOLDS_UNLIKE_JS`, about a hundred
-    /// characters such as `ß` or the ohm sign, and on `s` and `k` for a pattern holding `ſ` or the kelvin sign.
+    /// characters such as `ß` or the ohm sign, and on `s` and `k` for a pattern holding `ſ` or the kelvin sign. A
+    /// pattern relying on the Unicode tables does not hold on the few thousand chars of `UNICODE_UNLIKE_JS`.
     #[must_use]
     pub fn holds_for(&self, text: &str) -> bool {
+        if self.unicode_tables && !text.is_ascii() && text.chars().any(unicode_unlike_js) {
+            return false;
+        }
         if !self.uppercase_folding {
             return true;
         }
@@ -184,6 +256,20 @@ impl Translation {
     }
 }
 
+fn unicode_unlike_js(c: char) -> bool {
+    UNICODE_UNLIKE_JS
+        .binary_search_by(|&(start, end)| {
+            if end < c {
+                std::cmp::Ordering::Less
+            } else if start > c {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        })
+        .is_ok()
+}
+
 /// Translates a js pattern, `None` when it uses syntax this translation does not know.
 pub(crate) fn translate(source: &str, flags: &str) -> Option<Translation> {
     // the set notation of the `v` flag is not translated
@@ -192,16 +278,24 @@ pub(crate) fn translate(source: &str, flags: &str) -> Option<Translation> {
     }
     let (unicode, ignore_case) = (flags.contains('u'), flags.contains('i'));
     let chars: Vec<char> = source.chars().collect();
-    let mut translator =
-        Translator { unicode, ignore_case, dot_all: flags.contains('s'), multiline: flags.contains('m'), exact: true };
+    let mut translator = Translator {
+        unicode,
+        ignore_case,
+        dot_all: flags.contains('s'),
+        multiline: flags.contains('m'),
+        exact: true,
+        properties: false,
+    };
     let body = translator.body(&chars)?;
     let uppercase_folding = ignore_case && !unicode;
+    let ascii_pattern = source.is_ascii() && !source.contains("\\u") && !source.contains("\\x");
     Some(Translation {
         folds_into_ascii: uppercase_folding && folds_into_ascii(&body),
         pattern: if ignore_case { format!("(?i){body}") } else { body },
         exact: translator.exact,
         uppercase_folding,
-        ascii_pattern: source.is_ascii() && !source.contains("\\u") && !source.contains("\\x"),
+        ascii_pattern,
+        unicode_tables: translator.properties || (ignore_case && unicode && !ascii_pattern),
     })
 }
 
@@ -247,6 +341,8 @@ struct Translator {
     multiline: bool,
     /// Cleared as soon as something is approximated.
     exact: bool,
+    /// Whether the pattern holds a property escape such as `\p{L}`.
+    properties: bool,
 }
 
 impl Translator {
@@ -418,6 +514,7 @@ impl Translator {
             // js folds the case of what `\P{..}` matches, while the `regex` crate negates the folded property
             'P' if unicode && ignore_case => return None,
             'p' | 'P' if unicode => {
+                self.properties = true;
                 let end = chars[i..].iter().position(|&c| c == '}')?;
                 return Some((chars[i..=i + end].iter().collect(), i + end + 1));
             }
@@ -612,6 +709,79 @@ mod tests {
             (0..=0x10_ffff).filter_map(char::from_u32).filter(|c| !c.is_ascii() && folds_unlike_js(*c)).collect();
         assert!(FOLDS_UNLIKE_JS.is_sorted());
         assert_eq!(FOLDS_UNLIKE_JS, expected, "the unicode tables changed, update FOLDS_UNLIKE_JS");
+    }
+
+    fn ranges(chars: impl IntoIterator<Item = char>) -> Vec<(char, char)> {
+        let mut ranges: Vec<(char, char)> = Vec::new();
+        for c in chars {
+            match ranges.last_mut() {
+                Some((_, end)) if char::from_u32(*end as u32 + 1) == Some(c) => *end = c,
+                _ => ranges.push((c, c)),
+            }
+        }
+        ranges
+    }
+
+    /// The chars `regress` and the `regex` crate disagree on for the property `\p{name}`.
+    fn property_unlike_js(text: &str, name: &str) -> Vec<char> {
+        let property = format!(r"\p{{{name}}}+");
+        let js = regress::Regex::with_flags(&property, "u").unwrap();
+        let js: Vec<char> = js.find_iter(text).flat_map(|m| text[m.range()].chars()).collect();
+        let ours: Vec<char> =
+            ::regex::Regex::new(&property).unwrap().find_iter(text).flat_map(|m| m.as_str().chars()).collect();
+        let missing = |from: &[char], other: &[char]| -> Vec<char> {
+            from.iter().filter(|c| other.binary_search(c).is_err()).copied().collect()
+        };
+        [missing(&js, &ours), missing(&ours, &js)].concat()
+    }
+
+    /// Compares the general categories, the simple case folding, and the script extensions Unicode 17 changed.
+    #[test]
+    fn lists_the_chars_whose_unicode_data_differs_from_js() {
+        let text: String = (0..=0x10_ffff).filter_map(char::from_u32).collect();
+        let properties = [
+            "Lu", "Ll", "Lt", "Lm", "Lo", "Mn", "Mc", "Me", "Nd", "Nl", "No", "Pc", "Pd", "Ps", "Pe", "Pi", "Pf", "Po",
+            "Sm", "Sc", "Sk", "So", "Zs", "Zl", "Zp", "Cc", "Cf", "Co", "Cn",
+        ]
+        .map(str::to_owned)
+        .into_iter()
+        .chain(
+            ["Inherited", "Latin", "Nandinagari", "Newa", "Sharada", "Syriac", "Telugu", "Tifinagh", "Tirhuta"]
+                .map(|script| format!("Script_Extensions={script}")),
+        );
+        let mut unlike: Vec<char> = std::thread::scope(|scope| {
+            let text = &text;
+            let found: Vec<_> = properties.map(|name| scope.spawn(move || property_unlike_js(text, &name))).collect();
+            found.into_iter().flat_map(|found| found.join().unwrap()).collect()
+        });
+        let fold = |c: char| {
+            let mut class = ClassUnicode::new([ClassUnicodeRange::new(c, c)]);
+            class.case_fold_simple();
+            class.iter().flat_map(|range| range.start()..=range.end()).collect::<Vec<char>>()
+        };
+        let cased: String = text
+            .chars()
+            .filter(|&c| c.to_lowercase().ne([c]) || c.to_uppercase().ne([c]) || fold(c).len() > 1)
+            .collect();
+        unlike.extend(cased.chars().filter(|&c| {
+            let js = regress::Regex::with_flags(&format!(r"\u{{{:x}}}", c as u32), "iu").unwrap();
+            let js: Vec<char> = js.find_iter(&cased).flat_map(|m| cased[m.range()].chars()).collect();
+            js != fold(c)
+        }));
+        unlike.sort_unstable();
+        unlike.dedup();
+        assert_eq!(UNICODE_UNLIKE_JS, ranges(unlike), "the unicode tables changed, update UNICODE_UNLIKE_JS");
+    }
+
+    #[test]
+    fn holds_where_both_unicode_tables_agree() {
+        let holds = |source: &str, flags: &str, text: &str| translate(source, flags).unwrap().holds_for(text);
+        assert!(holds(r"\p{L}", "u", "Ünïcödé 日本語"));
+        assert!(!holds(r"\p{L}", "u", "a\u{88f}"));
+        assert!(!holds(r"[^\p{N}]", "u", "\u{11de0}"));
+        assert!(!holds(r"\u{a7d2}", "iu", "\u{a7d3}"));
+        assert!(holds(r"a\u{88f}", "u", "a\u{88f}"));
+        assert!(holds(r"x", "iu", "\u{a7d3}"));
     }
 
     #[test]

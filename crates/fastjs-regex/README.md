@@ -47,6 +47,11 @@ alone.
 `i` without `u` folds case by uppercasing in JavaScript, unlike the simple case folding of the `regex` crate: the
 few characters where the two differ make the translation stand aside for the texts holding them.
 
+The `regex` crate carries the tables of Unicode 16, `regress` those of Unicode 17 like V8: the translation of a
+pattern with a property escape such as `\p{L}`, or folding case with the `u` flag, stands aside for the texts holding
+one of the 4,804 characters whose data differs (those assigned in Unicode 17, and a few whose category, case folding or
+script extensions changed).
+
 The `verify` feature checks every shortcut against `regress` and panics when one changes a match. It is meant for
 test suites; `tests/js_parity.rs` runs every method against answers recorded from Node by
 `tests/fixtures/gen.mjs` (`node crates/fastjs-regex/tests/fixtures/gen.mjs` regenerates them).
@@ -75,6 +80,8 @@ positions of JavaScript. `split` gives `None` for a capture group that did not p
 - Without the `u` flag, JavaScript sees a character outside the basic multilingual plane (an emoji) as two halves:
   `.` and negated classes match one half, and an empty match moves on by one half. Texts here are `&str`, so such a
   character is one character: no match, split piece or position falls inside it.
+- The Unicode data of `\p{..}` classes and of case folding with `u` is that of Unicode 17, as in Node 26; other
+  Node versions can differ on the characters whose data changed between their versions.
 
 ## Not supported
 

@@ -38,6 +38,7 @@ use crate::translate::{Translation, translate};
 ///   an emoji, separately, so `.` and negated classes see one character here where js sees two. For the same
 ///   reason an empty match moves on past the whole character, where js moves on by one half: no match and no
 ///   split piece starts or ends inside such a character.
+/// - The Unicode data of `\p{..}` and of case folding with the `u` flag is that of Unicode 17, as in Node 26.
 #[derive(Clone)]
 pub struct Regex {
     source: Arc<str>,
