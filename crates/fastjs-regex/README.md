@@ -49,7 +49,7 @@ few characters where the two differ make the translation stand aside for the tex
 
 The `regex` crate carries the tables of Unicode 16, `regress` those of Unicode 17 like V8: the translation of a
 pattern with a property escape such as `\p{L}`, or folding case with the `u` flag, stands aside for the texts holding
-one of the 4,804 characters whose data differs (those assigned in Unicode 17, and a few whose category, case folding or
+one of the 4,822 characters whose data differs (those assigned in Unicode 17, and a few whose category, case folding or
 script extensions changed).
 
 The `verify` feature checks every shortcut against `regress` and panics when one changes a match. It is meant for
