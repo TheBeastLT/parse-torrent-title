@@ -146,28 +146,18 @@ const FOLDS_UNLIKE_JS: &[char] = &[
     '\u{16ed3}',
 ];
 
-/// The chars whose Unicode data differs between the tables of the `regex` crate (Unicode 16) and those of `regress`
-/// (Unicode 17, like V8): the chars assigned since, `ʕ` which became a `Lo`, and a few whose case folding or script
-/// extensions changed.
+/// The chars whose general category, script or simple case folding differs between the tables of the `regex` crate
+/// (Unicode 16) and those of `regress` (Unicode 17, like V8): the chars assigned since, `ʕ` which became a `Lo`, and
+/// the two older letters which gained an uppercase.
 ///
 /// Sorted, and checked against both crates by a test.
 const UNICODE_UNLIKE_JS: &[(char, char)] = &[
     ('\u{295}', '\u{295}'),
-    ('\u{306}', '\u{306}'),
-    ('\u{308}', '\u{308}'),
-    ('\u{320}', '\u{320}'),
-    ('\u{323}', '\u{323}'),
-    ('\u{331}', '\u{331}'),
     ('\u{88f}', '\u{88f}'),
-    ('\u{951}', '\u{952}'),
     ('\u{c5c}', '\u{c5c}'),
     ('\u{cdc}', '\u{cdc}'),
     ('\u{1acf}', '\u{1add}'),
     ('\u{1ae0}', '\u{1aeb}'),
-    ('\u{1cd5}', '\u{1cd8}'),
-    ('\u{1ce2}', '\u{1ce2}'),
-    ('\u{1ce9}', '\u{1ceb}'),
-    ('\u{1ced}', '\u{1ced}'),
     ('\u{20c1}', '\u{20c1}'),
     ('\u{2b96}', '\u{2b96}'),
     ('\u{a7ce}', '\u{a7cf}'),
@@ -253,6 +243,102 @@ impl Translation {
     #[must_use]
     pub fn folds_ascii_letters_only(&self) -> bool {
         self.uppercase_folding && self.ascii_pattern
+    }
+}
+
+/// The values of `General_Category` js accepts, with their aliases.
+const GENERAL_CATEGORIES: &[&str] = &[
+    "C",
+    "Cased_Letter",
+    "Cc",
+    "Cf",
+    "Close_Punctuation",
+    "Cn",
+    "Co",
+    "Combining_Mark",
+    "Connector_Punctuation",
+    "Control",
+    "Cs",
+    "Currency_Symbol",
+    "Dash_Punctuation",
+    "Decimal_Number",
+    "Enclosing_Mark",
+    "Final_Punctuation",
+    "Format",
+    "Initial_Punctuation",
+    "L",
+    "LC",
+    "Letter",
+    "Letter_Number",
+    "Line_Separator",
+    "Ll",
+    "Lm",
+    "Lo",
+    "Lowercase_Letter",
+    "Lt",
+    "Lu",
+    "M",
+    "Mark",
+    "Math_Symbol",
+    "Mc",
+    "Me",
+    "Mn",
+    "Modifier_Letter",
+    "Modifier_Symbol",
+    "N",
+    "Nd",
+    "Nl",
+    "No",
+    "Nonspacing_Mark",
+    "Number",
+    "Open_Punctuation",
+    "Other",
+    "Other_Letter",
+    "Other_Number",
+    "Other_Punctuation",
+    "Other_Symbol",
+    "P",
+    "Paragraph_Separator",
+    "Pc",
+    "Pd",
+    "Pe",
+    "Pf",
+    "Pi",
+    "Po",
+    "Private_Use",
+    "Ps",
+    "Punctuation",
+    "S",
+    "Sc",
+    "Separator",
+    "Sk",
+    "Sm",
+    "So",
+    "Space_Separator",
+    "Spacing_Mark",
+    "Surrogate",
+    "Symbol",
+    "Titlecase_Letter",
+    "Unassigned",
+    "Uppercase_Letter",
+    "Z",
+    "Zl",
+    "Zp",
+    "Zs",
+    "cntrl",
+    "digit",
+    "punct",
+];
+
+/// Whether the `regex` crate agrees with js on `\p{property}` outside `UNICODE_UNLIKE_JS`: general categories and
+/// scripts do; binary properties and script extensions also changed for older chars (`★` is no longer
+/// `Extended_Pictographic`), so they are left to `regress`.
+fn translates_property(property: &str) -> bool {
+    match property.split_once('=') {
+        Some(("gc" | "General_Category", value)) => GENERAL_CATEGORIES.contains(&value),
+        Some(("sc" | "Script", _)) => true,
+        Some(_) => false,
+        None => GENERAL_CATEGORIES.contains(&property),
     }
 }
 
@@ -516,6 +602,9 @@ impl Translator {
             'p' | 'P' if unicode => {
                 self.properties = true;
                 let end = chars[i..].iter().position(|&c| c == '}')?;
+                if !translates_property(&chars.get(i + 3..i + end)?.iter().collect::<String>()) {
+                    return None;
+                }
                 return Some((chars[i..=i + end].iter().collect(), i + end + 1));
             }
             'u' if chars.get(i + 2) == Some(&'{') && unicode => {
@@ -735,20 +824,38 @@ mod tests {
         [missing(&js, &ours), missing(&ours, &js)].concat()
     }
 
-    /// Compares the general categories, the simple case folding, and the script extensions Unicode 17 changed.
+    const SCRIPTS: &str = "Adlam Ahom Anatolian_Hieroglyphs Arabic Armenian Avestan Balinese Bamum Bassa_Vah Batak Bengali Bhaiksuki \
+         Bopomofo Brahmi Braille Buginese Buhid Canadian_Aboriginal Carian Caucasian_Albanian Chakma Cham Cherokee \
+         Chorasmian Common Coptic Cuneiform Cypriot Cypro_Minoan Cyrillic Deseret Devanagari Dives_Akuru Dogra \
+         Duployan Egyptian_Hieroglyphs Elbasan Elymaic Ethiopic Garay Georgian Glagolitic Gothic Grantha Greek \
+         Gujarati Gunjala_Gondi Gurmukhi Gurung_Khema Han Hangul Hanifi_Rohingya Hanunoo Hatran Hebrew Hiragana \
+         Imperial_Aramaic Inherited Inscriptional_Pahlavi Inscriptional_Parthian Javanese Kaithi Kannada Katakana \
+         Kawi Kayah_Li Kharoshthi Khitan_Small_Script Khmer Khojki Khudawadi Kirat_Rai Lao Latin Lepcha Limbu \
+         Linear_A Linear_B Lisu Lycian Lydian Mahajani Makasar Malayalam Mandaic Manichaean Marchen Masaram_Gondi \
+         Medefaidrin Meetei_Mayek Mende_Kikakui Meroitic_Cursive Meroitic_Hieroglyphs Miao Modi Mongolian Mro Multani \
+         Myanmar Nabataean Nag_Mundari Nandinagari New_Tai_Lue Newa Nko Nushu Nyiakeng_Puachue_Hmong Ogham Ol_Chiki \
+         Ol_Onal Old_Hungarian Old_Italic Old_North_Arabian Old_Permic Old_Persian Old_Sogdian Old_South_Arabian \
+         Old_Turkic Old_Uyghur Oriya Osage Osmanya Pahawh_Hmong Palmyrene Pau_Cin_Hau Phags_Pa Phoenician \
+         Psalter_Pahlavi Rejang Runic Samaritan Saurashtra Sharada Shavian Siddham SignWriting Sinhala Sogdian \
+         Sora_Sompeng Soyombo Sundanese Sunuwar Syloti_Nagri Syriac Tagalog Tagbanwa Tai_Le Tai_Tham Tai_Viet Takri \
+         Tamil Tangsa Tangut Telugu Thaana Thai Tibetan Tifinagh Tirhuta Todhri Toto Tulu_Tigalari Ugaritic Vai \
+         Vithkuqi Wancho Warang_Citi Yezidi Yi Zanabazar_Square";
+
+    /// Every general category but the surrogates no `&str` holds, and every script; the scripts added since are not
+    /// in `SCRIPTS`, the `regex` crate rejects them so they are left to `regress`.
+    fn translated_properties() -> impl Iterator<Item = String> {
+        GENERAL_CATEGORIES
+            .iter()
+            .filter(|category| !["Cs", "Surrogate"].contains(category))
+            .map(|category| (*category).to_owned())
+            .chain(SCRIPTS.split_whitespace().map(|script| format!("Script={script}")))
+    }
+
+    /// Compares every translated property, and the simple case folding.
     #[test]
     fn lists_the_chars_whose_unicode_data_differs_from_js() {
         let text: String = (0..=0x10_ffff).filter_map(char::from_u32).collect();
-        let properties = [
-            "Lu", "Ll", "Lt", "Lm", "Lo", "Mn", "Mc", "Me", "Nd", "Nl", "No", "Pc", "Pd", "Ps", "Pe", "Pi", "Pf", "Po",
-            "Sm", "Sc", "Sk", "So", "Zs", "Zl", "Zp", "Cc", "Cf", "Co", "Cn",
-        ]
-        .map(str::to_owned)
-        .into_iter()
-        .chain(
-            ["Inherited", "Latin", "Nandinagari", "Newa", "Sharada", "Syriac", "Telugu", "Tifinagh", "Tirhuta"]
-                .map(|script| format!("Script_Extensions={script}")),
-        );
+        let properties = translated_properties();
         let mut unlike: Vec<char> = std::thread::scope(|scope| {
             let text = &text;
             let found: Vec<_> = properties.map(|name| scope.spawn(move || property_unlike_js(text, &name))).collect();
@@ -771,6 +878,27 @@ mod tests {
         unlike.sort_unstable();
         unlike.dedup();
         assert_eq!(UNICODE_UNLIKE_JS, ranges(unlike), "the unicode tables changed, update UNICODE_UNLIKE_JS");
+    }
+
+    #[test]
+    fn translates_only_the_properties_whose_data_agrees() {
+        assert!(SCRIPTS.split_whitespace().all(|script| translates_property(&format!("sc={script}"))));
+        assert!(translated_properties().all(|property| translate(&format!(r"\p{{{property}}}"), "u").is_some()));
+        for property in [
+            "ASCII",
+            "Any",
+            "Assigned",
+            "Alphabetic",
+            "Diacritic",
+            "Emoji",
+            "Extended_Pictographic",
+            "White_Space",
+            "Script_Extensions=Latin",
+            "scx=Latn",
+        ] {
+            assert!(translate(&format!(r"\p{{{property}}}"), "u").is_none(), "{property}");
+            assert!(translate(&format!(r"[\P{{{property}}}a]"), "u").is_none(), "{property}");
+        }
     }
 
     #[test]

@@ -47,10 +47,12 @@ alone.
 `i` without `u` folds case by uppercasing in JavaScript, unlike the simple case folding of the `regex` crate: the
 few characters where the two differ make the translation stand aside for the texts holding them.
 
-The `regex` crate carries the tables of Unicode 16, `regress` those of Unicode 17 like V8: the translation of a
-pattern with a property escape such as `\p{L}`, or folding case with the `u` flag, stands aside for the texts holding
-one of the 4,822 characters whose data differs (those assigned in Unicode 17, and a few whose category, case folding or
-script extensions changed).
+The `regex` crate carries the tables of Unicode 16, `regress` those of Unicode 17 like V8. Only general categories
+(`\p{L}`, `\p{Ll}`, `\p{gc=N}`, ...) and scripts (`\p{sc=Latn}`), whose data only changed for 4,806 characters
+(those assigned in Unicode 17, `ʕ` and the two letters which gained an uppercase), are translated, and the translation
+of a pattern holding one, or folding case with the `u` flag, stands aside for the texts holding such a character.
+Binary properties (`\p{Extended_Pictographic}`, `\p{Diacritic}`, ...) and script extensions also changed for older
+characters, so patterns using them run on `regress` alone.
 
 The `verify` feature checks every shortcut against `regress` and panics when one changes a match. It is meant for
 test suites; `tests/js_parity.rs` runs every method against answers recorded from Node by

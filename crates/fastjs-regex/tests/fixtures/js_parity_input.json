@@ -235,7 +235,9 @@
   "a𖿴1 2𖿴𖿴",
   "aʕ1 2ʕʕ",
   "aꟓ1 2ꟓꟓ",
-  "a̠1 2̠̠"
+  "a̠1 2̠̠",
+  "a★1 2★★",
+  "a֢1 2֢֢"
  ],
  "patterns": [
   {
@@ -3790,6 +3792,46 @@
   {
    "source": "[\\p{L}--[a-z]]+",
    "flags": "v",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
+  },
+  {
+   "source": "\\p{Extended_Pictographic}",
+   "flags": "u",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
+  },
+  {
+   "source": "[\\P{Diacritic}]",
+   "flags": "u",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
+  },
+  {
+   "source": "\\p{Diacritic}+",
+   "flags": "u",
+   "origin": "unicode",
+   "methods": [
+    "all"
+   ],
+   "replacements": [],
+   "replacementsAll": []
+  },
+  {
+   "source": "\\p{sc=Latn}+",
+   "flags": "u",
    "origin": "unicode",
    "methods": [
     "all"
