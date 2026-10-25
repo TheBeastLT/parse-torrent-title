@@ -151,10 +151,9 @@ fn check_text(case: &Case<'_>, tally: &mut Tally, index: usize, text: &str) {
         let expected = sparse(&pattern["replaceAllFn"], index).cloned().unwrap_or_else(|| json!(text));
         let actual = regex.replace_all_with(text, |m| function_replacement(text, m));
         case.check(tally, "replace_all_with", text, &expected, json!(actual));
+        let expected = sparse(&pattern["split"], index).cloned().unwrap_or_else(|| json!([text]));
+        case.check(tally, "split", text, &expected, pieces(regex.split(text)));
+        let expected = sparse(&pattern["splitLimit"], index).cloned().unwrap_or_else(|| json!([text]));
+        case.check(tally, "split_limit", text, &expected, pieces(regex.split_limit(text, 2)));
     }
-
-    let expected = sparse(&pattern["split"], index).cloned().unwrap_or_else(|| json!([text]));
-    case.check(tally, "split", text, &expected, pieces(regex.split(text)));
-    let expected = sparse(&pattern["splitLimit"], index).cloned().unwrap_or_else(|| json!([text]));
-    case.check(tally, "split_limit", text, &expected, pieces(regex.split_limit(text, 2)));
 }

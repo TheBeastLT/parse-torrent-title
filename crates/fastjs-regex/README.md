@@ -37,7 +37,7 @@ Every pattern is compiled twice:
   the JavaScript meaning of each construct (`\w` stays ASCII, `.` excludes the JavaScript line terminators, ...).
 
 When the translation is exact (no lookaround, backreference, quantified capture group, multiline anchor, ...), it
-replaces the backtracking engine for `find`, `find_at` and `is_match`. Otherwise it matches a superset of the pattern: lookarounds are dropped
+replaces the backtracking engine for every method. Otherwise it matches a superset of the pattern: lookarounds are dropped
 or kept as plain groups, backreferences match anything. That superset is a prefilter: when it does not match, there
 is no match, which is the common case when many patterns run over each text, and when it does, the backtracking
 search starts where the superset first matched. Patterns the translation does not cover (`v` set operations,

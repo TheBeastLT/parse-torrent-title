@@ -344,9 +344,16 @@ impl Regex {
     /// does not start where the previous one ended.
     pub fn find_iter<'r, 't>(&'r self, text: &'t str) -> impl Iterator<Item = Match> + use<'r, 't> {
         let compiled = self.compiled();
-        let matches = (!self.cannot_match(text)).then(|| compiled.js.find_iter(text));
+        let exact = compiled.exact_for(text).is_some();
+        let mut backtracking = (!exact && !self.cannot_match(text)).then(|| compiled.js.find_iter(text));
         let mut next = Some(0);
-        matches.into_iter().flatten().map_while(move |m| {
+        std::iter::from_fn(move || {
+            if exact {
+                let m = self.find_at(text, next?)?;
+                next = if m.range().is_empty() { next_char(text, m.end()) } else { Some(m.end()) };
+                return Some(m);
+            }
+            let m = backtracking.as_mut()?.next()?;
             if compiled.sticky {
                 if next != Some(m.start()) {
                     return None;
@@ -435,15 +442,20 @@ impl Regex {
             parts.push(Some(text));
             return parts;
         }
-        let js = &self.compiled().js;
+        let compiled = self.compiled();
+        let exact = compiled.exact_for(text);
+        let find = |from: usize| match exact {
+            Some(regex) => compiled.find_exact(regex, text, from),
+            None => compiled.js.find_from(text, from).next().map(|m| compiled.to_match(m)),
+        };
         if text.is_empty() {
-            if js.find(text).is_none() {
+            if find(0).is_none() {
                 parts.push(Some(text));
             }
             return parts;
         }
         let (mut last, mut from) = (0, 0);
-        while let Some(m) = js.find_from(text, from).next().filter(|m| m.start() < text.len()) {
+        while let Some(m) = find(from).filter(|m| m.start() < text.len()) {
             if m.end() == last {
                 match next_char(text, m.start()) {
                     Some(next) => from = next,
@@ -453,11 +465,11 @@ impl Regex {
             }
             parts.push(Some(&text[last..m.start()]));
             let end = m.end();
-            for group in m.captures {
+            for index in 1..=m.group_count() {
                 if parts.len() == limit {
                     return parts;
                 }
-                parts.push(group.map(|range| &text[range]));
+                parts.push(m.group(index).map(|range| &text[range]));
             }
             if parts.len() == limit {
                 return parts;

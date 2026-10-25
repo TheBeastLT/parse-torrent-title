@@ -76,25 +76,32 @@ const results = patterns.map(pattern => {
   }
   const execAt = [];
   texts.forEach((text, index) => {
+    const matchesSomewhere = exec(text) !== null;
     for (const lastIndex of [1, 3, 7, text.length]) {
       if (lastIndex > text.length || insidePair(text, lastIndex)) continue;
       global.lastIndex = lastIndex;
-      execAt.push([index, lastIndex, execResult(text, global.exec(text))]);
+      const found = execResult(text, global.exec(text));
+      if (found !== null || matchesSomewhere) execAt.push([index, lastIndex, found]);
     }
   });
+  const methods = core;
+  const replacements = methods ? pattern.replacements : [];
+  const replacementsAll = methods && !flags.includes('g') ? pattern.replacementsAll : [];
   return {
     ...pattern,
+    replacements,
+    replacementsAll,
     texts: texts.length,
     exec: sparse(texts, exec, value => value === null),
     all: sparse(texts, all, value => value.length === 0),
-    replace: pattern.replacements.map(replacement =>
+    replace: replacements.map(replacement =>
       sparse(texts, text => text.replace(reset(regex), replacement), (v, t) => v === t)),
-    replaceAll: pattern.replacementsAll.map(replacement =>
+    replaceAll: replacementsAll.map(replacement =>
       sparse(texts, text => text.replaceAll(global, replacement), (v, t) => v === t)),
     replaceFn: core ? sparse(texts, text => text.replace(reset(regex), replacer), (v, t) => v === t) : {},
     replaceAllFn: core ? sparse(texts, text => text.replaceAll(global, replacer), (v, t) => v === t) : {},
-    split: sparse(texts, text => text.split(regex), (v, t) => same(v, [t])),
-    splitLimit: sparse(texts, text => text.split(regex, 2), (v, t) => same(v, [t])),
+    split: !methods ? {} : sparse(texts, text => text.split(regex), (v, t) => same(v, [t])),
+    splitLimit: !methods ? {} : sparse(texts, text => text.split(regex, 2), (v, t) => same(v, [t])),
     execAt: core ? execAt : [],
   };
 });

@@ -35,6 +35,7 @@ mod value;
 use std::fmt;
 use std::sync::LazyLock;
 
+pub use fastjs_regex::Error as RegexError;
 pub use handlers::add_defaults;
 pub use parser::{
     Context, Handler, HandlerFn, HandlerInfo, HandlerKind, HandlerMatch, MatchInfo, Matched, Options, Parser, Position,
@@ -88,8 +89,8 @@ impl fmt::Display for Error {
 
 impl std::error::Error for Error {}
 
-impl From<fastjs_regex::Error> for Error {
-    fn from(error: fastjs_regex::Error) -> Self {
+impl From<RegexError> for Error {
+    fn from(error: RegexError) -> Self {
         Error::Regex(error)
     }
 }
