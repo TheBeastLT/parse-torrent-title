@@ -966,3 +966,9 @@ fn should_keep_a_spaced_title_number_before_a_year_numbered_by_sessions() {
 fn should_keep_a_glued_title_number_before_a_year_numbered_by_sessions() {
     assert_includes("GP2 2015x05 Great Britain Feature Race SkyF1HD 720p50", json!({ "title": "GP2", "year": 2015 }));
 }
+
+/// should keep 3D starting a name after a group
+#[test]
+fn should_keep_3_d_starting_a_name_after_a_group() {
+    assert_includes("[GM] 3D Kanojo Real Girl S01E01-S02E04", json!({ "title": "3D Kanojo Real Girl", "group": "GM" }));
+}

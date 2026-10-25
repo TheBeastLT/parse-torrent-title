@@ -201,3 +201,9 @@ fn should_not_detect_3_d_in_name_v3() {
         &["threeD"],
     );
 }
+
+/// should not detect 3D starting a name after a group before any other match
+#[test]
+fn should_not_detect_3_d_starting_a_name_after_a_group_before_any_other_match() {
+    assert_missing("[GM] 3D Kanojo Real Girl S02E04", &["threeD"]);
+}

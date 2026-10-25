@@ -380,7 +380,7 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
     p.regex("threeD", r"\bHalf.?Over.?Under\b", "i", value("3D HOU"), Options::new());
     p.regex("threeD", r"\b(3D)\b.*\b(OU)\b", "i", value("3D OU"), Options::new());
     p.regex("threeD", r"\bOver.?Under\b", "i", value("3D OU"), Options::new());
-    p.regex("threeD", r"\b((?:BD)?3D)\b", "i", value("3D"), Options::new().skip_if_first(true));
+    p.regex("threeD", r"(?<!^\[[^\]]+]\s*)\b((?:BD)?3D)\b", "i", value("3D"), Options::new().skip_if_first(true));
 
     // Codec
     p.regex("codec", r"\b[xh][-. ]?26[45]", "i", lowercase(), Options::new().remove(true));
