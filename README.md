@@ -291,7 +291,7 @@ let parser = parse_torrent_title::create_parser();
 
 let resolution = parser.handlers().into_iter().filter(|handler| handler.name == "resolution").collect::<Vec<_>>();
 assert_eq!(resolution[1].index, 1);
-assert_eq!(resolution[1].regex().map(|regex| regex.source()), Some(r"\b[([]?4k[)\]]?\b"));
+assert_eq!(resolution[1].regex().map(|regex| regex.source()), Some(r"[([]4k[)\]]|\b[([]?4k[)\]]?\b"));
 ```
 
 `index` is the position within the category and `position` the position within all handlers.

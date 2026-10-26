@@ -195,3 +195,12 @@ fn should_not_detect_a_group_in_a_bare_file_name_with_a_dashed_subtitle() {
 fn should_detect_a_group_right_after_a_removed_codec() {
     assert_includes("BKFC.33.WEB.x264-HEADKICK.mp4", json!({ "group": "HEADKICK" }));
 }
+
+/// should detect a group after a bracketed 4k
+#[test]
+fn should_detect_a_group_after_a_bracketed_4k() {
+    assert_includes(
+        "[4K][DBD-Raws][魔法少女奈叶剧场版 2nd A's/Mahou Shoujo Lyrical Nanoha The Movie 2nd A's][2160P][BDRip][HEVC-10bit][简繁外挂][FLAC+DTS][MKV](魔法少女リリカルなのはThe MOVIE 2nd A's)",
+        json!({ "group": "DBD-Raws" }),
+    );
+}

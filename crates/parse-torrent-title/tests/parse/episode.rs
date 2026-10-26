@@ -2296,3 +2296,21 @@ fn should_read_a_lowercase_cyrillic_e_in_an_underscore_separated_name() {
 fn should_keep_a_cyrillic_word_starting_with_e_next_to_a_season_untouched() {
     assert_includes("Show S1 Епизод 4 [2020, WEB-DL]", json!({ "seasons": [1] }));
 }
+
+/// should detect an absolute episode after a resolution glued to a group
+#[test]
+fn should_detect_an_absolute_episode_after_a_resolution_glued_to_a_group() {
+    assert_includes("[BonoboSubs][4k]Renegade Immortal - 仙逆 Xian Ni - 164 v2", json!({ "episodes": [164] }));
+}
+
+/// should detect an absolute episode after a resolution group
+#[test]
+fn should_detect_an_absolute_episode_after_a_resolution_group() {
+    assert_includes("[Shridhuu][4K] Renegade Immortal / 仙逆 / Xian Ni - 163", json!({ "episodes": [163] }));
+}
+
+/// should not detect an episode after a leading source group
+#[test]
+fn should_not_detect_an_episode_after_a_leading_source_group() {
+    assert_missing("[DVD-Rip] Siddu +2 1st Attempt (2010) Lotus 350 MB X264 - TamilC", &["episodes"]);
+}

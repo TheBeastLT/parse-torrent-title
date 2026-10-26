@@ -144,7 +144,7 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
         value("$1p"),
         Options::new().remove(true),
     );
-    p.regex("resolution", r"\b[([]?4k[)\]]?\b", "i", value("4k"), Options::new().remove(true));
+    p.regex("resolution", r"[([]4k[)\]]|\b[([]?4k[)\]]?\b", "i", value("4k"), Options::new().remove(true));
     p.regex("resolution", r"21600?[pi]", "i", value("4k"), Options::new().skip_if_already_found(false).remove(true));
     p.regex("resolution", r"[([]?3840x\d{4}[)\]]?", "i", value("4k"), Options::new().remove(true));
     p.regex("resolution", r"[([]?1920x\d{3,4}[)\]]?", "i", value("1080p"), Options::new().remove(true));
@@ -891,16 +891,20 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
         r"^(?:[([-][ .]?)?(\d{1,4})(?![. _]?(?:-?й)?[. _]?(?:[Сс]езон|sez(?:on)?\b)(?![. _]?finali))(?:a|b|v\d)?(?!\Wmovie|\Wfilm|\Wфильм|-\d)(?:\W|$)",
         "i",
     );
+    let first_group = Regex::lazy(r"^\[[^\]]*\]", "");
+    let leading_groups = Regex::lazy(r"^(?:\[[^\]]*\][ .]?)+", "");
     p.function("episodes", move |c| {
         if has(c.result, "episodes") {
             return None;
         }
+        let end_of = |regex: &Regex| regex.find(c.title).map_or(0, |m| utf16_index(c.title, m.end()));
+        let (groups_start, groups_end) = (end_of(&first_group), end_of(&leading_groups));
         let indexes = |fields: &[&str]| -> Vec<usize> {
             fields
                 .iter()
                 .filter_map(|&field| c.matched.get(field))
                 .map(|m| m.match_index)
-                .filter(|&index| index > 0)
+                .filter(|&index| index > 0 && !(groups_start..=groups_end).contains(&index))
                 .collect()
         };
         let start_index = indexes(&["year", "seasons"]).into_iter().min().unwrap_or(0);

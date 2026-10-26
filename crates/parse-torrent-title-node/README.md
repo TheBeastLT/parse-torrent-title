@@ -255,7 +255,7 @@ addDefaults(parser, { exclude: ["site", "languages"] });
 parser.getHandlers().filter(handler => handler.name === "resolution");
 // [
 //   { name: "resolution", index: 0, position: 3, regExp: /(?<=\b(?:4k|2160p)\b.*)\b(480|720|1080)p\b/i, options: { ... } },
-//   { name: "resolution", index: 1, position: 4, regExp: /\b[([]?4k[)\]]?\b/i, options: { ... } },
+//   { name: "resolution", index: 1, position: 4, regExp: /[([]4k[)\]]|\b[([]?4k[)\]]?\b/i, options: { ... } },
 //   ...
 // ]
 ```
