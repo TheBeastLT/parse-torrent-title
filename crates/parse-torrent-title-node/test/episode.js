@@ -1103,7 +1103,7 @@ describe("Parsing episode", () => {
 
     it("should not detect number in parentheses with a suffix as episode", () => {
         const releaseName = "[Asakura] Kaiko Sareta Ankoku Heishi (30-dai) no Slow na Second Life 01 [BDRip 1920x1080 x265 10bit FLAC].mkv";
-        expect(parse(releaseName)).to.deep.include({ title: "Kaiko Sareta Ankoku Heishi (30-dai) no Slow na Second Life", episodes: [1] });
+        expect(parse(releaseName)).to.not.have.property("episodes");
     });
 
     it("should still detect episode after title with number in parentheses with a dash", () => {

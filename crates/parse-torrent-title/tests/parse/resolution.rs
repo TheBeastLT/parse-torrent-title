@@ -107,7 +107,7 @@ fn should_detect_720_without_spaces_title_prefix() {
 #[test]
 fn should_detect_resolution_in_brackets_without_p_suffix() {
     assert_includes("[PALATA666] Resurrection 01 (720).mkv", json!({ "resolution": "720p" }));
-    assert_includes("[PALATA666] Resurrection 01 (720).mkv", json!({ "episodes": [1] }));
+    assert_missing("[PALATA666] Resurrection 01 (720).mkv", &["episodes"]);
 }
 
 /// should detect 1080p resolution when 4k remastered is present

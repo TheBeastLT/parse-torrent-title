@@ -291,3 +291,12 @@ fn should_not_read_a_year_before_a_two_digit_year_as_the_year_of_an_alternative_
         json!({ "year": 2006, "title": "Kamen Rider Kabuto" }),
     );
 }
+
+/// should keep the first year when a later bracket has a year before a slash
+#[test]
+fn should_keep_the_first_year_when_a_later_bracket_has_a_year_before_a_slash() {
+    assert_includes(
+        "Исцеление / Снадобье / Cure / Kyua [1997, BDRip 1080p] [4K REMASTERED, 2024 / FRA Transfer] VO (liosaa)",
+        json!({ "year": 1997 }),
+    );
+}

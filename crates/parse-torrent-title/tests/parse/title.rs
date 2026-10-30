@@ -1167,3 +1167,38 @@ fn should_keep_a_glued_part_number_after_a_numbered_show_name() {
         json!({ "title": "babylon 5.the lost tales.part01." }),
     );
 }
+
+/// should keep a number ending the title after a group
+#[test]
+fn should_keep_a_number_ending_the_title_after_a_group() {
+    assert_includes("[HorribleRips] Mob Psycho 100 [720p]", json!({ "title": "Mob Psycho 100" }));
+    assert_missing("[HorribleRips] Mob Psycho 100 [720p]", &["episodes"]);
+}
+
+/// should keep a number ending the title after a group and a tag group
+#[test]
+fn should_keep_a_number_ending_the_title_after_a_group_and_a_tag_group() {
+    assert_includes("[GHOST][720p] Galaxy Express 999 [BD HEVC 10bit AC3]", json!({ "title": "Galaxy Express 999" }));
+    assert_missing("[GHOST][720p] Galaxy Express 999 [BD HEVC 10bit AC3]", &["episodes"]);
+}
+
+/// should keep a dotted title number after a group
+#[test]
+fn should_keep_a_dotted_title_number_after_a_group() {
+    assert_includes("[NTi] Oceans.13.R5.LINE.PROPER.XViD-PUKKA", json!({ "title": "Oceans 13" }));
+    assert_missing("[NTi] Oceans.13.R5.LINE.PROPER.XViD-PUKKA", &["episodes"]);
+}
+
+/// should keep a title number before a trailing group
+#[test]
+fn should_keep_a_title_number_before_a_trailing_group() {
+    assert_includes("[DVD5 ITA-ENG] La Carica Dei 101 [CR-Bt]", json!({ "title": "La Carica Dei 101" }));
+    assert_missing("[DVD5 ITA-ENG] La Carica Dei 101 [CR-Bt]", &["episodes"]);
+}
+
+/// should keep a franchise number ending a Russian file name after a group
+#[test]
+fn should_keep_a_franchise_number_ending_a_russian_file_name_after_a_group() {
+    assert_includes("[Group] Терминатор 2.avi", json!({ "title": "Терминатор 2" }));
+    assert_missing("[Group] Терминатор 2.avi", &["episodes"]);
+}

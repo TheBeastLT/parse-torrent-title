@@ -1511,7 +1511,7 @@ fn should_detect_multi_subs_with_other_languages() {
 fn should_not_detect_dual_audio_from_an_exclaimed_show_name() {
     assert_includes(
         "[km&sxales] Dual! Parallel Trouble Adventures 01 [DVD 576p x264 AC3][80EE2516].mkv",
-        json!({ "title": "Dual! Parallel Trouble Adventures", "episodes": [1] }),
+        json!({ "title": "Dual! Parallel Trouble Adventures 01" }),
     );
     assert_missing(
         "[km&sxales] Dual! Parallel Trouble Adventures 01 [DVD 576p x264 AC3][80EE2516].mkv",

@@ -247,7 +247,7 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
     );
     p.regex(
         "year",
-        r"(?<=\[[^\]\d]*[ .])((?:19\d|20[012])\d)(?=[ .]*\/[ .]*\p{L}[^\]]*\])",
+        r"(?<!(?:19\d|20[012])\d.*)(?<=\[\p{L}[^\]0-9]*[ .])((?:19\d|20[012])\d)(?=[ .]*\/[ .]*\p{L}[^\]]*\])",
         "u",
         integer(),
         Options::new().remove(true).skip_from_title(true),
@@ -916,12 +916,6 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
         r"^(?:[([-][ .]?)?(\d{1,4})(?![. _]?(?:-?й)?[. _]?(?:[Сс]езон|sez(?:on)?\b)(?![. _]?finali))(?:a|b|v\d)?(?!\Wmovie|\Wfilm|\Wфильм|-\d)(?:\W|$)",
         "i",
     );
-    let trailing_episode = Regex::lazy(
-        r"(?<=^\[[^\]]+\][ .]?\S.*?(?<!\b\d{2,3}[ .]+-[ .]+.*|^(?:\[[^\]]+\][ .]?)+[^\[]*?(?<![\p{L}\d])\d{2,4}(?![\p{L}\d]|-\p{L}).*|\b(?:movie|film|pel[ií]cula|ova|oad|ona|part|pt|vol|volume|chapter|season|series|(?-i:OP|ED))[ .]*))[ .](?<!\d\.)(?!(?:480|576|720)\b)(\d{2,3})(?:v\d)?(?=(?:[ .]+(?-i:[A-Z]{2,5}))?(?:[ .]*[\[(][^\[\]()]*[\])])*[ .[(]*(?:\.\w{2,4})?$)",
-        "iu",
-    );
-    let tagged_episode = Regex::lazy(r"^[ .]+(?!(?:264|265|480|576|720|1080)\b)(\d{2,3})(?:v\d)?\.[a-z]\w{1,3}$", "i");
-    let name_suffix = Regex::lazy(r"^[ .]*(?:\.\w{2,4})?$", "");
     let first_group = Regex::lazy(r"^\[[^\]]*\]", "");
     let leading_groups = Regex::lazy(r"^(?:\[[^\]]*\][ .]?)+", "");
     p.function("episodes", move |c| {
@@ -945,29 +939,14 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
         let beginning_title = &c.title[..end_index];
         let middle_title = &c.title[byte_index(c.title, start_index).min(end_index)..end_index];
 
-        // try to match the episode inside the title with a separator, if not found include the start of the title as
-        // well, and last a number ending the title after a group
-        let separated = separated_episode.find_iter(beginning_title).last().map(|m| (beginning_title, m));
-        let leading = || leading_episode.find(middle_title).map(|m| (middle_title, m));
-        let trailing = || {
-            trailing_episode
-                .find(beginning_title)
-                .filter(|m| m.start() >= beginning_title.len() - middle_title.len())
-                .filter(|m| !c.title[m.end()..].starts_with(char::is_alphanumeric))
-                .map(|m| (beginning_title, m))
-        };
-        let tagged = || {
-            tagged_episode
-                .find(&c.title[end_index..])
-                .filter(|_| !c.matched.contains_key("year") && !c.matched.contains_key("date"))
-                .map(|m| (&c.title[end_index..], m))
-        };
-        let is_name_suffix = separated
-            .as_ref()
-            .is_some_and(|(text, m)| text[m.range()].starts_with('(') && name_suffix.is_match(&text[m.end()..]));
-        let separated = if is_name_suffix { trailing().or(separated) } else { separated };
-        let (text, m) = separated.or_else(leading).or_else(trailing).or_else(tagged)?;
-        let (raw_match, episode) = (&text[m.range()], group(&m, text, 1));
+        // try to match the episode inside the title with a separator, if not found include the start of the title as well
+        let (raw_match, episode) = separated_episode
+            .find_iter(beginning_title)
+            .last()
+            .map(|m| (&beginning_title[m.range()], group(&m, beginning_title, 1)))
+            .or_else(|| {
+                leading_episode.find(middle_title).map(|m| (&middle_title[m.range()], group(&m, middle_title, 1)))
+            })?;
         let digits: String = episode.unwrap_or_default().chars().filter(char::is_ascii_digit).collect();
         c.result.set("episodes", vec![digits.parse::<i64>().ok()?]);
         Some(HandlerMatch::at(c.title.find(raw_match).map_or(0, |byte| utf16_index(c.title, byte))))

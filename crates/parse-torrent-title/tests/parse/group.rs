@@ -180,7 +180,7 @@ fn should_not_detect_a_chinese_episode_marker_as_group() {
 fn should_detect_group_from_a_bracket_closed_with_an_opening_bracket() {
     assert_includes(
         "[Anime Time[ Attack On Titan OAD - Lost Girls 01.mkv",
-        json!({ "group": "Anime Time", "title": "Attack On Titan OAD - Lost Girls", "episodes": [1] }),
+        json!({ "group": "Anime Time", "title": "Attack On Titan OAD - Lost Girls 01" }),
     );
 }
 
