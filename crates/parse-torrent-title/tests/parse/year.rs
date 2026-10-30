@@ -273,3 +273,21 @@ fn should_read_a_year_numbered_by_a_three_digit_session_as_the_year() {
 fn should_not_read_a_truncated_resolution_width_as_a_year_numbered_by_sessions() {
     assert_includes("Conan II - O Destruidor 1984 (Audio EN-ES - Leg BR - Mkv 1920x81", json!({ "year": 1984 }));
 }
+
+/// should detect the year before an alternative title in a bracketed title
+#[test]
+fn should_detect_the_year_before_an_alternative_title_in_a_bracketed_title() {
+    assert_includes(
+        "[DBD-Raws][4K_SDR+Remastered][摩斯拉 1961/Mothra][2160P][UHDBDRip][HEVC-10bit][简繁外挂][FLAC][MKV]",
+        json!({ "year": 1961, "title": "Mothra" }),
+    );
+}
+
+/// should not read a year before a two digit year as the year of an alternative title
+#[test]
+fn should_not_read_a_year_before_a_two_digit_year_as_the_year_of_an_alternative_title() {
+    assert_includes(
+        "Кабуто, наездник в маске / Kamen Rider Kabuto (15/49) [Япония, 2006/07 г., токусацу, TVRip] [JAP+Sub Rus] [RAW]",
+        json!({ "year": 2006, "title": "Kamen Rider Kabuto" }),
+    );
+}

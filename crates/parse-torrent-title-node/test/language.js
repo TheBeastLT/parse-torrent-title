@@ -1207,7 +1207,7 @@ describe("Parsing language", () => {
 
     it("should not detect dual audio from an exclaimed show name", () => {
         const releaseName = "[km&sxales] Dual! Parallel Trouble Adventures 01 [DVD 576p x264 AC3][80EE2516].mkv";
-        expect(parse(releaseName)).to.deep.include({ title: "Dual! Parallel Trouble Adventures 01" })
+        expect(parse(releaseName)).to.deep.include({ title: "Dual! Parallel Trouble Adventures", episodes: [1] })
             .and.not.have.any.keys("languages", "dubbed");
     });
 

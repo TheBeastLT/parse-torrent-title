@@ -88,8 +88,7 @@ describe("Parsing resolution", () => {
 
     it("should detect resolution in brackets without p suffix", () => {
         const releaseName = "[PALATA666] Resurrection 01 (720).mkv";
-        expect(parse(releaseName)).to.deep.include({ resolution: "720p" });
-        expect(parse(releaseName)).to.not.have.property("episodes");
+        expect(parse(releaseName)).to.deep.include({ resolution: "720p", episodes: [1] });
     });
 
     it("should detect 1080p resolution when 4k remastered is present", () => {

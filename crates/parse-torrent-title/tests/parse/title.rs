@@ -972,3 +972,198 @@ fn should_keep_a_glued_title_number_before_a_year_numbered_by_sessions() {
 fn should_keep_3_d_starting_a_name_after_a_group() {
     assert_includes("[GM] 3D Kanojo Real Girl S01E01-S02E04", json!({ "title": "3D Kanojo Real Girl", "group": "GM" }));
 }
+
+/// should take the title after a group and a resolution group
+#[test]
+fn should_take_the_title_after_a_group_and_a_resolution_group() {
+    assert_includes(
+        "[DBD-Raws][4K_HDR][Ookami Kodomo no Ame to Yuki][2160P][UHDBDRip][HEVC-10bit][FLACx2].mkv",
+        json!({ "title": "Ookami Kodomo no Ame to Yuki", "group": "DBD-Raws" }),
+    );
+}
+
+/// should take the title after a group and a bracketed resolution
+#[test]
+fn should_take_the_title_after_a_group_and_a_bracketed_resolution() {
+    assert_includes(
+        "[DBD-Raws][4K][蓝宝石之谜][27][2160P][UHDBDRip][HEVC-10bit][FLACx2].mkv",
+        json!({ "title": "蓝宝石之谜", "episodes": [27] }),
+    );
+}
+
+/// should take the title after a group and a remastered resolution group
+#[test]
+fn should_take_the_title_after_a_group_and_a_remastered_resolution_group() {
+    assert_includes(
+        "[DBD-Raws][4K_SDR+Remastered][地球防卫军/The Mysterians][2160P+1080P][UHDBDRip][HEVC-10bit][简繁外挂][FLAC][MKV](地球防衛軍)",
+        json!({ "title": "The Mysterians", "resolution": "4k", "remastered": true }),
+    );
+}
+
+/// should take the alternative title after a group and a resolution group
+#[test]
+fn should_take_the_alternative_title_after_a_group_and_a_resolution_group() {
+    assert_includes(
+        "[DBD-Raws][4K_SDR][天书奇谭/The Legend of Sealed Book][2160P][WebRip][HEVC-10bit][AAC][MKV]",
+        json!({ "title": "The Legend of Sealed Book" }),
+    );
+}
+
+/// should keep a bracketed title before a resolution group
+#[test]
+fn should_keep_a_bracketed_title_before_a_resolution_group() {
+    assert_includes(
+        "[Shrek The Third] [1080p] [BDRip] [Arabic-English] [Arabp2p.com] [ ]",
+        json!({ "title": "Shrek The Third" }),
+    );
+}
+
+/// should keep a bracketed title before a source group
+#[test]
+fn should_keep_a_bracketed_title_before_a_source_group() {
+    assert_includes("[Over Drive][DVDRIP][X264_AAC][Toki-Softsubs][TV][07].mkv", json!({ "title": "Over Drive" }));
+}
+
+/// should remove a black and white tag ending the title
+#[test]
+fn should_remove_a_black_and_white_tag_ending_the_title() {
+    assert_includes(
+        "Charley Chase - Fluttering Hearts (B&W).DVDRip.XviD-DIE-DVD21.avi",
+        json!({ "title": "Charley Chase - Fluttering Hearts" }),
+    );
+}
+
+/// should remove a glued black and white tag after another bracket
+#[test]
+fn should_remove_a_glued_black_and_white_tag_after_another_bracket() {
+    assert_includes(
+        "Laurel & Hardy - Laughing Gravy (2Reel)(B&W)-DVDRip.XviD-DIE-DVD10.avi",
+        json!({ "title": "Laurel & Hardy - Laughing Gravy (2Reel)" }),
+    );
+}
+
+/// should remove a glued black and white tag before a group
+#[test]
+fn should_remove_a_glued_black_and_white_tag_before_a_group() {
+    assert_includes(
+        "Laurel & Hardy - One Good Turn(B&W)-720- mkv - G&U",
+        json!({ "title": "Laurel & Hardy - One Good Turn", "group": "G&U" }),
+    );
+}
+
+/// should remove a glued colour tag
+#[test]
+fn should_remove_a_glued_colour_tag() {
+    assert_includes(
+        "Laurel & Hardy - Thier First Mistake(Colour)-DVDRip.XviD-DIE-DVD15.avi",
+        json!({ "title": "Laurel & Hardy - Thier First Mistake" }),
+    );
+}
+
+/// should remove a color tag
+#[test]
+fn should_remove_a_color_tag() {
+    assert_includes(
+        "UNLEASHED UNIVERSE CH02E06 Rise Of Asheron (color) .avi",
+        json!({ "title": "UNLEASHED UNIVERSE CH02E06 Rise Of Asheron" }),
+    );
+}
+
+/// should remove a colorized tag before a year
+#[test]
+fn should_remove_a_colorized_tag_before_a_year() {
+    assert_includes(
+        "Its a Wonderful Life (Colorized) (1946) [DVDRip, English] - Quin",
+        json!({ "title": "Its a Wonderful Life", "languages": ["english"] }),
+    );
+}
+
+/// should keep black and white spelled out in the title
+#[test]
+fn should_keep_black_and_white_spelled_out_in_the_title() {
+    assert_includes("Black & White (1999) DVDRip XviD -pong", json!({ "title": "Black & White" }));
+}
+
+/// should keep black and white as words in the title
+#[test]
+fn should_keep_black_and_white_as_words_in_the_title() {
+    assert_includes(
+        "Pokemon Black and White - 21 - The Lost World of Gothitelle!",
+        json!({ "title": "Pokemon Black and White" }),
+    );
+}
+
+/// should keep a bare black and white abbreviation in the title
+#[test]
+fn should_keep_a_bare_black_and_white_abbreviation_in_the_title() {
+    assert_includes("Season 1/Batman - B&W - 1x02 - Broken Nose.avi", json!({ "title": "Season 1/Batman - B&W" }));
+}
+
+/// should keep a black and white abbreviation starting the title
+#[test]
+fn should_keep_a_black_and_white_abbreviation_starting_the_title() {
+    assert_includes("B&W S01E01 1080p", json!({ "title": "B&W" }));
+}
+
+/// should remove a running time ending the title
+#[test]
+fn should_remove_a_running_time_ending_the_title() {
+    assert_includes(
+        "Iraq Documentary: The Death Squads (85min.)",
+        json!({ "title": "Iraq Documentary: The Death Squads" }),
+    );
+}
+
+/// should keep a title in minutes
+#[test]
+fn should_keep_a_title_in_minutes() {
+    assert_includes(
+        "13 minutos (13 Minutes) (2021) WEB-DL [Dublado Portugues] BRAZIN",
+        json!({ "title": "13 minutos" }),
+    );
+}
+
+/// should separate a glued part number
+#[test]
+fn should_separate_a_glued_part_number() {
+    assert_includes("The Fellowship Of The Ring Part1.avi", json!({ "title": "The Fellowship Of The Ring Part 1" }));
+}
+
+/// should separate a glued part number before a year
+#[test]
+fn should_separate_a_glued_part_number_before_a_year() {
+    assert_includes(
+        "Harry Potter and the Deathly Hallows Part1 [2010] 720p BRRiP x26",
+        json!({ "title": "Harry Potter and the Deathly Hallows Part 1", "year": 2010 }),
+    );
+}
+
+/// should separate a glued part number in a dot separated name
+#[test]
+fn should_separate_a_glued_part_number_in_a_dot_separated_name() {
+    assert_includes(
+        "The.Hunger.Games.Mockingjay.Part2.2015.720p.BDRip.x264.AC3-Mikas",
+        json!({ "title": "The Hunger Games Mockingjay Part 2" }),
+    );
+}
+
+/// should keep a part number glued to letters
+#[test]
+fn should_keep_a_part_number_glued_to_letters() {
+    assert_includes("Compilation Part1ty 720p", json!({ "title": "Compilation Part1ty" }));
+}
+
+/// should keep a glued part number next to a title number
+#[test]
+fn should_keep_a_glued_part_number_next_to_a_title_number() {
+    assert_includes("15_02 Super Swarm part1.ts", json!({ "title": "15 02 Super Swarm part1." }));
+}
+
+/// should keep a glued part number after a numbered show name
+#[test]
+fn should_keep_a_glued_part_number_after_a_numbered_show_name() {
+    assert_includes(
+        "babylon_5.the_lost_tales.part01.rus.Lostfilm.tv.avi",
+        json!({ "title": "babylon 5.the lost tales.part01." }),
+    );
+}

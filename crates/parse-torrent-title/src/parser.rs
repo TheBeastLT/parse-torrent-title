@@ -45,6 +45,7 @@ static BEFORE_TITLE: LazyLock<Regex> = LazyLock::new(|| {
         "",
     )
 });
+static TAG_GROUP: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"^[ .]?\[[^[\]]*]", ""));
 static CYRILLIC_E_IN_EPISODE_CODE: LazyLock<Regex> =
     LazyLock::new(|| Regex::lazy(r"(?<=\b[Ss]\d{1,3})[Ее](?=\d)", "g"));
 static TRAILING_QUOTED_SECTION: LazyLock<Regex> =
@@ -63,6 +64,7 @@ static DOT_SEPARATED: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"^[^\s.]*\
 static SUB_DUB_SUFFIX: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"\s+-+\s*(?:sub|dub)s?$", "i"));
 static WHOLE_TEXT: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(".*", ""));
 static WHITESPACE: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"\s+", "g"));
+static GLUED_PART: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"^(\D*\b)(part)(\d{1,2})(\b\D*)$", "i"));
 static ALT_TITLE_SEPARATOR: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"\s+[/|]\s+", ""));
 static UNDERSCORES: LazyLock<Regex> = LazyLock::new(|| Regex::lazy("_+", "g"));
 static UNCLOSED_LEADING_BRACKET: LazyLock<Regex> = LazyLock::new(|| Regex::lazy(r"^\[([^[\]]+)\[(?=\s)", ""));
@@ -355,7 +357,7 @@ fn run_regex(
 
     let index = utf16_index(title, m.start());
     let matched = &*context.matched;
-    let is_before_title = BEFORE_TITLE.find(title).is_some_and(|before| index < utf16_len(&title[before.range()]));
+    let is_before_title = index < before_title_end(title, index, name == "resolution");
     let others = || matched.iter().filter(|(field, _)| field.as_str() != name);
     let is_skip_if_first =
         options.skip_if_first && others().next().is_some() && others().all(|(_, other)| index < other.match_index);
@@ -378,6 +380,28 @@ fn run_regex(
         remove: options.remove,
         skip_from_title: is_before_title || options.skip_from_title,
     })
+}
+
+/// Where the release group markings end: the leading bracket groups, extended over a following group which starts
+/// with the resolution matched at `index` or with what an earlier match left behind.
+fn before_title_end(title: &str, index: usize, is_resolution: bool) -> usize {
+    let Some(before) = BEFORE_TITLE.find(title) else {
+        return 0;
+    };
+    let end = utf16_len(&title[before.range()]);
+    let rest = &title[before.range().end..];
+    let Some(group) = TAG_GROUP.find(rest) else {
+        return end;
+    };
+    let bracket = rest.find('[').unwrap_or_default();
+    let open = end + utf16_len(&rest[..bracket]);
+    let content = rest[bracket + 1..].chars().next();
+    let starts_with_tag = is_resolution && (index == open || index == open + 1);
+    if starts_with_tag || !content.is_some_and(char::is_alphanumeric) {
+        end + utf16_len(&rest[group.range()])
+    } else {
+        end
+    }
 }
 
 /// A handler as listed by [`Parser::handlers`].
@@ -662,17 +686,19 @@ fn clean_title(raw_title: &str) -> String {
     let title = UNOPENED_BRACKET.replace(&title, "$1"); // remove closing bracket without an opening one
     let title = SUB_DUB_SUFFIX.replace(&title, "");
     let title = WHOLE_TEXT.replace_with(&title, |m| remove_accented_alt_titles(&title[m.range()])); // prefer alt titles without accented chars
+    let title = GLUED_PART.replace(&title, "$1$2 $3$4");
     let title = WHITESPACE.replace(&title, " ");
     title.trim().to_owned()
 }
 
-/// A name made only of bracketed sections ("[Show Name][2022][S3E06]") keeps its longest one as the title.
+/// A name made only of bracketed sections ("[Show Name][2022][S3E06]"), possibly cut at an opening bracket, keeps
+/// its longest one as the title.
 fn longest_bracket_text(text: &str, tags: &[String]) -> String {
     let mut remainder = BRACKET_SECTIONS.replace(text, "").into_owned();
     for tag in tags {
         remainder = remainder.replacen(tag.as_str(), "", 1);
     }
-    if remainder.chars().any(|c| !(c.is_whitespace() || c == '+' || c == '-')) {
+    if remainder.chars().any(|c| !(c.is_whitespace() || c == '+' || c == '-' || c == '[')) {
         return String::new();
     }
     let mut sections: Vec<&str> =

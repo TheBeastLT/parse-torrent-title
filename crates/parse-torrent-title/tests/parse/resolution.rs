@@ -107,7 +107,7 @@ fn should_detect_720_without_spaces_title_prefix() {
 #[test]
 fn should_detect_resolution_in_brackets_without_p_suffix() {
     assert_includes("[PALATA666] Resurrection 01 (720).mkv", json!({ "resolution": "720p" }));
-    assert_missing("[PALATA666] Resurrection 01 (720).mkv", &["episodes"]);
+    assert_includes("[PALATA666] Resurrection 01 (720).mkv", json!({ "episodes": [1] }));
 }
 
 /// should detect 1080p resolution when 4k remastered is present
@@ -136,4 +136,88 @@ fn should_still_read_a_cropped_width_and_height_resolution() {
 fn should_detect_resolution_with_cyrillic_p() {
     assert_includes("«Эрнест и Селестина» 1 сезон 05 серия 720р.mkv", json!({ "resolution": "720p" }));
     assert_includes("Show 1 сезон 05 серия 1080р.mkv", json!({ "resolution": "1080p" }));
+}
+
+/// should detect 1080p resolution from a FHD tag
+#[test]
+fn should_detect_1080p_resolution_from_a_fhd_tag() {
+    assert_includes("[I.S.S.] Hunter Risvegliabestie Omegahorn 11 FHD", json!({ "resolution": "1080p" }));
+}
+
+/// should keep 1080p resolution when FHD precedes it
+#[test]
+fn should_keep_1080p_resolution_when_fhd_precedes_it() {
+    assert_includes(
+        "Metal Lords (2022)(FHD)(1080p)(x264)(WebDL)(MultiLang)(MultiSUB) PHDTeam",
+        json!({ "resolution": "1080p", "title": "Metal Lords" }),
+    );
+}
+
+/// should not detect resolution from a FHD group
+#[test]
+fn should_not_detect_resolution_from_a_fhd_group() {
+    assert_includes("Meet.Joe.Black.1998.1080p.BluRay.x264-FHD", json!({ "resolution": "1080p", "group": "FHD" }));
+}
+
+/// should detect 480p resolution from a trailing SD tag
+#[test]
+fn should_detect_480p_resolution_from_a_trailing_sd_tag() {
+    assert_includes("[I.S.S.] Hunter Risvegliabestie Omegahorn 11 SD", json!({ "resolution": "480p" }));
+}
+
+/// should detect 480p resolution from a SD tag before the extension
+#[test]
+fn should_detect_480p_resolution_from_a_sd_tag_before_the_extension() {
+    assert_includes(
+        "Formula.1.2025x04.Bahrain.Qualifying.SkyF1HD.SD",
+        json!({ "resolution": "480p", "title": "Formula 1" }),
+    );
+}
+
+/// should detect 480p resolution from a bracketed SD tag
+#[test]
+fn should_detect_480p_resolution_from_a_bracketed_sd_tag() {
+    assert_includes(
+        "I Cesaroni - Stagioni 01-03 (2006-2009 ITA) [SD] [WEB-DL] [direinde]",
+        json!({ "resolution": "480p", "title": "I Cesaroni" }),
+    );
+}
+
+/// should remove a leading bracketed SD tag from the title
+#[test]
+fn should_remove_a_leading_bracketed_sd_tag_from_the_title() {
+    assert_includes(
+        "(SD) Power Rangers Dino Charge S1 E02 (W4F).mp4",
+        json!({ "resolution": "480p", "title": "Power Rangers Dino Charge" }),
+    );
+}
+
+/// should not detect resolution from SD inside the title
+#[test]
+fn should_not_detect_resolution_from_sd_inside_the_title() {
+    assert_includes("[Inka-Subs] Mobile Suit SD Gundam MK 3", json!({ "title": "Mobile Suit SD Gundam MK 3" }));
+    assert_missing("[Inka-Subs] Mobile Suit SD Gundam MK 3", &["resolution"]);
+}
+
+/// should not detect resolution from a SD group
+#[test]
+fn should_not_detect_resolution_from_a_sd_group() {
+    assert_includes("Falling Skies S01E07 SWESUB HDTV XviD-SD.avi", json!({ "group": "SD" }));
+    assert_missing("Falling Skies S01E07 SWESUB HDTV XviD-SD.avi", &["resolution"]);
+}
+
+/// should not detect resolution from SD starting a title
+#[test]
+fn should_not_detect_resolution_from_sd_starting_a_title() {
+    assert_includes("SD GUNDAM WORLD HEROES S01E03 XviD-AFG", json!({ "title": "SD GUNDAM WORLD HEROES" }));
+    assert_missing("SD GUNDAM WORLD HEROES S01E03 XviD-AFG", &["resolution"]);
+}
+
+/// should detect 4k resolution when 1080p is added with a plus
+#[test]
+fn should_detect_4k_resolution_when_1080p_is_added_with_a_plus() {
+    assert_includes(
+        "[AI-Raws] Street Fighter II: The Animated Movie 4K+1080p MKV",
+        json!({ "resolution": "4k", "title": "Street Fighter II: The Animated Movie" }),
+    );
 }

@@ -162,7 +162,7 @@ describe("Parsing group", () => {
 
     it("should detect group from a bracket closed with an opening bracket", () => {
         const releaseName = "[Anime Time[ Attack On Titan OAD - Lost Girls 01.mkv";
-        expect(parse(releaseName)).to.deep.include({ group: "Anime Time", title: "Attack On Titan OAD - Lost Girls 01" });
+        expect(parse(releaseName)).to.deep.include({ group: "Anime Time", title: "Attack On Titan OAD - Lost Girls", episodes: [1] });
     });
 
     it("should not detect a group in a bare file name with a dashed subtitle", () => {
