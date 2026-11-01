@@ -542,6 +542,20 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
     p.regex("seasons", r"(?:(?:\bthe\W)?\bcomplete\W)?(?<!\bopen[ ._])(?:saison|seizoen|sezona|sezon(?:SO?)?|stagione|seasons?|series|temp(?:orada)?|sesong|s[äæ]song|sæson|staffel):?[. ]?(\d{1,2})(?!\d|(?<=seasons\W?\d+)[. ]?(?:episodes?|eps)\b(?![. -]*\d))", "i", array(integer()), Options::new());
     p.regex("seasons", r"[Сс]езон:?[. _]?№?(\d{1,2})(?!\d)", "i", array(integer()), Options::new());
     p.regex("seasons", r"(?:\D|^)(\d{1,2})Â?[°ºªa]?[. ]*temporada", "i", array(integer()), Options::new().remove(true));
+    p.regex(
+        "seasons",
+        r"(?:\D|^)(\d{1,2}\.[ .]*-[ .]*\d{1,2})\.[ .]?(?:s[ée]rie|séria|řada|sez[óo]na)\b",
+        "i",
+        range(),
+        Options::new().remove(true),
+    );
+    p.regex(
+        "seasons",
+        r"(?:\D|^)(\d{1,2})\.[ .]?(?:s[ée]rie|séria|řada|sez[óo]na)\b",
+        "i",
+        array(integer()),
+        Options::new().remove(true),
+    );
     p.regex("seasons", r"(?<![a-z])t(\d{1,3})[ex]+", "i", array(integer()), Options::new().remove(true));
     p.regex("seasons", r"(?<=\s)(?<!\bby\s)t(\d{1,2})$", "i", array(integer()), Options::new().remove(true));
     p.regex("seasons", r"(?:(?:\bthe\W)?\bcomplete)?(?!(?<!s\d{1,2})-so?[1-9]\d(?:\.[a-z\d]{2,4}$|\]))(?:[^\w'’]|^)so?([01]?[0-5]?[1-9]|[1-5]0)(?:[\Wex]|\d{2}\b)", "i", array(integer()), Options::new().skip_if_already_found(false));

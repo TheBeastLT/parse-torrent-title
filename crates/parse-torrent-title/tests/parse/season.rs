@@ -1268,3 +1268,42 @@ fn should_detect_a_season_glued_to_a_spaced_name_with_a_hyphen() {
 fn should_not_detect_a_season_from_a_release_group_after_the_release_tags() {
     assert_missing("Flashdance.1983.MULTi.720p.NF.WEB-DL.DDP5.1.H264-S78", &["seasons"]);
 }
+
+/// Tým Škorpion / Scorpion 4. serie (CZ)[TvRip]
+#[test]
+fn tym_skorpion_scorpion_4_serie_cz_tvrip() {
+    assert_includes("Tým Škorpion / Scorpion 4. serie (CZ)[TvRip]", json!({ "title": "Scorpion", "seasons": [4] }));
+}
+
+/// Lioness / Special Ops: Lioness 3. série (2026)(CZ/EN)[2160p][HDR10+/DV][HEVC]
+#[test]
+fn lioness_special_ops_lioness_3_serie_2026() {
+    assert_includes(
+        "Lioness / Special Ops: Lioness 3. série (2026)(CZ/EN)[2160p][HDR10+/DV][HEVC]",
+        json!({ "seasons": [3] }),
+    );
+}
+
+/// Cobra.Kai.-.3.série.(2021)(CZ.EN)[2160p][HEVC].=.CSFD.86%
+#[test]
+fn cobra_kai_3_serie_dotted() {
+    assert_includes(
+        "Cobra.Kai.-.3.série.(2021)(CZ.EN)[2160p][HEVC].=.CSFD.86%",
+        json!({ "title": "Cobra Kai", "seasons": [3] }),
+    );
+}
+
+/// Hvězdná brána SG1 / Stargate SG-1 komplet 1. - 10. řada - CZ
+#[test]
+fn stargate_sg1_komplet_1_10_rada() {
+    assert_includes(
+        "Hvězdná brána SG1 / Stargate SG-1 komplet 1. - 10. řada - CZ",
+        json!({ "seasons": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }),
+    );
+}
+
+/// Avtonomka.13.seria.iz.32.2006.XviD.DVDRip.Kinozal.TV.avi
+#[test]
+fn avtonomka_13_seria_iz_32_is_an_episode() {
+    assert_includes("Avtonomka.13.seria.iz.32.2006.XviD.DVDRip.Kinozal.TV.avi", json!({ "episodes": [13] }));
+}
