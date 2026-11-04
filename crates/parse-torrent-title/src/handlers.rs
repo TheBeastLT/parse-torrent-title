@@ -1694,7 +1694,21 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
     p.language_name("finnish", "finnish", Options::new().skip_from_title(true));
     p.standalone(
         "languages",
-        r"\b(?:(?<!w{3}\.\w+\.)SE|swe|swesubs?|sv(?:ensk)?|nordic)\b",
+        r"\b(?<![wW]{3}\.\w+\.)SE\b",
+        "",
+        uniq_concat(value("swedish")),
+        Options::new().skip_if_already_found(false),
+    );
+    p.standalone(
+        "languages",
+        r"\b(?<!w{3}\.\w+\.)se\b",
+        "i",
+        uniq_concat(value("swedish")),
+        Options::new().skip_if_first(true).skip_if_already_found(false),
+    );
+    p.standalone(
+        "languages",
+        r"\b(?:swe|swesubs?|sv(?:ensk)?|nordic)\b",
         "i",
         uniq_concat(value("swedish")),
         Options::new().skip_if_already_found(false),

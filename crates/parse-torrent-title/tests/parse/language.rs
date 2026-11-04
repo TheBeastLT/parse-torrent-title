@@ -1623,6 +1623,33 @@ fn should_not_detect_swedish_from_an_accented_spanish_word() {
     );
 }
 
+/// should not detect swedish from a lowercase title word
+#[test]
+fn should_not_detect_swedish_from_a_lowercase_title_word() {
+    assert_includes(
+        "Dotknout se hvězd / The Cost of Heaven (2026)(CZ/FR)[WEB-DL][1080p]",
+        json!({ "title": "The Cost of Heaven", "languages": ["french", "czech"] }),
+    );
+}
+
+/// should detect swedish from a title cased code in a subtitle list
+#[test]
+fn should_detect_swedish_from_a_title_cased_code_in_a_subtitle_list() {
+    assert_includes(
+        "28 Hotel Rooms (2012) PAL DVDR DTS Se Fi Dk No NL Subs",
+        json!({ "title": "28 Hotel Rooms", "languages": ["dutch", "danish", "finnish", "swedish"] }),
+    );
+}
+
+/// should not detect swedish from a mixed case site domain
+#[test]
+fn should_not_detect_swedish_from_a_mixed_case_site_domain() {
+    assert_includes(
+        "Alice [1080p][Castellano][wWw.EliteTorrent.SE]",
+        json!({ "title": "Alice", "languages": ["spanish"] }),
+    );
+}
+
 /// should not detect polish from an accented spanish word
 #[test]
 fn should_not_detect_polish_from_an_accented_spanish_word() {
