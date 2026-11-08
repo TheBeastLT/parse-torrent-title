@@ -1202,3 +1202,12 @@ fn should_keep_a_franchise_number_ending_a_russian_file_name_after_a_group() {
     assert_includes("[Group] Терминатор 2.avi", json!({ "title": "Терминатор 2" }));
     assert_missing("[Group] Терминатор 2.avi", &["episodes"]);
 }
+
+/// should take the title before a bracketed chinese uncensored tag
+#[test]
+fn should_take_the_title_before_a_bracketed_chinese_uncensored_tag() {
+    assert_includes(
+        "【悠哈璃羽字幕社】[脑洞学生会 / 学生会也有洞 / Seitokai ni mo Ana wa Aru][规制解除版][05][1080p HEVC][CHS][简体内嵌]",
+        json!({ "title": "Seitokai ni mo Ana wa Aru" }),
+    );
+}

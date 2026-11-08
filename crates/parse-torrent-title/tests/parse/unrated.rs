@@ -24,3 +24,12 @@ fn should_detect_if_the_release_is_uncensored() {
 fn should_not_detect_unrated_when_the_release_is_not_flagged_as_such() {
     assert_missing("Have I Got News For You S53E02 EXTENDED 720p HDTV x264-QPEL", &["unrated"]);
 }
+
+/// should detect a bracketed chinese uncensored tag
+#[test]
+fn should_detect_a_bracketed_chinese_uncensored_tag() {
+    assert_includes(
+        "[极彩花雨] 异世界迷宫里的后宫生活 / Isekai Meikyuu de Harem wo [无修正][02][1080P][简体内嵌]",
+        json!({ "unrated": true }),
+    );
+}

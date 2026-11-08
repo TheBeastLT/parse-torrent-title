@@ -166,6 +166,13 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
         value("$1p"),
         Options::new().remove(true),
     );
+    p.regex(
+        "resolution",
+        r"\b(?:240|360|480|540|576|720)p?-(720|1080|2160)p\b",
+        "i",
+        value("$1p"),
+        Options::new().remove(true),
+    );
     p.regex("resolution", r"(480|720|1080)0[pi]", "i", value("$1p"), Options::new().remove(true));
     p.regex("resolution", r"(?:BD|HD|M)(720|1080|2160)", "", value("$1p"), Options::new().remove(true));
     p.regex("resolution", r"(480|576|720|1080|2160)[piр]", "i", value("$1p"), Options::new().remove(true));
@@ -294,6 +301,7 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
 
     // Unrated
     p.regex("unrated", r"\bunrated|uncensored\b", "i", boolean(), Options::new());
+    p.regex("unrated", r"[\[【](?:[规規]制解除|[无無]修[正版]|未[删刪][减減])版?[\]】]", "", boolean(), Options::new());
 
     // Region
     p.regex(
@@ -326,16 +334,16 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
         Options::new().remove(true),
     );
     p.regex("source", r"\b(?:H[DQ][ .-]*)?S[ .-]+print", "i", value("CAM"), Options::new().remove(true));
-    p.regex(
+    p.standalone(
         "source",
-        r"\b(?:HD[ .-]*)?T(?:ELE)?S(?:YNC)?(?:Rip)?\b",
+        r"(?:HD[ .-]*)?T(?:ELE)?S(?:YNC)?(?:Rip)?\b",
         "i",
         value("TeleSync"),
         Options::new().remove(true),
     );
-    p.regex(
+    p.standalone(
         "source",
-        r"\b(?:HD[ .-]*)?T(?:ELE)?C(?:INE)?(?:Rip)?\b",
+        r"(?:HD[ .-]*)?T(?:ELE)?C(?:INE)?(?:Rip)?\b",
         "",
         value("TeleCine"),
         Options::new().remove(true),
@@ -557,8 +565,8 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
         Options::new().remove(true),
     );
     p.regex("seasons", r"(?<![a-z])t(\d{1,3})[ex]+", "i", array(integer()), Options::new().remove(true));
-    p.regex("seasons", r"(?<=\s)(?<!\bby\s)t(\d{1,2})$", "i", array(integer()), Options::new().remove(true));
-    p.regex("seasons", r"(?:(?:\bthe\W)?\bcomplete)?(?!(?<!s\d{1,2})-so?[1-9]\d(?:\.[a-z\d]{2,4}$|\]))(?:[^\w'’]|^)so?([01]?[0-5]?[1-9]|[1-5]0)(?:[\Wex]|\d{2}\b)", "i", array(integer()), Options::new().skip_if_already_found(false));
+    p.regex("seasons", r"(?<=\s)(?<!\bby\s|-\s)t(\d{1,2})$", "i", array(integer()), Options::new().remove(true));
+    p.regex("seasons", r"(?:(?:\bthe\W)?\bcomplete)?(?!(?<!s\d{1,2})-so?[1-9]\d(?:\.[a-z\d]{2,4}$|\]))(?:[^\w'’]|^)so?([01]?[0-5]?[1-9]|[1-5]0)(?:[\Wex]|\d{2}\b|complete\b)", "i", array(integer()), Options::new().skip_if_already_found(false));
     p.regex("seasons", r"(?:[^\w-]|^)s(\d{1,2})$", "i", array(integer()), Options::new());
     p.regex(
         "seasons",

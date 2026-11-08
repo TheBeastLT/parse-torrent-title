@@ -221,3 +221,13 @@ fn should_detect_4k_resolution_when_1080p_is_added_with_a_plus() {
         json!({ "resolution": "4k", "title": "Street Fighter II: The Animated Movie" }),
     );
 }
+
+/// should read a bracketed resolution range as the higher resolution
+#[test]
+fn should_read_a_bracketed_resolution_range_as_the_higher_resolution() {
+    assert_includes(
+        "Modern Family Temporada 5 S05 Subtitulado Esp Espaol Subtitulada [720-1080p]",
+        json!({ "resolution": "1080p" }),
+    );
+    assert_missing("Modern Family Temporada 5 S05 Subtitulado Esp Espaol Subtitulada [720-1080p]", &["episodes"]);
+}

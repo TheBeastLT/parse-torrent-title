@@ -417,3 +417,12 @@ fn should_detect_cam_source_attached_to_year() {
 fn should_detect_web_source() {
     assert_includes("The.Last.of.Us.S01E08.1080p.WEB.H264-CAKES[TGx]", json!({ "source": "WEB" }));
 }
+
+/// should not detect telesync inside a word with an accented letter
+#[test]
+fn should_not_detect_telesync_inside_a_word_with_an_accented_letter() {
+    assert_includes(
+        "Os Segredos do Universo por Aristóteles e Dante 2023 WEB-DL 1080p x264 DUAL 5.1",
+        json!({ "title": "Os Segredos do Universo por Aristóteles e Dante", "source": "WEB-DL" }),
+    );
+}

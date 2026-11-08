@@ -1307,3 +1307,18 @@ fn stargate_sg1_komplet_1_10_rada() {
 fn avtonomka_13_seria_iz_32_is_an_episode() {
     assert_includes("Avtonomka.13.seria.iz.32.2006.XviD.DVDRip.Kinozal.TV.avi", json!({ "episodes": [13] }));
 }
+
+/// should detect a season glued to a complete tag
+#[test]
+fn should_detect_a_season_glued_to_a_complete_tag() {
+    assert_includes(
+        "Ciężarówką przez pół świata.S01Complete.PL.1080p.WEB-DL.H265-HEVC.MKV.AC3-2.0 [StarLordX]",
+        json!({ "title": "Ciężarówką przez pół świata", "seasons": [1] }),
+    );
+}
+
+/// should not detect a season in a trailing dash separated group tag
+#[test]
+fn should_not_detect_a_season_in_a_trailing_dash_separated_group_tag() {
+    assert_missing("Mom.and.Dad.Save.the.World.1992.VHSRip.XviD.BG AUDIO - T12", &["seasons"]);
+}
