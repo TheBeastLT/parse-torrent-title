@@ -138,7 +138,7 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
 
     // Running time and colour tags
     let tag = Regex::lazy(
-        r"[[(](?:\d{1,3} ?mins?\.?|\d ?h(?:ours?|rs?)? ?\d{1,2} ?mins?\.?|B&W|Colou?r(?:i[sz]ed)?)[)\]]",
+        r"[[(](?:\d{1,3} ?mins?\.?|\d ?h(?:ours?|rs?)? ?\d{1,2} ?mins?\.?|B&W|Colou?r(?:i[sz]ed)?)[)\]]|(?<=\w[ ._-]+)(?<!\bthe[ ._]+)[[(]?(?:versi[oó]n[ ._])?\bIMAX\b(?![ ._]*:)",
         "i",
     );
     p.function("trash", move |c| {
@@ -552,14 +552,14 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
     p.regex("seasons", r"(?:\D|^)(\d{1,2})Â?[°ºªa]?[. ]*temporada", "i", array(integer()), Options::new().remove(true));
     p.regex(
         "seasons",
-        r"(?:\D|^)(\d{1,2}\.[ .]*-[ .]*\d{1,2})\.[ .]?(?:s[ée]rie|séria|řada|sez[óo]na)\b",
+        r"(?:\D|^)(\d{1,2}\.?[ .]*-[ .]*\d{1,2})(?:\.[ .]?| (?=\S+[ .]*[([)]))(?:s[ée]rie|séria|řada|sez[óo]na)\b",
         "i",
         range(),
         Options::new().remove(true),
     );
     p.regex(
         "seasons",
-        r"(?:\D|^)(\d{1,2})\.[ .]?(?:s[ée]rie|séria|řada|sez[óo]na)\b",
+        r"(?:\D|^)(\d{1,2})(?:\.[ .]?| (?=\S+[ .]*[([)]))(?:s[ée]rie|séria|řada|sez[óo]na)\b",
         "i",
         array(integer()),
         Options::new().remove(true),
@@ -1837,7 +1837,7 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
     });
 
     // Group
-    p.regex("group", r"- ?(?!\d+$|S\d+|\d+x|ep?\d+|[^[]+]$|(?:OVA|OAV|OAD|ONA|SP|Specials?)\d*(?:\.\w{2,4})?$|第\d+[話话集])([^\-. []+[^\-. [)\]\d][^\-. [)\]]*)(?:\[[\w.-]+])?(?=\.\w{2,4}$|$)", "i", none(), Options::new().skip_if_nothing_before(true));
+    p.regex("group", r"(?<=\S.*)- ?(?!\d+$|S\d+|\d+x|ep?\d+|[^[]+]$|(?:OVA|OAV|OAD|ONA|SP|Specials?)\d*(?:\.\w{2,4})?$|第\d+[話话集])([^\-. []+[^\-. [)\]\d][^\-. [)\]]*)(?:\[[\w.-]+])?(?=\.\w{2,4}$|$)", "i", none(), Options::new().skip_if_nothing_before(true));
     p.regex("group", r"^\[([^[\]]+)]", "", none(), Options::new());
     p.regex("group", r"\(([\w-]+)\)(?:$|\.\w{2,4}$)", "", none(), Options::new());
     let bracketed = Regex::lazy(r"^\[.+]$", "");

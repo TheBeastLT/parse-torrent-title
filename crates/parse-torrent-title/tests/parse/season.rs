@@ -1322,3 +1322,24 @@ fn should_detect_a_season_glued_to_a_complete_tag() {
 fn should_not_detect_a_season_in_a_trailing_dash_separated_group_tag() {
     assert_missing("Mom.and.Dad.Save.the.World.1992.VHSRip.XviD.BG AUDIO - T12", &["seasons"]);
 }
+
+/// Penoza 1 série (2010)(NL)[1080p]
+#[test]
+fn penoza_1_serie_2010_nl() {
+    assert_includes("Penoza 1 série (2010)(NL)[1080p]", json!({ "title": "Penoza", "seasons": [1] }));
+}
+
+/// Stranger Things 1-5 serie (2016-2025)(CZ)[720p][WEB-DL][AV1]
+#[test]
+fn stranger_things_1_5_serie_cz() {
+    assert_includes(
+        "Stranger Things 1-5 serie (2016-2025)(CZ)[720p][WEB-DL][AV1]",
+        json!({ "title": "Stranger Things", "seasons": [1, 2, 3, 4, 5] }),
+    );
+}
+
+/// Ulises 31 Serie Completa -Animacion
+#[test]
+fn ulises_31_serie_completa() {
+    assert_missing("Ulises 31 Serie Completa -Animacion", &["seasons"]);
+}

@@ -1211,3 +1211,57 @@ fn should_take_the_title_before_a_bracketed_chinese_uncensored_tag() {
         json!({ "title": "Seitokai ni mo Ana wa Aru" }),
     );
 }
+
+/// The Odyssey IMAX HDR10 4KDS 1080p SVT-AV1-Tritium.mkv
+#[test]
+fn the_odyssey_imax_hdr10_4kds_1080p() {
+    assert_includes("The Odyssey IMAX HDR10 4KDS 1080p SVT-AV1-Tritium.mkv", json!({ "title": "The Odyssey" }));
+}
+
+/// Doctor Strange en el multiverso de la locura ( Version IMAX) [4K UHDremux 2160p][HDR10][Castellano]
+#[test]
+fn doctor_strange_en_el_multiverso_version_imax() {
+    assert_includes(
+        "Doctor Strange en el multiverso de la locura ( Version IMAX) [4K UHDremux 2160p][HDR10][Castellano]",
+        json!({ "title": "Doctor Strange en el multiverso de la locura" }),
+    );
+}
+
+/// Voyage of Time: The IMAX Experience (2016) 1080p
+#[test]
+fn voyage_of_time_the_imax_experience_2016() {
+    assert_includes(
+        "Voyage of Time: The IMAX Experience (2016) 1080p",
+        json!({ "title": "Voyage of Time: The IMAX Experience" }),
+    );
+}
+
+/// IMAX: Viajes Asombrosos 2015
+#[test]
+fn imax_viajes_asombrosos_2015() {
+    assert_includes("IMAX: Viajes Asombrosos 2015", json!({ "title": "IMAX: Viajes Asombrosos" }));
+}
+
+/// (1974) - Stardust
+#[test]
+fn year_dash_stardust() {
+    assert_includes("(1974) - Stardust", json!({ "title": "Stardust", "year": 1974 }));
+    assert_missing("(1974) - Stardust", &["group"]);
+}
+
+/// 1995 - Seven.avi
+#[test]
+fn year_dash_seven_avi() {
+    assert_includes("1995 - Seven.avi", json!({ "title": "Seven", "year": 1995 }));
+    assert_missing("1995 - Seven.avi", &["group"]);
+}
+
+/// Wonder Woman 1984 IMAX (2020) 1080p x264 KK650 Regraded
+#[test]
+fn wonder_woman_1984_imax_2020() {
+    assert_includes(
+        "Wonder Woman 1984 IMAX (2020) 1080p x264 KK650 Regraded",
+        json!({ "title": "Wonder Woman 1984", "year": 2020 }),
+    );
+    assert_missing("Wonder Woman 1984 IMAX (2020) 1080p x264 KK650 Regraded", &["episodes"]);
+}
