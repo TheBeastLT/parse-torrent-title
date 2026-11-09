@@ -70,15 +70,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # every target cross-compiles on linux: `-x` builds windows with cargo-xwin and the others with cargo-zigbuild.
+        # The macOS minimums are the ones rustc uses natively, zig targets a newer macOS by default
         settings:
-          - { host: macos-latest, target: aarch64-apple-darwin, build: npm run build -- --target aarch64-apple-darwin }
-          - { host: macos-latest, target: x86_64-apple-darwin, build: npm run build -- --target x86_64-apple-darwin }
-          - { host: windows-latest, target: x86_64-pc-windows-msvc, build: npm run build -- --target x86_64-pc-windows-msvc }
-          - { host: ubuntu-latest, target: x86_64-unknown-linux-gnu, build: npm run build -- --target x86_64-unknown-linux-gnu --use-napi-cross }
-          - { host: ubuntu-latest, target: aarch64-unknown-linux-gnu, build: npm run build -- --target aarch64-unknown-linux-gnu --use-napi-cross }
-          - { host: ubuntu-latest, target: x86_64-unknown-linux-musl, build: npm run build -- --target x86_64-unknown-linux-musl -x }
-          - { host: ubuntu-latest, target: aarch64-unknown-linux-musl, build: npm run build -- --target aarch64-unknown-linux-musl -x }
-    runs-on: ${{ matrix.settings.host }}
+          - { target: aarch64-apple-darwin, build: MACOSX_DEPLOYMENT_TARGET=11.0 npm run build -- --target aarch64-apple-darwin -x }
+          - { target: x86_64-apple-darwin, build: MACOSX_DEPLOYMENT_TARGET=10.12 npm run build -- --target x86_64-apple-darwin -x }
+          - { target: x86_64-pc-windows-msvc, build: npm run build -- --target x86_64-pc-windows-msvc -x }
+          - { target: x86_64-unknown-linux-gnu, build: npm run build -- --target x86_64-unknown-linux-gnu --use-napi-cross }
+          - { target: aarch64-unknown-linux-gnu, build: npm run build -- --target aarch64-unknown-linux-gnu --use-napi-cross }
+          - { target: x86_64-unknown-linux-musl, build: npm run build -- --target x86_64-unknown-linux-musl -x }
+          - { target: aarch64-unknown-linux-musl, build: npm run build -- --target aarch64-unknown-linux-musl -x }
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -90,12 +92,11 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           key: ${{ matrix.settings.target }}
-      # `-x` builds musl targets with cargo-zigbuild, which it installs itself
+      # cargo-zigbuild needs zig, while `-x` installs cargo-zigbuild and cargo-xwin itself
       - uses: mlugg/setup-zig@v2
-        if: contains(matrix.settings.target, 'musl')
+        if: contains(matrix.settings.target, 'apple') || contains(matrix.settings.target, 'musl')
       - run: npm ci
       - run: ${{ matrix.settings.build }}
-        shell: bash
       - uses: actions/upload-artifact@v6
         with:
           name: bindings-${{ matrix.settings.target }}
