@@ -1679,3 +1679,9 @@ fn should_detect_a_language_followed_by_subtitles_without_a_year() {
 fn should_detect_a_leading_language_in_a_plain_comma_separated_language_list() {
     assert_includes("french,english,spanish.srt", json!({ "languages": ["english", "french", "spanish"] }));
 }
+
+/// should not detect a language name ending a slash separated title
+#[test]
+fn should_not_detect_a_language_name_ending_a_slash_separated_title() {
+    assert_missing("Потерянная душа / Anima persa / Lost Soul [1977, DVDRip] MVO (ТВЦ)", &["languages"]);
+}

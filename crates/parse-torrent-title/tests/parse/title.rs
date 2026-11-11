@@ -1265,3 +1265,12 @@ fn wonder_woman_1984_imax_2020() {
     );
     assert_missing("Wonder Woman 1984 IMAX (2020) 1080p x264 KK650 Regraded", &["episodes"]);
 }
+
+/// A little bit French / Let's fall in love! / Slightly French / Let's Fall in Love [1949, USA, musical, melodrama, comedy, WEB-DL 1080p] Sub Rus + Sub Eng + Original Eng
+#[test]
+fn a_little_bit_french_slightly_french_1949() {
+    assert_includes(
+        "A little bit French / Let's fall in love! / Slightly French / Let's Fall in Love [1949, USA, musical, melodrama, comedy, WEB-DL 1080p] Sub Rus + Sub Eng + Original Eng",
+        json!({ "title": "A little bit French / Let's fall in love! / Slightly French / Let's Fall in Love", "year": 1949 }),
+    );
+}

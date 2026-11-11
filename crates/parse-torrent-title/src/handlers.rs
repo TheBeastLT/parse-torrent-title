@@ -88,7 +88,7 @@ impl Defaults<'_> {
         self.regex("languages", &[r"(?<=\p{Ll}.*)\b(?:", &caps, r")\b"].concat(), "u", language(), options.clone());
         self.regex(
             "languages",
-            &[r"\b(?:", name, r")\b(?![ .]+(?!(?:sub(?:title)?s?|language|dub\w*)\b)\p{L}+(?![\p{L}\p{N}]|$))"]
+            &[r"\b(?:", name, r")\b(?![ .]+/|[ .]+(?!(?:sub(?:title)?s?|language|dub\w*)\b)\p{L}+(?![\p{L}\p{N}]|$))"]
                 .concat(),
             "iu",
             language(),
