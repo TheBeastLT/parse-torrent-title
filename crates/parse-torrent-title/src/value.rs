@@ -242,6 +242,7 @@ impl ParsedTitle {
 
     accessors! {
         date: "date" => as_str -> &str;
+        aspect_ratio: "aspectRatio" => as_str -> &str;
         resolution: "resolution" => as_str -> &str;
         region: "region" => as_str -> &str;
         container: "container" => as_str -> &str;

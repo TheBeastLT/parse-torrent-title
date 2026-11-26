@@ -31,6 +31,7 @@ declare namespace ParseTorrentTitle {
         title: string;
         date?: string;
         year?: number | string;
+        aspectRatio?: string;
         resolution?: string;
         extended?: boolean;
         unrated?: boolean;

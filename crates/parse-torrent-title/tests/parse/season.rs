@@ -1343,3 +1343,33 @@ fn stranger_things_1_5_serie_cz() {
 fn ulises_31_serie_completa() {
     assert_missing("Ulises 31 Serie Completa -Animacion", &["seasons"]);
 }
+
+/// should not detect a 4x3 aspect ratio before a full screen tag as season
+#[test]
+fn should_not_detect_a_4x3_aspect_ratio_before_a_full_screen_tag_as_season() {
+    assert_missing("Something Wicked This Way Comes_(1983)_DVDRip_[4x3 Full Screen]_.avi", &["seasons"]);
+}
+
+/// should not detect a 4x3 aspect ratio before a screen format as season
+#[test]
+fn should_not_detect_a_4x3_aspect_ratio_before_a_screen_format_as_season() {
+    assert_missing("Once Upon A Forest 1993 4x3 Full frame.avi", &["seasons"]);
+}
+
+/// should detect a bare 4x3 episode code as season
+#[test]
+fn should_detect_a_bare_4x3_episode_code_as_season() {
+    assert_includes("Heroes 4x3.avi", json!({ "season": 4 }));
+}
+
+/// should detect a bracketed 4x3 episode code before an episode title as season
+#[test]
+fn should_detect_a_bracketed_4x3_episode_code_before_an_episode_title_as_season() {
+    assert_includes("Czarna Żmija [4x3] Sztuka kamuflażu.avi", json!({ "season": 4 }));
+}
+
+/// should detect a 4x3 episode code before an hdtv source as season
+#[test]
+fn should_detect_a_4x3_episode_code_before_an_hdtv_source_as_season() {
+    assert_includes("Buffy cazavampiros 4x3 HDTV XviD Castellano.avi", json!({ "season": 4 }));
+}

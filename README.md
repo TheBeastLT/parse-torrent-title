@@ -90,6 +90,7 @@ field as a `Value`, including the ones added by [custom handlers](#advanced-usag
 | `volumes`       | `&[i64]`     | `[1, 2, 3]`                                                                                     |
 | `complete`      | `bool`       | complete series, collections, box sets, trilogies, batches                                      |
 | `extras`        | `bool`       | packs that also bundle OVAs, specials, movies, OSTs and similar                                 |
+| `aspectRatio`   | `&str`       | `"16:9"`, `"4:3"`                                                                               |
 | `resolution`    | `&str`       | `"4k"`, `"1080p"`, `"720p"`, `"576p"`, `"480p"`                                                 |
 | `source`        | `&str`       | `"BluRay REMUX"`, `"BluRay"`, `"BDRip"`, `"BRRip"`, `"UHDRip"`, `"WEB-DL"`, `"WEBRip"`, `"WEB"`, `"HDTV"`, `"HDRip"`, `"DVDRip"`, `"DVD"`, `"TVRip"`, `"SATRip"`, `"PPVRip"`, `"SCR"`, `"R5"`, `"TeleCine"`, `"TeleSync"`, `"CAM"` |
 | `codec`         | `&str`       | `"x264"`, `"x265"`, `"h264"`, `"h265"`, `"hevc"`, `"avc"`, `"av1"`, `"xvid"`, `"divx"`, `"mpeg2"` |

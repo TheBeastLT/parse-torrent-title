@@ -2341,3 +2341,15 @@ fn should_not_detect_a_running_time_in_hours_and_minutes_as_episode() {
     assert_includes("Movie Title (1h 32min) 1080p.mkv", json!({ "title": "Movie Title", "resolution": "1080p" }));
     assert_missing("Movie Title (1h 32min) 1080p.mkv", &["episodes"]);
 }
+
+/// should detect a bare 4x3 episode code as episode
+#[test]
+fn should_detect_a_bare_4x3_episode_code_as_episode() {
+    assert_includes("Heroes 4x3.avi", json!({ "episode": 3 }));
+}
+
+/// should detect a 4x3 episode code before a bracketed resolution as episode
+#[test]
+fn should_detect_a_4x3_episode_code_before_a_bracketed_resolution_as_episode() {
+    assert_includes("Last Week Tonight with John Oliver 4x3 (720p-HDTV-x264-BFF)", json!({ "episode": 3 }));
+}

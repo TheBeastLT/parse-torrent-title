@@ -74,6 +74,7 @@ Only fields that were found are present in the result, except for `title`, which
 | `volumes`       | `number[]` | `[1, 2, 3]`                                                                                     |
 | `complete`      | `boolean`  | complete series, collections, box sets, trilogies, batches                                      |
 | `extras`        | `boolean`  | packs that also bundle OVAs, specials, movies, OSTs and similar                                 |
+| `aspectRatio`   | `string`   | `"16:9"`, `"4:3"`                                                                               |
 | `resolution`    | `string`   | `"4k"`, `"1080p"`, `"720p"`, `"576p"`, `"480p"`                                                 |
 | `source`        | `string`   | `"BluRay REMUX"`, `"BluRay"`, `"BDRip"`, `"BRRip"`, `"UHDRip"`, `"WEB-DL"`, `"WEBRip"`, `"WEB"`, `"HDTV"`, `"HDRip"`, `"DVDRip"`, `"DVD"`, `"TVRip"`, `"SATRip"`, `"PPVRip"`, `"SCR"`, `"R5"`, `"TeleCine"`, `"TeleSync"`, `"CAM"` |
 | `codec`         | `string`   | `"x264"`, `"x265"`, `"h264"`, `"h265"`, `"hevc"`, `"avc"`, `"av1"`, `"xvid"`, `"divx"`, `"mpeg2"` |

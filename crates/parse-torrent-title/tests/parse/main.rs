@@ -5,6 +5,7 @@
 
 mod common;
 
+mod aspect_ratio;
 mod audio;
 mod codec;
 mod complete;

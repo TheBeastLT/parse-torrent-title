@@ -13,6 +13,11 @@ const SUBTITLE_EXTENSIONS: &str = "sub|smi|srt|ssa|ass|vtt";
 const PACK_EXTRA: &str = r"(?:\d+\s*)?(?:OVAs?|OAVs?|OADs?|ONAs?|Specials?|SPs?|Movies?|Films?|Extras?|Bonus(?:es)?|Novels?|Mangas?|OSTs?|Soundtracks?|Artbooks?|OP|ED|NC ?(?:OP|ED)s?)\b";
 const PLUS_EXTRA: &str = r"(?:\d+\s*)?(?:Extras?|Bonus(?:es)?)\b";
 const EPISODE_CODE: &str = r"(?:\bS\d{1,2}E\d{1,3}|\b\d{1,2}x\d{1,3}\b)";
+const ASPECT_RATIO_4_3: &str = concat!(
+    r"(?<!\d)4[xх]3(?!\d)(?=[ ._-]*(?:ws|lb|ff|fs|full|wide|open|dvd|bd|blu|remux|xvid|divx|[xh]\.?26[45]|avc|ac3|aac|hevc|dd\d|",
+    r"\d{3,4}p|uncut|cut|dar|pal|ntsc|letterbox))|(?<=\([^)]*|\][ ._]*\[[^\]]*|(?:\d{3,4}x\d{3,4}|\d{3,4}p|(?:dvd|bd)\w*|",
+    r"(?:full|wide) ?screen|full frame|open matte|xvid|divx|[xh]\.?26[45]|avc|ac3|pal|ntsc)[ ._,:-]*)(?<!\d)4[xх]3(?!\d)",
+);
 const HALF_EPISODE_END: &str = concat!(
     r"\.5(?:v\d)?(?=[ ._\-)\][]|$)(?![ .-]\d)(?![ ._]?(?:gb|mb|ch|kbps|fps|bit|x\d|th\b|km\b|dimensional))",
     r"(?![._-](?:minut[eio]s?|seconds?|hours?|days?|weeks?|months?|years?|anni|o'?clock|[ap]m|to|million|ways|signs|stages|",
@@ -145,6 +150,10 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
         let m = tag.find(c.title)?;
         Some(HandlerMatch::at(utf16_index(c.title, m.start())).raw_match(&c.title[m.range()]).remove(true))
     });
+
+    // Aspect ratio
+    p.regex("aspectRatio", r"(?<!^|\d)16[xх]9(?!\d)", "i", value("16:9"), Options::new().remove(true));
+    p.regex("aspectRatio", ASPECT_RATIO_4_3, "i", value("4:3"), Options::new().remove(true));
 
     // Resolution
     p.regex(
