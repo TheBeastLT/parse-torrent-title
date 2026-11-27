@@ -368,7 +368,7 @@ pub fn add_defaults(parser: &mut Parser, exclude: &[&str]) {
     p.regex("source", r"\b(?:BR|Blu[ .-]*Ray)[ .-]*Rip\b", "i", value("BRRip"), Options::new().remove(true));
     p.regex(
         "source",
-        r"\bBD[ .-]*Rip\b|\bBDR\b|\bBD-RM\b|[[(]BD[\]) .,-]|(?<=[[(][^\])]* )(?<!^\[[^\]]*)BD(?=[\]) ,-])",
+        r"\bBD[ .-]*Rip\b|\bBDR\b|\bBD-RM\b|[[(]BD[\]) .,-]|(?<=[[(][^\])/]* )(?<!(?:^|/)\[[^\]]*)BD(?=[\]) ,-])(?![^/]*/)",
         "i",
         value("BDRip"),
         Options::new().remove(true),

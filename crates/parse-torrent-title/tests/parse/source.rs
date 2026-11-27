@@ -118,6 +118,24 @@ fn should_detect_the_bd_source_after_the_region_in_parentheses() {
     );
 }
 
+/// should not read BD in a folder name as the source
+#[test]
+fn should_not_read_bd_in_a_folder_name_as_the_source() {
+    assert_includes(
+        "Sub/Eng sub (USA BD)/[Beatrice-Raws] Sword Art Online II - 01 [BDRip 1280x720 x264 Vorbis].sup",
+        json!({ "episode": 1, "source": "BDRip" }),
+    );
+}
+
+/// should detect the BD source in the file name of a path
+#[test]
+fn should_detect_the_bd_source_in_the_file_name_of_a_path() {
+    assert_includes(
+        "S1/Boku no Hero Academia - 01 (Dual Audio BD 1080p x264 FLAC) [7DD64EDE].mkv",
+        json!({ "title": "S1/Boku no Hero Academia", "episode": 1, "source": "BDRip" }),
+    );
+}
+
 /// should keep BD in the release group
 #[test]
 fn should_keep_bd_in_the_release_group() {
