@@ -22,6 +22,16 @@ describe("Parsing source", () => {
         expect(parse(releaseName)).to.deep.include({ source: "SATRip" });
     });
 
+    it("should detect the BD source after the resolution in brackets", () => {
+        const releaseName = "[FrixySubs] Kikansha no Mahou wa Tokubetsu desu - S01E03 [1080p BD HEVC-10bit FLAC] [Napisy PL].mkv";
+        expect(parse(releaseName)).to.deep.include({ source: "BDRip" });
+    });
+
+    it("should detect the BD source after the resolution in parentheses", () => {
+        const releaseName = "[ALS] BanG Dream! Ave Mujica 07 (1080p BD AAC x264)";
+        expect(parse(releaseName)).to.deep.include({ source: "BDRip" });
+    });
+
     it("should detect the DVDRip source correctly", () => {
         const releaseName = "A Stable Life S01E01 DVDRip x264-Ltu";
         expect(parse(releaseName)).to.deep.include({ source: "DVDRip" });

@@ -94,6 +94,39 @@ fn should_detect_the_bd_rm_source_correctly() {
     );
 }
 
+/// should detect the BD source after the resolution in brackets
+#[test]
+fn should_detect_the_bd_source_after_the_resolution_in_brackets() {
+    assert_includes(
+        "[FrixySubs] Kikansha no Mahou wa Tokubetsu desu - S01E03 [1080p BD HEVC-10bit FLAC] [Napisy PL].mkv",
+        json!({ "source": "BDRip" }),
+    );
+}
+
+/// should detect the BD source after the resolution in parentheses
+#[test]
+fn should_detect_the_bd_source_after_the_resolution_in_parentheses() {
+    assert_includes("[ALS] BanG Dream! Ave Mujica 07 (1080p BD AAC x264)", json!({ "source": "BDRip" }));
+}
+
+/// should detect the BD source after the region in parentheses
+#[test]
+fn should_detect_the_bd_source_after_the_region_in_parentheses() {
+    assert_includes(
+        "Super Beast Machine God Dancouga (US BD) [TV + OVA]",
+        json!({ "title": "Super Beast Machine God Dancouga", "source": "BDRip" }),
+    );
+}
+
+/// should keep BD in the release group
+#[test]
+fn should_keep_bd_in_the_release_group() {
+    assert_includes(
+        "[Commie BD Ver.] Monogatari Series Second Season & Hanamonogatari [BD 720P x264 10bit AAC]",
+        json!({ "group": "Commie BD Ver.", "source": "BDRip" }),
+    );
+}
+
 /// should detect the MicroHD source correctly
 #[test]
 fn should_detect_the_micro_hd_source_correctly() {
